@@ -1,48 +1,50 @@
-# Product Name
+# M5Unit - GESTURE
 
 ## Overview
 
-### SKU:xxx
+Library for UnitHUB using M5UnitUnified.  
 
-Description of the product
+The M5UnitUnified version of the library is located under [src/unit](src/unit).  
+M5UnitUnfied has a unified API and can control multiple units via PaHub, etc.
 
-## Related Link
 
-- [Document & Datasheet](https://docs.m5stack.com/en/unit/product_Link)
+### SKU:U127
 
-## Required Libraries:
+PAJ7620U2 touchless Gesture Moving Recognition Sensor Recognize up to 9 Gestures It's a touchless 3D gesture recognition sensor via the I2C interface that integrates with PAJ7620U2. You could feel the charm of 9 kinds of gesture recognition by default program. In addition to adding more complex gestures, the recognition rate is up to 240Hz with higher anti-interference capability. This sensor is reliable for its recognition process is intuitive and has low power consumption (operating current only 2.2mA) that allows you to control a robot in accordance with your hand's movement. This is particularly useful in interactive applications.
 
-- [Adafruit_BMP280_Library](https://github.com/adafruit/Required_Libraries_Link)
+Support 9 gestures:
 
-## License
+Up, Down, Left, Right, Front, Back, Clockwise, Counterclockwise, Quick wave
 
-- [Product Name- MIT](LICENSE)
-
-## Remaining steps(Editorial Staff Look,After following the steps, remember to delete all the content below)
-
-1. Change [clang format check path](./.github/workflows/clang-format-check.yml#L9-L15).
-2. Add License content to [LICENSE](/LICENSE).
-3. Change link on line 78 of [bug-report.yml](./.github/ISSUE_TEMPLATE/bug-report.yml#L78).
-
-```cpp
-Example
-# M5Unit-ENV
-
-## Overview
-
-### SKU:U001 & U001-B & U001-C
-
-Contains M5Stack-**UNIT ENV** series related case programs.ENV is an environmental sensor with integrated SHT30 and QMP6988 internally to detect temperature, humidity, and atmospheric pressure data.
 
 ## Related Link
 
-- [Document & Datasheet](https://docs.m5stack.com/en/unit/envIII)
+- [Unit GESTURE & Datasheet](https://docs.m5stack.com/en/unit/Gesture)
 
 ## Required Libraries:
 
-- [Adafruit_BMP280_Library](https://github.com/adafruit/Adafruit_BMP280_Library)
+- [M5UnitUnified](https://github.com/m5stack/M5UnitUnified)
+- [M5Utility](https://github.com/m5stack/M5Utility)
+- [M5HAL](https://github.com/m5stack/M5HAL)
 
 ## License
 
-- [M5Unit-ENV - MIT](LICENSE)
+- [M5Unit-GESTURE- MIT](LICENSE)
+
+## Examples
+See also [examples/UnitUnified](examples/UnitUnified)
+
+## Doxygen document
+If you want to generate documents on your local machine, execute the following command
+
 ```
+bash docs/doxy.sh
+```
+
+It will output it under docs/html  
+If you want to output Git commit hashes to html, do it for the git cloned folder.
+
+### Required
+- [Doxyegn](https://www.doxygen.nl/)
+- [pcregrep](https://formulae.brew.sh/formula/pcre2)
+- [Git](https://git-scm.com/) (Output commit hash to html)
