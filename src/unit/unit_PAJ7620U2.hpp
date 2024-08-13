@@ -133,8 +133,7 @@ struct Data {
     ///@{
     /*! @brief Has object? */
     inline bool hasObject() const {
-        return (data_mode == Mode::Cursor) ? gesture() == Gesture::HasObject
-                                           : false;
+        return (data_mode == Mode::Cursor) ? gesture() == Gesture::HasObject : false;
     }
     /*! @brief Gets the cursor X the any object */
     inline uint16_t cursorX() const {
@@ -153,9 +152,7 @@ struct Data {
   @class UnitPAJ7620U2
   @brief PAJ7620U2 unit
  */
-class UnitPAJ7620U2
-    : public Component,
-      public PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data> {
+class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data> {
     M5_UNIT_COMPONENT_HPP_BUILDER(UnitPAJ7620U2, 0x73);
 
    public:
@@ -181,8 +178,7 @@ class UnitPAJ7620U2
     };
 
     explicit UnitPAJ7620U2(const uint8_t addr = DEFAULT_ADDRESS)
-        : Component(addr),
-          _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)} {
+        : Component(addr), _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)} {
     }
     virtual ~UnitPAJ7620U2() {
     }
@@ -419,23 +415,19 @@ class UnitPAJ7620U2
     ///@{
     bool start_periodic_measurement(const uint32_t intervalMs = 0);
 
-    bool start_periodic_measurement(const paj7620u2::Mode mode,
-                                    const paj7620u2::Frequency freq,
+    bool start_periodic_measurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
                                     const uint32_t intervalMs);
 
     bool stop_periodic_measurement();
     ///@}
-    M5_UNIT_COMPONENT_PERIODIC_MEASUREMENT_ADAPTER_HPP_BUILDER(UnitPAJ7620U2,
-                                                               paj7620u2::Data);
+    M5_UNIT_COMPONENT_PERIODIC_MEASUREMENT_ADAPTER_HPP_BUILDER(UnitPAJ7620U2, paj7620u2::Data);
 
     bool select_bank(const uint8_t bank, const bool force = false);
 
-    bool read_banked_register(const uint16_t reg, uint8_t* buf,
-                              const size_t len);
+    bool read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len);
     bool read_banked_register8(const uint16_t reg, uint8_t& value);
     bool read_banked_register16(const uint16_t reg, uint16_t& value);
-    bool write_banked_register(const uint16_t reg, const uint8_t* buf,
-                               const size_t len);
+    bool write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len);
     bool write_banked_register8(const uint16_t reg, const uint8_t value);
     bool write_banked_register16(const uint16_t reg, const uint16_t value);
 

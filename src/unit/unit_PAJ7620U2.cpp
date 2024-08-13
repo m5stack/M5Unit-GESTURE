@@ -225,36 +225,35 @@ constexpr Pair register_for_gesture[] = {
 #endif
     {0xFF /*terminator*/, 0xFF}};
 // proximity mode
-constexpr Pair register_for_proximity[] = {
-    {0xEF, 0x00},  // Bank 0
-    {0x41, 0x00},  // R_Int_1_En [7:0]
-    {0x42, 0x02},  // R_Int_2_En [7:0]
-    {0x48, 0x20},  // R_AE_Exposure_UB [7:0]
-    {0x49, 0x00},  // R_AE_Exposure_UB [15:8]
-    {0x51, 0x13},  // R_Manual_GG[0]
-    {0x83, 0x00},  // R_LightThd [7:0]
-    {0x9F, 0xF8},  // R_RotateEnH
-    {0x69, 0x96},  // R_Pox_UB [7:0]
-    {0x6A, 0x02},  // R_Pox_LB [7:0]
-    {0xEF, 0x01},  // Bank 1
-    {0x01, 0x1E},  // Cmd_VSize [5:0]
-    {0x02, 0x0F},  // Cmd_HStart [5:0]
-    {0x03, 0x10},  // Cmd_VStart [5:0]
-    {0x04, 0x02},  // R_HR_LS_Comp_DAvg_V
-    {0x41, 0x50},  // R_dac_ctrl
-    {0x43, 0x34},  // R_pga_test
-    {0x65, 0xCE},  // R_IDLE_TIME[7:0]
-    {0x66, 0x0B},  // R_IDLE_TIME[18:5]
-    {0x67, 0xCE},  // R_IDLE_TIME_SLEEP_1 [7:0]
-    {0x68, 0x0B},  // R_IDLE_TIME_SLEEP_1 [15:8]
-    {0x69, 0xE9},  // R_IDLE_TIME_SLEEP_2 [7:0]
-    {0x6A, 0x05},  // R_IDLE_TIME_SLEEP_2 [15:8]
-    {0x6B, 0x50},  // R_Obj_TIME_1 [7:0]
-    {0x6C, 0xC3},  // R_Obj_TIME_1 [15:8]
-    {0x6D, 0x50},  // R_Obj_TIME_2 [7:0]
-    {0x6E, 0xC3},  // R_Obj_TIME_2 [15:8]
-    {0x74, 0x05},  // R_WakeUpSig_SelEnable 5:proximity
-    {0xFF /*terminator*/, 0xFF}};
+constexpr Pair register_for_proximity[] = {{0xEF, 0x00},  // Bank 0
+                                           {0x41, 0x00},  // R_Int_1_En [7:0]
+                                           {0x42, 0x02},  // R_Int_2_En [7:0]
+                                           {0x48, 0x20},  // R_AE_Exposure_UB [7:0]
+                                           {0x49, 0x00},  // R_AE_Exposure_UB [15:8]
+                                           {0x51, 0x13},  // R_Manual_GG[0]
+                                           {0x83, 0x00},  // R_LightThd [7:0]
+                                           {0x9F, 0xF8},  // R_RotateEnH
+                                           {0x69, 0x96},  // R_Pox_UB [7:0]
+                                           {0x6A, 0x02},  // R_Pox_LB [7:0]
+                                           {0xEF, 0x01},  // Bank 1
+                                           {0x01, 0x1E},  // Cmd_VSize [5:0]
+                                           {0x02, 0x0F},  // Cmd_HStart [5:0]
+                                           {0x03, 0x10},  // Cmd_VStart [5:0]
+                                           {0x04, 0x02},  // R_HR_LS_Comp_DAvg_V
+                                           {0x41, 0x50},  // R_dac_ctrl
+                                           {0x43, 0x34},  // R_pga_test
+                                           {0x65, 0xCE},  // R_IDLE_TIME[7:0]
+                                           {0x66, 0x0B},  // R_IDLE_TIME[18:5]
+                                           {0x67, 0xCE},  // R_IDLE_TIME_SLEEP_1 [7:0]
+                                           {0x68, 0x0B},  // R_IDLE_TIME_SLEEP_1 [15:8]
+                                           {0x69, 0xE9},  // R_IDLE_TIME_SLEEP_2 [7:0]
+                                           {0x6A, 0x05},  // R_IDLE_TIME_SLEEP_2 [15:8]
+                                           {0x6B, 0x50},  // R_Obj_TIME_1 [7:0]
+                                           {0x6C, 0xC3},  // R_Obj_TIME_1 [15:8]
+                                           {0x6D, 0x50},  // R_Obj_TIME_2 [7:0]
+                                           {0x6E, 0xC3},  // R_Obj_TIME_2 [15:8]
+                                           {0x74, 0x05},  // R_WakeUpSig_SelEnable 5:proximity
+                                           {0xFF /*terminator*/, 0xFF}};
 // cursor mode
 constexpr Pair register_for_cursor[] = {
     // restore
@@ -384,8 +383,7 @@ bool UnitPAJ7620U2::begin() {
             return false;
         }
     }
-    if (!select_bank(0, true) || !setFrequency(_cfg.frequency) ||
-        !setMode(_cfg.mode)) {
+    if (!select_bank(0, true) || !setFrequency(_cfg.frequency) || !setMode(_cfg.mode)) {
         M5_LIB_LOGE("Fauled to settings");
         return false;
     }
@@ -409,16 +407,14 @@ void UnitPAJ7620U2::update(const bool force) {
                 case Mode::Proximity:
                     _updated = update_proximity(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
-                        _updated = latest().gesture() != d.gesture() ||
-                                   latest().brightness() != d.brightness() ||
+                        _updated = latest().gesture() != d.gesture() || latest().brightness() != d.brightness() ||
                                    latest().approach() != d.approach();
                     }
                     break;
                 case Mode::Cursor:
                     _updated = update_cursor(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
-                        _updated = latest().gesture() != d.gesture() ||
-                                   latest().cursorX() != d.cursorX() ||
+                        _updated = latest().gesture() != d.gesture() || latest().cursorX() != d.cursorX() ||
                                    latest().cursorY() != d.cursorY();
                     }
                     break;
@@ -444,8 +440,7 @@ bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d) {
     return false;
 #else
     if (read_gesture(d)) {
-        d.data_gesture = rotate_gesture(
-            static_cast<Gesture>(*(uint16_t*)d.raw.data()), _rotation);
+        d.data_gesture = rotate_gesture(static_cast<Gesture>(*(uint16_t*)d.raw.data()), _rotation);
         return true;
     }
     return false;
@@ -495,8 +490,7 @@ bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d) {
     }
     return false;
 #else
-    if (read_gesture(d) && d.gesture() == Gesture::HasObject &&
-        read_cursor(d)) {
+    if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
         d.cursor_x = (((uint16_t)(d.raw[3] & 0X0F)) << 8) | d.raw[2];
         d.cursor_y = (((uint16_t)(d.raw[5] & 0X0F)) << 8) | d.raw[4];
         return true;
@@ -511,8 +505,7 @@ bool UnitPAJ7620U2::read_gesture(Data& d) {
 }
 
 bool UnitPAJ7620U2::read_proximity(Data& d) {
-    return read_banked_register(S_AVGY, d.raw.data() + 2, 1) &&
-           read_banked_register(S_STATE, d.raw.data() + 3, 1);
+    return read_banked_register(S_AVGY, d.raw.data() + 2, 1) && read_banked_register(S_STATE, d.raw.data() + 3, 1);
 }
 
 bool UnitPAJ7620U2::read_cursor(Data& d) {
@@ -527,8 +520,7 @@ bool UnitPAJ7620U2::readGesture(Gesture& ges) {
     }
 #else
     uint8_t high{}, low{};
-    if (read_banked_register8(INT_FLAG_1, low) &&
-        read_banked_register8(INT_FLAG_2, high)) {
+    if (read_banked_register8(INT_FLAG_1, low) && read_banked_register8(INT_FLAG_2, high)) {
         uint16_t v = (((uint16_t)high) << 8) | low;
         ges        = static_cast<Gesture>(v);
         ges        = rotate_gesture(ges, _rotation);
@@ -551,16 +543,13 @@ bool UnitPAJ7620U2::readObjectSize(uint16_t& sz) {
 }
 
 bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach) {
-    return read_banked_register8(S_AVGY, brightness) &&
-           read_banked_register8(S_STATE, approach);
+    return read_banked_register8(S_AVGY, brightness) && read_banked_register8(S_STATE, approach);
 }
 
 bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y) {
     uint8_t xl{}, xh{}, yl{}, yh{};
-    if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) &&
-        read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
-        read_banked_register8(OBJECT_CENTER_Y_LOW, yl) &&
-        read_banked_register8(OBJECT_CENTER_Y_HIGH, yh)) {
+    if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) && read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
+        read_banked_register8(OBJECT_CENTER_Y_LOW, yl) && read_banked_register8(OBJECT_CENTER_Y_HIGH, yh)) {
         x = (((uint16_t)(xh & 0X1F)) << 8) | xl;
         y = (((uint16_t)(yh & 0X1F)) << 8) | yl;
         return true;
@@ -572,10 +561,8 @@ bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y) {
     //    std::array<uint8_t, 4> raw{};  // X_LOW , 4?
 
     uint8_t xl{}, xh{}, yl{}, yh{};
-    if (read_banked_register8(CURSOR_CLAMP_CENTER_X_LOW, xl) &&
-        read_banked_register8(CURSOR_CLAMP_CENTER_X_HIGH, xh) &&
-        read_banked_register8(CURSOR_CLAMP_CENTER_Y_LOW, yl) &&
-        read_banked_register8(CURSOR_CLAMP_CENTER_Y_HIGH, yh)) {
+    if (read_banked_register8(CURSOR_CLAMP_CENTER_X_LOW, xl) && read_banked_register8(CURSOR_CLAMP_CENTER_X_HIGH, xh) &&
+        read_banked_register8(CURSOR_CLAMP_CENTER_Y_LOW, yl) && read_banked_register8(CURSOR_CLAMP_CENTER_Y_HIGH, yh)) {
         x = (((uint16_t)(xh & 0X0F)) << 8) | xl;
         y = (((uint16_t)(yh & 0X0F)) << 8) | yl;
         return true;
@@ -617,9 +604,7 @@ bool UnitPAJ7620U2::readFrequency(Frequency& f) {
 }
 
 bool UnitPAJ7620U2::setFrequency(const Frequency f) {
-    if (f == Frequency::Unknown ||
-        !write_banked_register8(R_REF_CLK_CNT_LOW,
-                                freq_table[m5::stl::to_underlying(f)])) {
+    if (f == Frequency::Unknown || !write_banked_register8(R_REF_CLK_CNT_LOW, freq_table[m5::stl::to_underlying(f)])) {
         return false;
     }
     _frequency = f;
@@ -627,9 +612,8 @@ bool UnitPAJ7620U2::setFrequency(const Frequency f) {
 }
 
 bool UnitPAJ7620U2::setMode(const Mode m) {
-    auto idx = m5::stl::to_underlying(m);
-    const Pair* rv =
-        idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
+    auto idx       = m5::stl::to_underlying(m);
+    const Pair* rv = idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
     if (!rv) {
         M5_LIB_LOGE("Inbalid mode:%x", m);
         return false;
@@ -653,19 +637,15 @@ bool UnitPAJ7620U2::setMode(const Mode m) {
     _mode = m;
 
     // To resolve bank inconsistencies after register setting
-    return select_bank(0, true) &&
-           ((_mode != Mode::Proximity) ? setFrequency(_frequency) : true);
+    return select_bank(0, true) && ((_mode != Mode::Proximity) ? setFrequency(_frequency) : true);
 }
 
 bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low) {
-    return read_banked_register8(R_POX_UB, high) &&
-           read_banked_register8(R_POX_LB, low);
+    return read_banked_register8(R_POX_UB, high) && read_banked_register8(R_POX_LB, low);
 }
 
-bool UnitPAJ7620U2::setApproachThreshold(const uint8_t high,
-                                         const uint8_t low) {
-    return write_banked_register8(R_POX_UB, high) &&
-           write_banked_register8(R_POX_LB, low);
+bool UnitPAJ7620U2::setApproachThreshold(const uint8_t high, const uint8_t low) {
+    return write_banked_register8(R_POX_UB, high) && write_banked_register8(R_POX_LB, low);
 }
 
 bool UnitPAJ7620U2::readHorizontalFlip(bool& flip) {
@@ -716,40 +696,28 @@ bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force) {
     return false;
 }
 
-bool UnitPAJ7620U2::read_banked_register(const uint16_t reg, uint8_t* buf,
-                                         const size_t len) {
-    return select_bank((reg >> 8) & 1) &&
-           readRegister((uint8_t)(reg & 0xFF), buf, len, 1);
+bool UnitPAJ7620U2::read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len) {
+    return select_bank((reg >> 8) & 1) && readRegister((uint8_t)(reg & 0xFF), buf, len, 1);
 }
 
 bool UnitPAJ7620U2::read_banked_register8(const uint16_t reg, uint8_t& value) {
-    return select_bank((reg >> 8) & 1) &&
-           readRegister8((uint8_t)(reg & 0xFF), value, 1);
+    return select_bank((reg >> 8) & 1) && readRegister8((uint8_t)(reg & 0xFF), value, 1);
 }
 
-bool UnitPAJ7620U2::read_banked_register16(const uint16_t reg,
-                                           uint16_t& value) {
-    return select_bank((reg >> 8) & 1) &&
-           readRegister16((uint8_t)(reg & 0xFF), value, 1);
+bool UnitPAJ7620U2::read_banked_register16(const uint16_t reg, uint16_t& value) {
+    return select_bank((reg >> 8) & 1) && readRegister16((uint8_t)(reg & 0xFF), value, 1);
 }
 
-bool UnitPAJ7620U2::write_banked_register(const uint16_t reg,
-                                          const uint8_t* buf,
-                                          const size_t len) {
-    return select_bank((reg >> 8) & 1) &&
-           writeRegister((uint8_t)(reg & 0xFF), buf, len);
+bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len) {
+    return select_bank((reg >> 8) & 1) && writeRegister((uint8_t)(reg & 0xFF), buf, len);
 }
 
-bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg,
-                                           const uint8_t value) {
-    return select_bank((reg >> 8) & 1) &&
-           writeRegister8((uint8_t)(reg & 0xFF), value);
+bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg, const uint8_t value) {
+    return select_bank((reg >> 8) & 1) && writeRegister8((uint8_t)(reg & 0xFF), value);
 }
 
-bool UnitPAJ7620U2::write_banked_register16(const uint16_t reg,
-                                            const uint16_t value) {
-    return select_bank((reg >> 8) & 1) &&
-           writeRegister16((uint8_t)(reg & 0xFF), value);
+bool UnitPAJ7620U2::write_banked_register16(const uint16_t reg, const uint16_t value) {
+    return select_bank((reg >> 8) & 1) && writeRegister16((uint8_t)(reg & 0xFF), value);
 }
 
 bool UnitPAJ7620U2::was_wakeup() {
@@ -765,14 +733,12 @@ bool UnitPAJ7620U2::get_version(uint8_t& version) {
     return read_banked_register8(VERSION_ID, version);
 }
 
-bool UnitPAJ7620U2::start_periodic_measurement(const paj7620u2::Mode mode,
-                                               const paj7620u2::Frequency freq,
+bool UnitPAJ7620U2::start_periodic_measurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
                                                const uint32_t intervalMs) {
     if (inPeriodic()) {
         return false;
     }
-    return setFrequency(freq) && setMode(mode) &&
-           start_periodic_measurement(intervalMs);
+    return setFrequency(freq) && setMode(mode) && start_periodic_measurement(intervalMs);
 }
 
 bool UnitPAJ7620U2::start_periodic_measurement(const uint32_t intervalMs) {
@@ -792,4 +758,3 @@ bool UnitPAJ7620U2::stop_periodic_measurement() {
 
 }  // namespace unit
 }  // namespace m5
-

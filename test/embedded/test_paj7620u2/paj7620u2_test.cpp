@@ -19,8 +19,7 @@ using namespace m5::unit;
 using namespace m5::unit::paj7620u2;
 using namespace m5::unit::paj7620u2::command;
 
-const ::testing::Environment* global_fixture =
-    ::testing::AddGlobalTestEnvironment(new GlobalFixture<400000U>());
+const ::testing::Environment* global_fixture = ::testing::AddGlobalTestEnvironment(new GlobalFixture<400000U>());
 
 struct TestParams {
     bool hal;
@@ -53,8 +52,7 @@ class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
 // ::testing::Values(false));
 
 INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
-                         ::testing::Values(TestParams{false, true},
-                                           TestParams{false, false}));
+                         ::testing::Values(TestParams{false, true}, TestParams{false, false}));
 
 using check_param_callback = void (*)(UnitPAJ7620U2*);
 
@@ -96,8 +94,7 @@ TEST_P(TestPAJ7620U2, Gesture) {
     EXPECT_TRUE(unit->inPeriodic());
     EXPECT_EQ(unit->interval(), 10U);
 
-    test_periodic_measurement(unit.get(), 16, check_param_callback(nullptr),
-                              true);
+    test_periodic_measurement(unit.get(), 16, check_param_callback(nullptr), true);
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
