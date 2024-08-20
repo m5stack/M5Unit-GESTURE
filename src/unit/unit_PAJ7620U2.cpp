@@ -401,6 +401,7 @@ void UnitPAJ7620U2::update(const bool force) {
                 case Mode::Gesture:
                     _updated = update_gesture(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
+                        //                        M5_LIB_LOGE(">>>> Latest:%u now:%u", latest().gesture(), d.gesture());
                         _updated = latest().gesture() != d.gesture();
                     }
                     break;

@@ -10,8 +10,8 @@
   @mainpage M5UnitGESTURE
   Library for UnitGESTURE using M5UnitUnified.
 */
-#ifndef M5_UNIT_GESTURE_HPP
-#define M5_UNIT_GESTURE_HPP
+#ifndef M5_UNIT_UNIFIED_GESTURE_HPP
+#define M5_UNIT_UNIFIED_GESTURE_HPP
 
 #include "unit/unit_PAJ7620U2.hpp"
 
@@ -25,6 +25,10 @@ namespace m5 {
   @namespace unit
   @brief Unit-related namespace
  */
-namespace unit {}  // namespace unit
+namespace unit {
+
+using UnitGESTURE = m5::unit::UnitPAJ7620U2;
+
+}  // namespace unit
 }  // namespace m5
 #endif

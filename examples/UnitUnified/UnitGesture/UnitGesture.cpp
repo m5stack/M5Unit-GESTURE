@@ -12,7 +12,7 @@
 
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
-#include <unit/unit_PAJ7620U2.hpp>
+#include <M5UnitUnifiedGESTURE.h>
 #if defined(USING_PAHUB)
 #include <unit/unit_PaHub.hpp>
 #endif
@@ -23,7 +23,7 @@ auto& lcd = M5.Display;
 constexpr uint32_t wire_freq = 400000U;
 
 m5::unit::UnitUnified Units;
-m5::unit::UnitPAJ7620U2 unit;
+m5::unit::UnitGESTURE unit;
 #if defined(USING_PAHUB)
 m5::unit::UnitPaHub unitPaHub;
 #endif
