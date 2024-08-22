@@ -401,30 +401,30 @@ void UnitPAJ7620U2::update(const bool force) {
                 case Mode::Gesture:
                     _updated = update_gesture(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
-                        //                        M5_LIB_LOGE(">>>> Latest:%u now:%u", latest().gesture(), d.gesture());
                         _updated = latest().gesture() != d.gesture();
                     }
                     break;
                 case Mode::Proximity:
                     _updated = update_proximity(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
-                        _updated = latest().gesture() != d.gesture() || latest().brightness() != d.brightness() ||
-                                   latest().approach() != d.approach();
+                        auto ld  = latest();
+                        _updated = ld.gesture() != d.gesture() || ld.brightness() != d.brightness() ||
+                                   ld.approach() != d.approach();
                     }
                     break;
                 case Mode::Cursor:
                     _updated = update_cursor(d);
                     if (_updated && _cfg.store_on_change && !empty()) {
-                        _updated = latest().gesture() != d.gesture() || latest().cursorX() != d.cursorX() ||
-                                   latest().cursorY() != d.cursorY();
+                        auto ld = latest();
+                        _updated =
+                            ld.gesture() != d.gesture() || ld.cursorX() != d.cursorX() || ld.cursorY() != d.cursorY();
                     }
                     break;
                 default:
                     return;
             }
             if (_updated) {
-                _latest     = at;
-                d.data_mode = _mode;
+                _latest = at;
                 _data->push_back(d);
             }
         }
@@ -432,77 +432,38 @@ void UnitPAJ7620U2::update(const bool force) {
 }
 
 bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d) {
-#if 0
-    Gesture ges{};
-    if (readGesture(ges) && ges != _gesture) {
-        _gesture = ges;
-        return true;
-    }
-    return false;
-#else
     if (read_gesture(d)) {
+        d.data_mode    = Mode::Gesture;
         d.data_gesture = rotate_gesture(static_cast<Gesture>(*(uint16_t*)d.raw.data()), _rotation);
         return true;
     }
     return false;
-#endif
 }
 
 bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d) {
-#if 0
-    uint8_t br{}, app{};
-    Gesture ges{};
-    if (readGesture(ges) && readProximity(br, app)) {
-        if (ges != _gesture || (br != _brightness || app != _approach)) {
-            _gesture    = ges;
-            _brightness = br;
-            _approach   = (bool)app;
-            return true;
-        }
-    }
-    return false;
-#else
     if (read_gesture(d) && read_proximity(d)) {
+        d.data_mode            = Mode::Proximity;
         d.proximity_brightness = d.raw[2];
         d.proximity_approach   = d.raw[3];
         return true;
     }
     return false;
-#endif
 }
 
 bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d) {
-#if 0
-    Gesture ges{};
-    uint16_t x{_cursorX}, y{_cursorY};
-
-    if (readGesture(ges)) {
-        if (ges == Gesture::HasObject) {
-            if (!readCursor(x, y)) {
-                return false;
-            }
-        }
-        if (ges != _gesture || (x != _cursorX || y != _cursorY)) {
-            _gesture = ges;
-            _cursorX = x;
-            _cursorY = y;
-            return true;
-        }
-    }
-    return false;
-#else
-    if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
-        d.cursor_x = (((uint16_t)(d.raw[3] & 0X0F)) << 8) | d.raw[2];
-        d.cursor_y = (((uint16_t)(d.raw[5] & 0X0F)) << 8) | d.raw[4];
+    // if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
+    if (read_cursor(d)) {
+        d.data_mode = Mode::Cursor;
+        d.cursor_x  = (((uint16_t)(d.raw[3] & 0X0F)) << 8) | d.raw[2];
+        d.cursor_y  = (((uint16_t)(d.raw[5] & 0X0F)) << 8) | d.raw[4];
         return true;
     }
+    //    M5_LIB_LOGE(">>>> %x", d.gesture());
     return false;
-
-#endif
 }
 
 bool UnitPAJ7620U2::read_gesture(Data& d) {
-    return read_banked_register(INT_FLAG_1, d.raw.data(), d.raw.size());
+    return read_banked_register(INT_FLAG_1, d.raw.data(), 2);
 }
 
 bool UnitPAJ7620U2::read_proximity(Data& d) {
@@ -514,40 +475,43 @@ bool UnitPAJ7620U2::read_cursor(Data& d) {
 }
 
 bool UnitPAJ7620U2::readGesture(Gesture& ges) {
-#if 1
-    if (read_banked_register(INT_FLAG_1, (uint8_t*)&ges, 2)) {
-        ges = rotate_gesture(ges, _rotation);
+    ges = Gesture::None;
+    Data d{};
+    if (update_gesture(d)) {
+        ges = d.gesture();
         return true;
     }
-#else
-    uint8_t high{}, low{};
-    if (read_banked_register8(INT_FLAG_1, low) && read_banked_register8(INT_FLAG_2, high)) {
-        uint16_t v = (((uint16_t)high) << 8) | low;
-        ges        = static_cast<Gesture>(v);
-        ges        = rotate_gesture(ges, _rotation);
-        return true;
-    }
-#endif
     return false;
 }
 
 bool UnitPAJ7620U2::readNoObjectCount(uint8_t& cnt) {
+    cnt = 0;
     return read_banked_register8(NO_OBJECT_COUNT, cnt);
 }
 
 bool UnitPAJ7620U2::readNoMotionCount(uint8_t& cnt) {
+    cnt = 0;
     return read_banked_register8(NO_MOTION_COUNT, cnt);
 }
 
 bool UnitPAJ7620U2::readObjectSize(uint16_t& sz) {
+    sz = 0;
     return read_banked_register(OBJECT_SIZE_LOW, (uint8_t*)&sz, 2);
 }
 
 bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach) {
-    return read_banked_register8(S_AVGY, brightness) && read_banked_register8(S_STATE, approach);
+    brightness = approach = 0;
+    Data d{};
+    if (update_proximity(d)) {
+        brightness = d.brightness();
+        approach   = d.approach();
+        return true;
+    }
+    return false;
 }
 
 bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y) {
+    x = y = 0;
     uint8_t xl{}, xh{}, yl{}, yh{};
     if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) && read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
         read_banked_register8(OBJECT_CENTER_Y_LOW, yl) && read_banked_register8(OBJECT_CENTER_Y_HIGH, yh)) {
@@ -559,13 +523,11 @@ bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y) {
 }
 
 bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y) {
-    //    std::array<uint8_t, 4> raw{};  // X_LOW , 4?
-
-    uint8_t xl{}, xh{}, yl{}, yh{};
-    if (read_banked_register8(CURSOR_CLAMP_CENTER_X_LOW, xl) && read_banked_register8(CURSOR_CLAMP_CENTER_X_HIGH, xh) &&
-        read_banked_register8(CURSOR_CLAMP_CENTER_Y_LOW, yl) && read_banked_register8(CURSOR_CLAMP_CENTER_Y_HIGH, yh)) {
-        x = (((uint16_t)(xh & 0X0F)) << 8) | xl;
-        y = (((uint16_t)(yh & 0X0F)) << 8) | yl;
+    x = y = 0;
+    Data d{};
+    if (update_cursor(d)) {
+        x = d.cursorX();
+        y = cursorY();
         return true;
     }
     return false;
@@ -584,6 +546,7 @@ bool UnitPAJ7620U2::resume() {
 }
 
 bool UnitPAJ7620U2::readFrequency(uint8_t& raw) {
+    raw = 0;
     return read_banked_register8(R_REF_CLK_CNT_LOW, raw);
 }
 
@@ -650,6 +613,7 @@ bool UnitPAJ7620U2::setApproachThreshold(const uint8_t high, const uint8_t low) 
 }
 
 bool UnitPAJ7620U2::readHorizontalFlip(bool& flip) {
+    flip = false;
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         flip = (v & 0x01);  // HFlip bit:0
@@ -659,6 +623,7 @@ bool UnitPAJ7620U2::readHorizontalFlip(bool& flip) {
 }
 
 bool UnitPAJ7620U2::readVerticalFlip(bool& flip) {
+    flip = false;
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         flip = (v & 0x02);  // VFlip bit:1

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 /*
-  Example using M5UnitUnified for PAJ7620U2
+  Example using M5UnitUnified for UnitGESTURE
 */
 
 // #define USING_PAHUB (2)  // Connection channel number for use via PaHub.
@@ -14,7 +14,7 @@
 #include <M5UnitUnified.h>
 #include <M5UnitUnifiedGESTURE.h>
 #if defined(USING_PAHUB)
-#include <unit/unit_PaHub.hpp>
+#include <M5UnitUnifiedHUB.h>
 #endif
 
 namespace {
@@ -25,7 +25,7 @@ constexpr uint32_t wire_freq = 400000U;
 m5::unit::UnitUnified Units;
 m5::unit::UnitGESTURE unit;
 #if defined(USING_PAHUB)
-m5::unit::UnitPaHub unitPaHub;
+m5::unit::UnitPaHub2 unitPaHub;
 #endif
 
 constexpr const char* gstr[] = {
@@ -186,7 +186,7 @@ void loop() {
                 unit.readObjectSize(size);
                 unit.readObjectCenter(x, y);
 
-                M5_LOGI("gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)", gesture_to_string(unit.gesture()), noobj,
+                M5_LOGI("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)", gesture_to_string(unit.gesture()), noobj,
                         nomot, size, x, y);
             }
             unit.readNoObjectCount(noobj);
@@ -206,7 +206,7 @@ void loop() {
         } break;
         case m5::unit::paj7620u2::Mode::Cursor: {
             if (unit.updated()) {
-                M5_LOGI("HasObject:%u cursor:%u,%u", unit.hasObject(), unit.cursorX(), unit.cursorY());
+                M5_LOGI("Cursor:%u,%u", unit.cursorX(), unit.cursorY());
             }
             delay(100);
         } break;

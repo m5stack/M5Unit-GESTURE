@@ -131,10 +131,6 @@ struct Data {
     ///@}
     ///@name Cursor mode
     ///@{
-    /*! @brief Has object? */
-    inline bool hasObject() const {
-        return (data_mode == Mode::Cursor) ? gesture() == Gesture::HasObject : false;
-    }
     /*! @brief Gets the cursor X the any object */
     inline uint16_t cursorX() const {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
@@ -215,10 +211,6 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     //! @brief Oldest approach status if Proximity mode
     inline bool approach() const {
         return !empty() ? oldest().approach() : false;
-    }
-    //! @brief Oldest has object status if Cursor mode
-    bool hasObject() {
-        return !empty() ? oldest().hasObject() : false;
     }
     //! @brief Oldest cursor X if Cursor mode
     uint16_t cursorX() const {
