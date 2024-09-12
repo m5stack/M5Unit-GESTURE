@@ -175,6 +175,9 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
 
     explicit UnitPAJ7620U2(const uint8_t addr = DEFAULT_ADDRESS)
         : Component(addr), _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)} {
+        auto ccfg  = component_config();
+        ccfg.clock = 400 * 1000U;
+        component_config(ccfg);
     }
     virtual ~UnitPAJ7620U2() {
     }
@@ -185,18 +188,14 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     ///@name Settings for begin
     ///@{
     /*! @brief Gets the configration */
-    config_t config() {
+    inline config_t config() {
         return _cfg;
     }
     //! @brief Set the configration
-    void config(const config_t& cfg) {
+    inline void config(const config_t& cfg) {
         _cfg = cfg;
     }
     ///@}
-
-    /*! @fn  bool PeriodicMeasurementAdapter::startPeriodicMeasurement()
-     * @brief TEST
-     */
 
     ///@name Measurement data by periodic
     ///@{
