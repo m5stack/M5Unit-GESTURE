@@ -216,23 +216,23 @@ void loop() {
     if (M5.BtnA.wasClicked()) {
         auto prev = detection;
         ++detection;
-        if (unit.setMode(detection)) {
-            M5_LOGI(">>> setNMode %x", detection);
+        if (unit.writeMode(detection)) {
+            M5_LOGI(">>> writeNMode %x", detection);
             switch (unit.mode()) {
                 case m5::unit::paj7620u2::Mode::Gesture:
-                    unit.setFrequency(Frequency::Gaming);
+                    unit.writeFrequency(Frequency::Gaming);
                     break;
                 case m5::unit::paj7620u2::Mode::Proximity:
-                    unit.setApproachThreshold(20, 10);
+                    unit.writeApproachThreshold(20, 10);
                     break;
                 case m5::unit::paj7620u2::Mode::Cursor:
-                    unit.setFrequency(Frequency::Gaming);
+                    unit.writeFrequency(Frequency::Gaming);
                     break;
                 default:
                     break;
             }
         } else {
-            M5_LOGE("Failed to setMode %x", detection);
+            M5_LOGE("Failed to writeMode %x", detection);
             detection = prev;
         }
     }

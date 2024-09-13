@@ -31,9 +31,12 @@ class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
     virtual UnitPAJ7620U2* get_instance() override {
         auto ptr = new m5::unit::UnitPAJ7620U2();
         if (ptr) {
+            auto ccfg            = ptr->component_config();
+            ccfg.stored_size     = 8;
+            ptr->component_config(ccfg);
+
             auto cfg            = ptr->config();
             cfg.start_periodic  = false;
-            cfg.stored_size     = 8;
             cfg.store_on_change = GetParam().store_on_change;
             ptr->config(cfg);
         }
@@ -66,11 +69,11 @@ TEST_P(TestPAJ7620U2, Suspend) {
 TEST_P(TestPAJ7620U2, Gesture) {
     SCOPED_TRACE(ustr);
 
-    EXPECT_TRUE(unit->setMode(Mode::Gesture));
+    EXPECT_TRUE(unit->writeMode(Mode::Gesture));
 
-    EXPECT_TRUE(unit->setFrequency(Frequency::Gaming));
+    EXPECT_TRUE(unit->writeFrequency(Frequency::Gaming));
     EXPECT_EQ(unit->frequency(), Frequency::Gaming);
-    EXPECT_TRUE(unit->setFrequency(Frequency::Normal));
+    EXPECT_TRUE(unit->writeFrequency(Frequency::Normal));
     EXPECT_EQ(unit->frequency(), Frequency::Normal);
 
     Gesture ges{};
@@ -98,7 +101,9 @@ TEST_P(TestPAJ7620U2, Gesture) {
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
-
+    EXPECT_EQ(unit->cursorX(), 0xFFFF);
+    EXPECT_EQ(unit->cursorY(), 0xFFFF);
+    
     uint32_t cnt{};
 
     // They do not accumulate in the same state
@@ -136,14 +141,14 @@ TEST_P(TestPAJ7620U2, Gesture) {
 TEST_P(TestPAJ7620U2, Proximity) {
     SCOPED_TRACE(ustr);
 
-    EXPECT_TRUE(unit->setMode(Mode::Proximity));
+    EXPECT_TRUE(unit->writeMode(Mode::Proximity));
 
     Gesture ges{};
     uint8_t brightness{}, approach{};
     EXPECT_TRUE(unit->readGesture(ges));
     EXPECT_TRUE(unit->readProximity(brightness, approach));
-
-    EXPECT_TRUE(unit->setApproachThreshold(98, 76));
+    
+    EXPECT_TRUE(unit->writeApproachThreshold(98, 76));
     uint8_t high{}, low{};
     EXPECT_TRUE(unit->readApproachThreshold(high, low));
     EXPECT_EQ(high, 98);
@@ -157,7 +162,7 @@ TEST_P(TestPAJ7620U2, Proximity) {
 TEST_P(TestPAJ7620U2, Cursor) {
     SCOPED_TRACE(ustr);
 
-    EXPECT_TRUE(unit->setMode(Mode::Cursor));
+    EXPECT_TRUE(unit->writeMode(Mode::Cursor));
 
     uint16_t x{}, y{};
     EXPECT_TRUE(unit->readCursor(x, y));
@@ -173,12 +178,12 @@ TEST_P(TestPAJ7620U2, Flip) {
     bool flip{}, flip2{};
 
     EXPECT_TRUE(unit->readHorizontalFlip(flip));
-    EXPECT_TRUE(unit->setHorizontalFlip(!flip));
+    EXPECT_TRUE(unit->writeHorizontalFlip(!flip));
     EXPECT_TRUE(unit->readHorizontalFlip(flip2));
     EXPECT_NE(flip, flip2);
 
     EXPECT_TRUE(unit->readVerticalFlip(flip));
-    EXPECT_TRUE(unit->setVerticalFlip(!flip));
+    EXPECT_TRUE(unit->writeVerticalFlip(!flip));
     EXPECT_TRUE(unit->readVerticalFlip(flip2));
     EXPECT_NE(flip, flip2);
 }

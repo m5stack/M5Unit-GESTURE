@@ -384,7 +384,7 @@ bool UnitPAJ7620U2::begin() {
             return false;
         }
     }
-    if (!select_bank(0, true) || !setFrequency(_cfg.frequency) || !setMode(_cfg.mode)) {
+    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode)) {
         M5_LIB_LOGE("Fauled to settings");
         return false;
     }
@@ -568,7 +568,7 @@ bool UnitPAJ7620U2::readFrequency(Frequency& f) {
     return false;
 }
 
-bool UnitPAJ7620U2::setFrequency(const Frequency f) {
+bool UnitPAJ7620U2::writeFrequency(const Frequency f) {
     if (f == Frequency::Unknown || !write_banked_register8(R_REF_CLK_CNT_LOW, freq_table[m5::stl::to_underlying(f)])) {
         return false;
     }
@@ -576,7 +576,7 @@ bool UnitPAJ7620U2::setFrequency(const Frequency f) {
     return true;
 }
 
-bool UnitPAJ7620U2::setMode(const Mode m) {
+bool UnitPAJ7620U2::writeMode(const Mode m) {
     auto idx       = m5::stl::to_underlying(m);
     const Pair* rv = idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
     if (!rv) {
@@ -602,14 +602,14 @@ bool UnitPAJ7620U2::setMode(const Mode m) {
     _mode = m;
 
     // To resolve bank inconsistencies after register setting
-    return select_bank(0, true) && ((_mode != Mode::Proximity) ? setFrequency(_frequency) : true);
+    return select_bank(0, true) && ((_mode != Mode::Proximity) ? writeFrequency(_frequency) : true);
 }
 
 bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low) {
     return read_banked_register8(R_POX_UB, high) && read_banked_register8(R_POX_LB, low);
 }
 
-bool UnitPAJ7620U2::setApproachThreshold(const uint8_t high, const uint8_t low) {
+bool UnitPAJ7620U2::writeApproachThreshold(const uint8_t high, const uint8_t low) {
     return write_banked_register8(R_POX_UB, high) && write_banked_register8(R_POX_LB, low);
 }
 
@@ -633,7 +633,7 @@ bool UnitPAJ7620U2::readVerticalFlip(bool& flip) {
     return false;
 }
 
-bool UnitPAJ7620U2::setHorizontalFlip(const bool flip) {
+bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip) {
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x01) | (flip ? 0x01 : 0x00);
@@ -642,7 +642,7 @@ bool UnitPAJ7620U2::setHorizontalFlip(const bool flip) {
     return false;
 }
 
-bool UnitPAJ7620U2::setVerticalFlip(const bool flip) {
+bool UnitPAJ7620U2::writeVerticalFlip(const bool flip) {
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x02) | (flip ? 0x02 : 0x00);
@@ -705,7 +705,7 @@ bool UnitPAJ7620U2::start_periodic_measurement(const paj7620u2::Mode mode, const
     if (inPeriodic()) {
         return false;
     }
-    return setFrequency(freq) && setMode(mode) && start_periodic_measurement(intervalMs);
+    return writeFrequency(freq) && writeMode(mode) && start_periodic_measurement(intervalMs);
 }
 
 bool UnitPAJ7620U2::start_periodic_measurement(const uint32_t intervalMs) {

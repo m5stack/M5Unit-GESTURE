@@ -240,7 +240,9 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       rot 1,2,3... Treat as 90 deg counter-clockwise rotation
       ```
      */
-    void setRotate(const uint8_t rot);
+    void setRotate(const uint8_t rot) {
+        _rotation = rot & 0x03;
+    }
 
     //! @brief Gets the inner frequency
     paj7620u2::Frequency frequency() const {
@@ -259,11 +261,11 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
      */
     bool readFrequency(paj7620u2::Frequency& f);
     /*!
-      @brief Set the frequency
+      @brief Write the frequency
       @param f Frequency
       @return True if successful
     */
-    bool setFrequency(const paj7620u2::Frequency f);
+    bool writeFrequency(const paj7620u2::Frequency f);
 
     ///@name For detect gesture
     ///@{
@@ -333,14 +335,14 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
      */
     bool readApproachThreshold(uint8_t& high, uint8_t& low);
     /*!
-      @brief Sets the threshold for detect approach
+      @brief Write the threshold for detect approach
       @param high High threshold
       @param low Lowthreshold
       @note Approach:brightness >= high
       @note Not approach: brightness <= low
       @warning Only valid in Proximity mode
      */
-    bool setApproachThreshold(const uint8_t high, const uint8_t low);
+    bool writeApproachThreshold(const uint8_t high, const uint8_t low);
     ///@}
 
     ///@name For detect cursor
@@ -362,21 +364,21 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
         return _mode;
     }
     /*!
-      @brief Sets the detection mode
+      @brief Write the detection mode
       @param mode detection mode
       @return True if successful
      */
-    bool setMode(const paj7620u2::Mode m);
+    bool writeMode(const paj7620u2::Mode m);
     ///@}
 
     //! @brief Read the horizontal flipping
     bool readHorizontalFlip(bool& flip);
     //! @brief Read the vertical flipping
     bool readVerticalFlip(bool& flip);
-    //! @brief Sets the horizontal flipping
-    bool setHorizontalFlip(const bool flip);
-    //! @brief Sets the vertical flipping
-    bool setVerticalFlip(const bool flip);
+    //! @brief Write the horizontal flipping
+    bool writeHorizontalFlip(const bool flip);
+    //! @brief Write the vertical flipping
+    bool writeVerticalFlip(const bool flip);
 
     ///@name General purpose
     ///@{
