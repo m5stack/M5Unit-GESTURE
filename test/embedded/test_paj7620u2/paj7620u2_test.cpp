@@ -31,8 +31,8 @@ class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
     virtual UnitPAJ7620U2* get_instance() override {
         auto ptr = new m5::unit::UnitPAJ7620U2();
         if (ptr) {
-            auto ccfg            = ptr->component_config();
-            ccfg.stored_size     = 8;
+            auto ccfg        = ptr->component_config();
+            ccfg.stored_size = 8;
             ptr->component_config(ccfg);
 
             auto cfg            = ptr->config();
@@ -103,7 +103,7 @@ TEST_P(TestPAJ7620U2, Gesture) {
     EXPECT_FALSE(unit->inPeriodic());
     EXPECT_EQ(unit->cursorX(), 0xFFFF);
     EXPECT_EQ(unit->cursorY(), 0xFFFF);
-    
+
     uint32_t cnt{};
 
     // They do not accumulate in the same state
@@ -147,7 +147,7 @@ TEST_P(TestPAJ7620U2, Proximity) {
     uint8_t brightness{}, approach{};
     EXPECT_TRUE(unit->readGesture(ges));
     EXPECT_TRUE(unit->readProximity(brightness, approach));
-    
+
     EXPECT_TRUE(unit->writeApproachThreshold(98, 76));
     uint8_t high{}, low{};
     EXPECT_TRUE(unit->readApproachThreshold(high, low));
