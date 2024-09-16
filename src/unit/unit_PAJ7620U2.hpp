@@ -66,7 +66,7 @@ enum class Gesture : uint16_t {
 
 /*!
   @enum Mode
-  @brief What it detects
+  @brief Operation Mode
  */
 enum class Mode : uint8_t {
     Gesture,    //!< Detect gesture
@@ -110,7 +110,7 @@ struct Data {
         };
     };
 
-    //! @brief Gets the data mode
+    //! @brief Gets the operation mode
     inline Mode mode() const {
         return data_mode;
     }
@@ -156,18 +156,18 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       @struct config_t
       @brief Settings for begin
      */
-    struct config_t : public Component::config_t {
-        //! @brief Start periodic measurement on begin?
+    struct config_t {
+        //! Start periodic measurement on begin?
         bool start_periodic{true};
-        //! @brief Set mode on begin
+        //! Mode if start on bein
         paj7620u2::Mode mode{paj7620u2::Mode::Gesture};
-        //! bbrief Set freq o begin
+        //! Frequency if start on bein
         paj7620u2::Frequency frequency{paj7620u2::Frequency::Normal};
-        //! @brief Flip horizontal on begin
+        //! Flip horizontal if start on bein
         bool hflip{false};
-        //! @brief Flip verticl on begin
+        //! Flip verticl if start on bein
         bool vflip{true};
-        //! @brief Set rotation on begin
+        //! Rotation if start on begin
         uint8_t rotation{0};
         //! Store only when value is a change
         bool store_on_change{true};
@@ -218,6 +218,36 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     //! @brief Oldest cursor Y if Cursor mode
     uint16_t cursorY() const {
         return !empty() ? oldest().cursorY() : 0xFFFF;
+    }
+    ///@}
+
+    ///@name Periodic measurement
+    ///@{
+    /*!
+      @brief Start periodic measurement in the current settings
+      @param intervalMs Measurement Interval(ms)
+      @return True if successful
+    */
+    bool startPeriodicMeasurement(const uint32_t intervalMs = 0) {
+        return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(intervalMs);
+    }
+    /*!
+      @brief Start periodic measurement
+      @param mode Operation mode
+      @param freq Frequency
+      @param intervalMs Measurement Interval(ms)
+      @return True if successful
+    */
+    bool startPeriodicMeasurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
+                                  const uint32_t intervalMs) {
+        return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(intervalMs);
+    }
+    /*!
+      @brief Stop periodic measurement
+      @return True if successful
+    */
+    bool stopPeriodicMeasurement() {
+        return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::stopPeriodicMeasurement();
     }
     ///@}
 
@@ -403,16 +433,11 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     ///@}
 
    protected:
-    ///@note Call via startPeriodicMeasurement/stopPeriodicMeasurement
-    ///@name Periodic measurement
-    ///@{
     bool start_periodic_measurement(const uint32_t intervalMs = 0);
-
     bool start_periodic_measurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
                                     const uint32_t intervalMs);
-
     bool stop_periodic_measurement();
-    ///@}
+
     M5_UNIT_COMPONENT_PERIODIC_MEASUREMENT_ADAPTER_HPP_BUILDER(UnitPAJ7620U2, paj7620u2::Data);
 
     bool select_bank(const uint8_t bank, const bool force = false);
