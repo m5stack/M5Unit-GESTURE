@@ -2,10 +2,8 @@
 
 ## Overview
 
-Library for UnitHUB using M5UnitUnified.  
-
-The M5UnitUnified version of the library is located under [src/unit](src/unit).  
-M5UnitUnfied has a unified API and can control multiple units via PaHub, etc.
+Library for UnitHUB using [M5UnitUnified](https://github.com/m5stack/M5UnitUnified).  
+M5UnitUnified is a library for unified handling of various M5 units products.
 
 
 ### SKU:U127
@@ -18,6 +16,7 @@ Up, Down, Left, Right, Front, Back, Clockwise, Counterclockwise, Quick wave
 
 
 ## Related Link
+See also examples using conventional methods here.
 
 - [Unit GESTURE & Datasheet](https://docs.m5stack.com/en/unit/Gesture)
 
