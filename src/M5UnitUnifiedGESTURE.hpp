@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  */
 /*!
-  @file M5UnitGESTURE.hpp
+  @file M5UnitUnifiedGESTURE.hpp
   @brief Main header of M5UnitGESTURE
 
   @mainpage M5UnitGESTURE

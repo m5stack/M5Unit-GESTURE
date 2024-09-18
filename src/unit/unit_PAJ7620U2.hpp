@@ -6,21 +6,6 @@
 /*!
   @file unit_PAJ7620U2.hpp
   @brief PAJ7620U2 Unit for M5UnitUnified
-
-  @mainpage M5UnitGesture
-
-  PAJ7620U2 touchless Gesture Moving Recognition Sensor Recognize up to 9
-  Gestures It's a touchless 3D gesture recognition sensor via the I2C interface
-  that integrates with PAJ7620U2. You could feel the charm of 9 kinds of gesture
-  recognition by default program. In addition to adding more complex gestures,
-  the recognition rate is up to 240Hz with higher anti-interference capability.
-  This sensor is reliable for its recognition process is intuitive and has low
-  power consumption (operating current only 2.2mA) that allows you to control a
-  robot in accordance with your hand's movement. This is particularly useful in
-  interactive applications.
-
-  Support 9 gestures:
-  Up, Down, Left, Right, Front, Back, Clockwise, Counterclockwise, Quick wave
 */
 #ifndef M5_UNIT_GESTURE_UNIT_PAJ7620U2_HPP
 #define M5_UNIT_GESTURE_UNIT_PAJ7620U2_HPP
