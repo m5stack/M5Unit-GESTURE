@@ -10,19 +10,14 @@
     "type": "git",
     "url": "https://github.com/m5stack/M5Unit-GESTURE.git"
   },
-  "dependencies": [
-    {
-      "name": "M5UnitUnified"
-    },
-    {
-      "name": "M5Utility"
-    },
-    {
-      "name": "M5HAL"
-    }
-  ],
+  "dependencies":
+  {
+    "M5UnitUnified": "https://github.com/m5stack/M5UnitUnified.git",
+    "M5Utility": "https://github.com/m5stack/M5Utility.git",
+    "M5HAL": "https://github.com/m5stack/M5HAL.git"
+  },
   "version": "0.0.0",
   "frameworks": ["arduino", "espidf"],
   "platforms": ["espressif32"],
-  "headers": "M5UnitGESTURE.h"
+  "headers": "M5UnitUnifiedGESTURE.h"
 }
