@@ -61,7 +61,7 @@ constexpr uint8_t key_table[] = {
     0,               // Abort
     0,               // Reserve
     0,               // NoObject
-};  // namespace
+};
 
 uint8_t gesture_to_key(const gesture_t g)
 {
