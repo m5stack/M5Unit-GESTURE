@@ -74,7 +74,8 @@ enum class Frequency : int8_t {
   @brief Measurement data group
  */
 struct Data {
-    Data() {
+    Data()
+    {
     }
     // Common
     // [0,1]:gesture
@@ -96,32 +97,38 @@ struct Data {
     };
 
     //! @brief Gets the operation mode
-    inline Mode mode() const {
+    inline Mode mode() const
+    {
         return data_mode;
     }
     //! @brief Gets the gesture (Common)
-    Gesture gesture() const {
+    Gesture gesture() const
+    {
         return data_gesture;
     }
     ///@name Proximity mode
     ///@{
     /*! @brief Gets the brightness */
-    inline uint8_t brightness() const {
+    inline uint8_t brightness() const
+    {
         return (data_mode == Mode::Proximity) ? proximity_brightness : 0;
     }
     /*! @brief Detect the approach? */
-    inline bool approach() const {
+    inline bool approach() const
+    {
         return (data_mode == Mode::Proximity) ? proximity_approach : false;
     }
     ///@}
     ///@name Cursor mode
     ///@{
     /*! @brief Gets the cursor X the any object */
-    inline uint16_t cursorX() const {
+    inline uint16_t cursorX() const
+    {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
     }
     /*! @brief Gets the cursor Y the any object */
-    inline uint16_t cursorY() const {
+    inline uint16_t cursorY() const
+    {
         return (data_mode == Mode::Cursor) ? cursor_y : 0xFFFF;
     }
     ///@}
@@ -136,7 +143,7 @@ struct Data {
 class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data> {
     M5_UNIT_COMPONENT_HPP_BUILDER(UnitPAJ7620U2, 0x73);
 
-   public:
+public:
     /*!
       @struct config_t
       @brief Settings for begin
@@ -159,12 +166,14 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     };
 
     explicit UnitPAJ7620U2(const uint8_t addr = DEFAULT_ADDRESS)
-        : Component(addr), _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)} {
+        : Component(addr), _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)}
+    {
         auto ccfg  = component_config();
         ccfg.clock = 400 * 1000U;
         component_config(ccfg);
     }
-    virtual ~UnitPAJ7620U2() {
+    virtual ~UnitPAJ7620U2()
+    {
     }
 
     virtual bool begin() override;
@@ -173,11 +182,13 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     ///@name Settings for begin
     ///@{
     /*! @brief Gets the configration */
-    inline config_t config() {
+    inline config_t config()
+    {
         return _cfg;
     }
     //! @brief Set the configration
-    inline void config(const config_t& cfg) {
+    inline void config(const config_t& cfg)
+    {
         _cfg = cfg;
     }
     ///@}
@@ -185,23 +196,28 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     ///@name Measurement data by periodic
     ///@{
     /*! @brief Oldest gesture */
-    inline paj7620u2::Gesture gesture() const {
+    inline paj7620u2::Gesture gesture() const
+    {
         return !empty() ? oldest().gesture() : paj7620u2::Gesture::None;
     }
     //! @brief Oldest brightness if Proximity mode
-    inline uint8_t brightness() const {
+    inline uint8_t brightness() const
+    {
         return !empty() ? oldest().brightness() : 0;
     }
     //! @brief Oldest approach status if Proximity mode
-    inline bool approach() const {
+    inline bool approach() const
+    {
         return !empty() ? oldest().approach() : false;
     }
     //! @brief Oldest cursor X if Cursor mode
-    uint16_t cursorX() const {
+    uint16_t cursorX() const
+    {
         return !empty() ? oldest().cursorX() : 0xFFFF;
     }
     //! @brief Oldest cursor Y if Cursor mode
-    uint16_t cursorY() const {
+    uint16_t cursorY() const
+    {
         return !empty() ? oldest().cursorY() : 0xFFFF;
     }
     ///@}
@@ -213,7 +229,8 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       @param intervalMs Measurement Interval(ms)
       @return True if successful
     */
-    bool startPeriodicMeasurement(const uint32_t intervalMs = 0) {
+    bool startPeriodicMeasurement(const uint32_t intervalMs = 0)
+    {
         return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(intervalMs);
     }
     /*!
@@ -224,14 +241,16 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       @return True if successful
     */
     bool startPeriodicMeasurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
-                                  const uint32_t intervalMs) {
+                                  const uint32_t intervalMs)
+    {
         return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(intervalMs);
     }
     /*!
       @brief Stop periodic measurement
       @return True if successful
     */
-    bool stopPeriodicMeasurement() {
+    bool stopPeriodicMeasurement()
+    {
         return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::stopPeriodicMeasurement();
     }
     ///@}
@@ -241,7 +260,8 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       @return Rotation [0...3]
       @sa setRotatation
     */
-    inline uint8_t rotation() const {
+    inline uint8_t rotation() const
+    {
         return _rotation;
     }
     /*!
@@ -255,12 +275,14 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       rot 1,2,3... Treat as 90 deg counter-clockwise rotation
       ```
      */
-    void setRotate(const uint8_t rot) {
+    void setRotate(const uint8_t rot)
+    {
         _rotation = rot & 0x03;
     }
 
     //! @brief Gets the inner frequency
-    paj7620u2::Frequency frequency() const {
+    paj7620u2::Frequency frequency() const
+    {
         return _frequency;
     }
     /*!
@@ -308,7 +330,8 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
       @param[out] exists true if exists
       @return True if successful
     */
-    bool existsObject(bool& exists) {
+    bool existsObject(bool& exists)
+    {
         uint8_t e{};
         if (readNoObjectCount(e)) {
             exists = (e == 0);
@@ -375,7 +398,8 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     ///@name Detection mode
     ///@{
     /*! @brief Gets the detection mode */
-    inline paj7620u2::Mode mode() const {
+    inline paj7620u2::Mode mode() const
+    {
         return _mode;
     }
     /*!
@@ -404,11 +428,13 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
      */
     bool enable(const bool flag);
     //! @brief enable sensor
-    inline bool enable() {
+    inline bool enable()
+    {
         return enable(true);
     }
     //! @brief disable sensor
-    inline bool disable() {
+    inline bool disable()
+    {
         return enable(false);
     }
     //! @brief suspend
@@ -417,7 +443,7 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     bool resume();
     ///@}
 
-   protected:
+protected:
     bool start_periodic_measurement(const uint32_t intervalMs = 0);
     bool start_periodic_measurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
                                     const uint32_t intervalMs);
@@ -446,7 +472,7 @@ class UnitPAJ7620U2 : public Component, public PeriodicMeasurementAdapter<UnitPA
     bool get_chip_id(uint16_t& id);
     bool get_version(uint8_t& version);
 
-   protected:
+protected:
     uint8_t _current_bank{0xFF};
     paj7620u2::Mode _mode{};
     paj7620u2::Frequency _frequency{};

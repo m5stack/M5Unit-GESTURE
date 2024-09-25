@@ -27,8 +27,9 @@ struct TestParams {
 };
 
 class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
-   protected:
-    virtual UnitPAJ7620U2* get_instance() override {
+protected:
+    virtual UnitPAJ7620U2* get_instance() override
+    {
         auto ptr = new m5::unit::UnitPAJ7620U2();
         if (ptr) {
             auto ccfg        = ptr->component_config();
@@ -42,7 +43,8 @@ class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
         }
         return ptr;
     }
-    virtual bool is_using_hal() const override {
+    virtual bool is_using_hal() const override
+    {
         return GetParam().hal;
     };
 };
@@ -59,14 +61,16 @@ INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
 
 using check_param_callback = void (*)(UnitPAJ7620U2*);
 
-TEST_P(TestPAJ7620U2, Suspend) {
+TEST_P(TestPAJ7620U2, Suspend)
+{
     SCOPED_TRACE(ustr);
 
     EXPECT_TRUE(unit->suspend());
     EXPECT_TRUE(unit->resume());
 }
 
-TEST_P(TestPAJ7620U2, Gesture) {
+TEST_P(TestPAJ7620U2, Gesture)
+{
     SCOPED_TRACE(ustr);
 
     EXPECT_TRUE(unit->writeMode(Mode::Gesture));
@@ -138,7 +142,8 @@ TEST_P(TestPAJ7620U2, Gesture) {
     }
 }
 
-TEST_P(TestPAJ7620U2, Proximity) {
+TEST_P(TestPAJ7620U2, Proximity)
+{
     SCOPED_TRACE(ustr);
 
     EXPECT_TRUE(unit->writeMode(Mode::Proximity));
@@ -159,7 +164,8 @@ TEST_P(TestPAJ7620U2, Proximity) {
     EXPECT_EQ(unit->cursorY(), 0xFFFF);
 }
 
-TEST_P(TestPAJ7620U2, Cursor) {
+TEST_P(TestPAJ7620U2, Cursor)
+{
     SCOPED_TRACE(ustr);
 
     EXPECT_TRUE(unit->writeMode(Mode::Cursor));
@@ -172,7 +178,8 @@ TEST_P(TestPAJ7620U2, Cursor) {
     EXPECT_FALSE(unit->approach());
 }
 
-TEST_P(TestPAJ7620U2, Flip) {
+TEST_P(TestPAJ7620U2, Flip)
+{
     SCOPED_TRACE(ustr);
 
     bool flip{}, flip2{};

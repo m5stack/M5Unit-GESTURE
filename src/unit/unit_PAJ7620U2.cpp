@@ -317,7 +317,8 @@ constexpr const Gesture* rotate_table[] = {
     rotate_3,
 };
 
-Gesture rotate_gesture(const Gesture g, const uint8_t rot) {
+Gesture rotate_gesture(const Gesture g, const uint8_t rot)
+{
     auto gv = m5::stl::to_underlying(g);
     auto p  = rotate_table[rot & 0x03];
     if (!p || (gv & 0x0F) == 0) {
@@ -340,7 +341,8 @@ const char UnitPAJ7620U2::name[] = "UnitPAJ7620U2";
 const types::uid_t UnitPAJ7620U2::uid{"UnitPAJ7620U2"_mmh3};
 const types::uid_t UnitPAJ7620U2::attr{0};
 
-bool UnitPAJ7620U2::begin() {
+bool UnitPAJ7620U2::begin()
+{
     auto ssize = stored_size();
     assert(ssize && "stored_size must be greater than zero");
     if (ssize != _data->capacity()) {
@@ -392,7 +394,8 @@ bool UnitPAJ7620U2::begin() {
     return _cfg.start_periodic ? startPeriodicMeasurement() : true;
 }
 
-void UnitPAJ7620U2::update(const bool force) {
+void UnitPAJ7620U2::update(const bool force)
+{
     _updated = false;
     if (inPeriodic()) {
         elapsed_time_t at{m5::utility::millis()};
@@ -432,7 +435,8 @@ void UnitPAJ7620U2::update(const bool force) {
     }
 }
 
-bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d) {
+bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d)
+{
     if (read_gesture(d)) {
         d.data_mode    = Mode::Gesture;
         d.data_gesture = rotate_gesture(static_cast<Gesture>(*(uint16_t*)d.raw.data()), _rotation);
@@ -441,7 +445,8 @@ bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d) {
     return false;
 }
 
-bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d) {
+bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d)
+{
     if (read_gesture(d) && read_proximity(d)) {
         d.data_mode            = Mode::Proximity;
         d.proximity_brightness = d.raw[2];
@@ -451,7 +456,8 @@ bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d) {
     return false;
 }
 
-bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d) {
+bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d)
+{
     // if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
     if (read_cursor(d)) {
         d.data_mode = Mode::Cursor;
@@ -463,19 +469,23 @@ bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d) {
     return false;
 }
 
-bool UnitPAJ7620U2::read_gesture(Data& d) {
+bool UnitPAJ7620U2::read_gesture(Data& d)
+{
     return read_banked_register(INT_FLAG_1, d.raw.data(), 2);
 }
 
-bool UnitPAJ7620U2::read_proximity(Data& d) {
+bool UnitPAJ7620U2::read_proximity(Data& d)
+{
     return read_banked_register(S_AVGY, d.raw.data() + 2, 1) && read_banked_register(S_STATE, d.raw.data() + 3, 1);
 }
 
-bool UnitPAJ7620U2::read_cursor(Data& d) {
+bool UnitPAJ7620U2::read_cursor(Data& d)
+{
     return read_banked_register(OBJECT_CENTER_X_LOW, d.raw.data() + 2, 4);
 }
 
-bool UnitPAJ7620U2::readGesture(Gesture& ges) {
+bool UnitPAJ7620U2::readGesture(Gesture& ges)
+{
     ges = Gesture::None;
     Data d{};
     if (update_gesture(d)) {
@@ -485,22 +495,26 @@ bool UnitPAJ7620U2::readGesture(Gesture& ges) {
     return false;
 }
 
-bool UnitPAJ7620U2::readNoObjectCount(uint8_t& cnt) {
+bool UnitPAJ7620U2::readNoObjectCount(uint8_t& cnt)
+{
     cnt = 0;
     return read_banked_register8(NO_OBJECT_COUNT, cnt);
 }
 
-bool UnitPAJ7620U2::readNoMotionCount(uint8_t& cnt) {
+bool UnitPAJ7620U2::readNoMotionCount(uint8_t& cnt)
+{
     cnt = 0;
     return read_banked_register8(NO_MOTION_COUNT, cnt);
 }
 
-bool UnitPAJ7620U2::readObjectSize(uint16_t& sz) {
+bool UnitPAJ7620U2::readObjectSize(uint16_t& sz)
+{
     sz = 0;
     return read_banked_register(OBJECT_SIZE_LOW, (uint8_t*)&sz, 2);
 }
 
-bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach) {
+bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach)
+{
     brightness = approach = 0;
     Data d{};
     if (update_proximity(d)) {
@@ -511,7 +525,8 @@ bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach) {
     return false;
 }
 
-bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y) {
+bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y)
+{
     x = y = 0;
     uint8_t xl{}, xh{}, yl{}, yh{};
     if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) && read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
@@ -523,7 +538,8 @@ bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y) {
     return false;
 }
 
-bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y) {
+bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y)
+{
     x = y = 0;
     Data d{};
     if (update_cursor(d)) {
@@ -534,24 +550,29 @@ bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y) {
     return false;
 }
 
-bool UnitPAJ7620U2::enable(const bool flag) {
+bool UnitPAJ7620U2::enable(const bool flag)
+{
     return write_banked_register8(R_TG_ENH, flag ? 1 : 0);
 }
 
-bool UnitPAJ7620U2::suspend() {
+bool UnitPAJ7620U2::suspend()
+{
     return enable(false) && write_banked_register8(SW_SUSPEND_ENL, 0);
 }
 
-bool UnitPAJ7620U2::resume() {
+bool UnitPAJ7620U2::resume()
+{
     return was_wakeup() && enable(true);
 }
 
-bool UnitPAJ7620U2::readFrequency(uint8_t& raw) {
+bool UnitPAJ7620U2::readFrequency(uint8_t& raw)
+{
     raw = 0;
     return read_banked_register8(R_REF_CLK_CNT_LOW, raw);
 }
 
-bool UnitPAJ7620U2::readFrequency(Frequency& f) {
+bool UnitPAJ7620U2::readFrequency(Frequency& f)
+{
     f = Frequency::Unknown;
 
     uint8_t raw{};
@@ -568,7 +589,8 @@ bool UnitPAJ7620U2::readFrequency(Frequency& f) {
     return false;
 }
 
-bool UnitPAJ7620U2::writeFrequency(const Frequency f) {
+bool UnitPAJ7620U2::writeFrequency(const Frequency f)
+{
     if (f == Frequency::Unknown || !write_banked_register8(R_REF_CLK_CNT_LOW, freq_table[m5::stl::to_underlying(f)])) {
         return false;
     }
@@ -576,7 +598,8 @@ bool UnitPAJ7620U2::writeFrequency(const Frequency f) {
     return true;
 }
 
-bool UnitPAJ7620U2::writeMode(const Mode m) {
+bool UnitPAJ7620U2::writeMode(const Mode m)
+{
     auto idx       = m5::stl::to_underlying(m);
     const Pair* rv = idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
     if (!rv) {
@@ -605,15 +628,18 @@ bool UnitPAJ7620U2::writeMode(const Mode m) {
     return select_bank(0, true) && ((_mode != Mode::Proximity) ? writeFrequency(_frequency) : true);
 }
 
-bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low) {
+bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low)
+{
     return read_banked_register8(R_POX_UB, high) && read_banked_register8(R_POX_LB, low);
 }
 
-bool UnitPAJ7620U2::writeApproachThreshold(const uint8_t high, const uint8_t low) {
+bool UnitPAJ7620U2::writeApproachThreshold(const uint8_t high, const uint8_t low)
+{
     return write_banked_register8(R_POX_UB, high) && write_banked_register8(R_POX_LB, low);
 }
 
-bool UnitPAJ7620U2::readHorizontalFlip(bool& flip) {
+bool UnitPAJ7620U2::readHorizontalFlip(bool& flip)
+{
     flip = false;
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
@@ -623,7 +649,8 @@ bool UnitPAJ7620U2::readHorizontalFlip(bool& flip) {
     return false;
 }
 
-bool UnitPAJ7620U2::readVerticalFlip(bool& flip) {
+bool UnitPAJ7620U2::readVerticalFlip(bool& flip)
+{
     flip = false;
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
@@ -633,7 +660,8 @@ bool UnitPAJ7620U2::readVerticalFlip(bool& flip) {
     return false;
 }
 
-bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip) {
+bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip)
+{
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x01) | (flip ? 0x01 : 0x00);
@@ -642,7 +670,8 @@ bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip) {
     return false;
 }
 
-bool UnitPAJ7620U2::writeVerticalFlip(const bool flip) {
+bool UnitPAJ7620U2::writeVerticalFlip(const bool flip)
+{
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x02) | (flip ? 0x02 : 0x00);
@@ -652,7 +681,8 @@ bool UnitPAJ7620U2::writeVerticalFlip(const bool flip) {
 }
 
 //
-bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force) {
+bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force)
+{
     if (!force && _current_bank == bank) {
         return true;
     }
@@ -663,52 +693,63 @@ bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force) {
     return false;
 }
 
-bool UnitPAJ7620U2::read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len) {
+bool UnitPAJ7620U2::read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len)
+{
     return select_bank((reg >> 8) & 1) && readRegister((uint8_t)(reg & 0xFF), buf, len, 1);
 }
 
-bool UnitPAJ7620U2::read_banked_register8(const uint16_t reg, uint8_t& value) {
+bool UnitPAJ7620U2::read_banked_register8(const uint16_t reg, uint8_t& value)
+{
     return select_bank((reg >> 8) & 1) && readRegister8((uint8_t)(reg & 0xFF), value, 1);
 }
 
-bool UnitPAJ7620U2::read_banked_register16(const uint16_t reg, uint16_t& value) {
+bool UnitPAJ7620U2::read_banked_register16(const uint16_t reg, uint16_t& value)
+{
     return select_bank((reg >> 8) & 1) && readRegister16((uint8_t)(reg & 0xFF), value, 1);
 }
 
-bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len) {
+bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len)
+{
     return select_bank((reg >> 8) & 1) && writeRegister((uint8_t)(reg & 0xFF), buf, len);
 }
 
-bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg, const uint8_t value) {
+bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg, const uint8_t value)
+{
     return select_bank((reg >> 8) & 1) && writeRegister8((uint8_t)(reg & 0xFF), value);
 }
 
-bool UnitPAJ7620U2::write_banked_register16(const uint16_t reg, const uint16_t value) {
+bool UnitPAJ7620U2::write_banked_register16(const uint16_t reg, const uint16_t value)
+{
     return select_bank((reg >> 8) & 1) && writeRegister16((uint8_t)(reg & 0xFF), value);
 }
 
-bool UnitPAJ7620U2::was_wakeup() {
+bool UnitPAJ7620U2::was_wakeup()
+{
     uint8_t v{};
     return read_banked_register8(PART_ID_LOW, v) && (v == wakeup_value);
 }
 
-bool UnitPAJ7620U2::get_chip_id(uint16_t& id) {
+bool UnitPAJ7620U2::get_chip_id(uint16_t& id)
+{
     return read_banked_register(PART_ID_LOW, (uint8_t*)&id, 2);
 }
 
-bool UnitPAJ7620U2::get_version(uint8_t& version) {
+bool UnitPAJ7620U2::get_version(uint8_t& version)
+{
     return read_banked_register8(VERSION_ID, version);
 }
 
 bool UnitPAJ7620U2::start_periodic_measurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
-                                               const uint32_t intervalMs) {
+                                               const uint32_t intervalMs)
+{
     if (inPeriodic()) {
         return false;
     }
     return writeFrequency(freq) && writeMode(mode) && start_periodic_measurement(intervalMs);
 }
 
-bool UnitPAJ7620U2::start_periodic_measurement(const uint32_t intervalMs) {
+bool UnitPAJ7620U2::start_periodic_measurement(const uint32_t intervalMs)
+{
     if (inPeriodic()) {
         return false;
     }
@@ -718,7 +759,8 @@ bool UnitPAJ7620U2::start_periodic_measurement(const uint32_t intervalMs) {
     return true;
 }
 
-bool UnitPAJ7620U2::stop_periodic_measurement() {
+bool UnitPAJ7620U2::stop_periodic_measurement()
+{
     _periodic = false;
     return true;
 }

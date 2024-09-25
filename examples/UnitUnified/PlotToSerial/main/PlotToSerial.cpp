@@ -6,42 +6,32 @@
 /*
   Example using M5UnitUnified for UnitGESTURE
 */
-
-// #define USING_PAHUB (2)  // Connection channel number for use via PaHub.
-// #define USING_M5HAL      // When using M5HAL
-
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
 #include <M5UnitUnifiedGESTURE.h>
-#if defined(USING_PAHUB)
-#include <M5UnitUnifiedHUB.h>
-#endif
+#include <M5Utility.h>
 
 namespace {
 auto& lcd = M5.Display;
 
-constexpr uint32_t wire_freq = 400000U;
-
 m5::unit::UnitUnified Units;
 m5::unit::UnitGESTURE unit;
-#if defined(USING_PAHUB)
-m5::unit::UnitPaHub2 unitPaHub;
-#endif
 
 constexpr const char* gstr[] = {
     "None", "Left ",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
+const char* gesture_to_string(const gesture_t g)
+{
+    auto gg = m5::stl::to_underlying(g);
 
-const char* gesture_to_string(const m5::unit::paj7620u2::Gesture g) {
-    unsigned int ui{m5::stl::to_underlying(g)};
-    ui = (ui == 0) ? 0 : __builtin_ctz(ui) + 1;
-
-    return ui < m5::stl::size(gstr) ? gstr[ui] : "ERROR";
+    uint32_t idx = (gg == 0) ? 0 : __builtin_ctz(gg) + 1;
+    return idx < m5::stl::size(gstr) ? gstr[idx] : "ERR";
 }
 
 using namespace m5::unit::paj7620u2;
-Mode& operator++(Mode& m) {
+Mode& operator++(Mode& m)
+{
     uint8_t v = m5::stl::to_underlying(m) + 1;
     if (v > m5::stl::to_underlying(Mode::Cursor)) {
         v = 0;
@@ -63,7 +53,8 @@ constexpr const char* cstr[] = {
     "None", "LeftTop", "RightTop", "LeftBottom", "RightBottom", "Center",
 };
 
-Corner detectCorner() {
+Corner detectCorner()
+{
     bool exists{};
     uint16_t x{}, y{};
 
@@ -91,7 +82,8 @@ Corner detectCorner() {
 
 }  // namespace
 
-void setup() {
+void setup()
+{
     m5::utility::delay(2000);
 
     M5.begin();
@@ -100,59 +92,8 @@ void setup() {
     auto pin_num_scl = M5.getPin(m5::pin_name_t::port_a_scl);
     M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
 
-#if defined(USING_PAHUB)
-#pragma message "Using via PaHub"
-    // Using via PaHub
-#if defined(USING_M5HAL)
-#pragma message "Using M5HAL"
-    // Using M5HAL
-    m5::hal::bus::I2CBusConfig i2c_cfg;
-    i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
-    i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
-    auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
-
-    if (!unitPaHub.add(unit, USING_PAHUB) || !Units.add(unitPaHub, i2c_bus ? i2c_bus.value() : nullptr) ||
-        !Units.begin()) {
-        M5_LOGE("Failed to begin");
-        lcd.clear(TFT_RED);
-        while (true) {
-            m5::utility::delay(10000);
-        }
-    }
-#else
     // Using TwoWire
-#pragma message "Using Wire"
-    Wire.begin(pin_num_sda, pin_num_scl, wire_freq);
-    if (!unitPaHub.add(unit, USING_PAHUB) || !Units.add(unitPaHub, Wire) || !Units.begin()) {
-        M5_LOGE("Failed to begin");
-        lcd.clear(TFT_RED);
-        while (true) {
-            m5::utility::delay(10000);
-        }
-    }
-#endif
-
-#else
-    // Direct connection
-#pragma message "Direct connection"
-#if defined(USING_M5HAL)
-#pragma message "Using M5HAL"
-    // Using M5HAL
-    m5::hal::bus::I2CBusConfig i2c_cfg;
-    i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
-    i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
-    auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
-    if (!Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) || !Units.begin()) {
-        M5_LOGE("Failed to begin");
-        lcd.clear(TFT_RED);
-        while (true) {
-            m5::utility::delay(10000);
-        }
-    }
-#else
-#pragma message "Using Wire"
-    // Using TwoWire
-    Wire.begin(pin_num_sda, pin_num_scl, wire_freq);
+    Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000);
     M5_LOGW("Wire begin");
 
     if (!Units.add(unit, Wire) || !Units.begin()) {
@@ -162,8 +103,6 @@ void setup() {
             m5::utility::delay(10000);
         }
     }
-#endif
-#endif
 
     M5_LOGI("M5UnitUnified has been begun");
     M5_LOGI("%s", Units.debugInfo().c_str());
@@ -171,7 +110,8 @@ void setup() {
     lcd.clear(TFT_DARKGREEN);
 }
 
-void loop() {
+void loop()
+{
     M5.update();
     Units.update();
     switch (unit.mode()) {
