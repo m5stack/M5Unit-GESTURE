@@ -5,5 +5,9 @@
  */
 /*
   Example of sending identified gestures as keyboard commands via BLE
+  Required
+  - M5Unified
+  - NimBLE-Arduino
+  - BLE-keyboard
 */
-#include "main/Pager.cpp"
+#include "main/BLEKeyboard.cpp"

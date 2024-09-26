@@ -34,6 +34,7 @@ constexpr const char* gstr[] = {
     "None", "Left ",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
+
 const char* gesture_to_string(const gesture_t g)
 {
     auto gg = m5::stl::to_underlying(g);

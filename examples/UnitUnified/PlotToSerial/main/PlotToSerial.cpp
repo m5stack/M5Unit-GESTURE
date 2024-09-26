@@ -17,6 +17,8 @@ auto& lcd = M5.Display;
 m5::unit::UnitUnified Units;
 m5::unit::UnitGESTURE unit;
 
+using gesture_t = m5::unit::paj7620u2::Gesture;
+
 constexpr const char* gstr[] = {
     "None", "Left ",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
@@ -91,10 +93,7 @@ void setup()
     auto pin_num_sda = M5.getPin(m5::pin_name_t::port_a_sda);
     auto pin_num_scl = M5.getPin(m5::pin_name_t::port_a_scl);
     M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-
-    // Using TwoWire
-    Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000);
-    M5_LOGW("Wire begin");
+    Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
 
     if (!Units.add(unit, Wire) || !Units.begin()) {
         M5_LOGE("Failed to begin");
