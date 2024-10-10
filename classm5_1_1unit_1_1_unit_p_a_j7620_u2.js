@@ -13,7 +13,6 @@ var classm5_1_1unit_1_1_unit_p_a_j7620_u2 =
     [ "existsObject", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a842b66c89441198458af712fca1f5608", null ],
     [ "frequency", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a2ecec4a2cfe83fbf47749031c66b0223", null ],
     [ "gesture", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#afb7624eabdd9a9f1926c06707152f1d0", null ],
-    [ "hasObject", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a0f325908f2b4eb9bcdea901b80b8b391", null ],
     [ "mode", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a62eb4df54c1708dc103729ce3520de71", null ],
     [ "readApproachThreshold", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5679286c2ec751d8a9820a09b85816db", null ],
     [ "readCursor", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a584efcef7d2aff4a061745ba22a07a57", null ],
@@ -29,11 +28,14 @@ var classm5_1_1unit_1_1_unit_p_a_j7620_u2 =
     [ "readVerticalFlip", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5a482d4c09935b62bf120448b2ea7f79", null ],
     [ "resume", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a474404e87cca236491a83c8b3ad16b14", null ],
     [ "rotation", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aa6bbd85428f2d8cfd9bed16f6c73e1db", null ],
-    [ "setApproachThreshold", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a18357745c43a4a2c69216d99196651a2", null ],
-    [ "setFrequency", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a37050e00931be1aaeb97b0b320cded1a", null ],
-    [ "setHorizontalFlip", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#afcb91454a8b655d62dfadd00f4c6c6c3", null ],
-    [ "setMode", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#acc58393057ccf8bce1444ac7b267bcad", null ],
     [ "setRotate", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a44da9a5d31501230a6f3f932ca1f39df", null ],
-    [ "setVerticalFlip", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a795622ad19b21abd7410133683c8e157", null ],
-    [ "suspend", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5bc2c4959b55fa7dbeebf5add79c2b7a", null ]
+    [ "startPeriodicMeasurement", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a3144d2f50155f30e5e83b01cfff57092", null ],
+    [ "startPeriodicMeasurement", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a715b87e0f8c050560f81a48c4687b6e5", null ],
+    [ "stopPeriodicMeasurement", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a348e980789fe3b01fa9cbb541e9256ba", null ],
+    [ "suspend", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5bc2c4959b55fa7dbeebf5add79c2b7a", null ],
+    [ "writeApproachThreshold", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a38356220b7ee9d0c58a5d3afafdeedb3", null ],
+    [ "writeFrequency", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a7399669413b298255c0606ef4d5f7530", null ],
+    [ "writeHorizontalFlip", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5f1cb422a8d2605245bf3c522b41935f", null ],
+    [ "writeMode", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#abfc737f18000f4ea7deb4cf7e8d332b3", null ],
+    [ "writeVerticalFlip", "classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5230d39b50ae23d802f7fe449c40885a", null ]
 ];

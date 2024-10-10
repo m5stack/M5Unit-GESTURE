@@ -1,16 +1,7 @@
 var searchData=
 [
-  ['readapproachthreshold_0',['readApproachThreshold',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5679286c2ec751d8a9820a09b85816db',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readcursor_1',['readCursor',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a584efcef7d2aff4a061745ba22a07a57',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readfrequency_2',['readFrequency',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a88c83b07724c94eb952a3d29d75dd2f8',1,'m5::unit::UnitPAJ7620U2::readFrequency(uint8_t &amp;raw)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a6c16136522e489d0084b2895ab7d5834',1,'m5::unit::UnitPAJ7620U2::readFrequency(paj7620u2::Frequency &amp;f)']]],
-  ['readgesture_3',['readGesture',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4d2b9e9b02f9cf89f0f3fabde706e95c',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readhorizontalflip_4',['readHorizontalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aaa8a5f75eb516232a0fe0a89fd7a0365',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readnomotioncount_5',['readNoMotionCount',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5a2f89f7517ae65fb8b17d970fb94a13',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readnoobjectcount_6',['readNoObjectCount',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a1faa443875dd6df9c13ed421c6e1f0bc',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readobjectcenter_7',['readObjectCenter',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a877d17040931640e17ff9b6b60cf77b0',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readobjectsize_8',['readObjectSize',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#ad0651ecf1bf44a5cc8bc0f1a5432f1de',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readproximity_9',['readProximity',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a0132d1e007a4a28fcf78377617b0cead',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readverticalflip_10',['readVerticalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5a482d4c09935b62bf120448b2ea7f79',1,'m5::unit::UnitPAJ7620U2']]],
-  ['resume_11',['resume',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a474404e87cca236491a83c8b3ad16b14',1,'m5::unit::UnitPAJ7620U2']]],
-  ['rotation_12',['rotation',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aa6bbd85428f2d8cfd9bed16f6c73e1db',1,'m5::unit::UnitPAJ7620U2']]]
+  ['setrotate_0',['setRotate',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a44da9a5d31501230a6f3f932ca1f39df',1,'m5::unit::UnitPAJ7620U2']]],
+  ['startperiodicmeasurement_1',['startPeriodicMeasurement',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a715b87e0f8c050560f81a48c4687b6e5',1,'m5::unit::UnitPAJ7620U2::startPeriodicMeasurement(const uint32_t intervalMs=0)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a3144d2f50155f30e5e83b01cfff57092',1,'m5::unit::UnitPAJ7620U2::startPeriodicMeasurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq, const uint32_t intervalMs)']]],
+  ['stopperiodicmeasurement_2',['stopPeriodicMeasurement',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a348e980789fe3b01fa9cbb541e9256ba',1,'m5::unit::UnitPAJ7620U2']]],
+  ['suspend_3',['suspend',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5bc2c4959b55fa7dbeebf5add79c2b7a',1,'m5::unit::UnitPAJ7620U2']]]
 ];

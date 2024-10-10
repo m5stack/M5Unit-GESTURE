@@ -47,7 +47,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"_m5_unit_g_e_s_t_u_r_e_8hpp.html"
+"_m5_unit_unified_g_e_s_t_u_r_e_8hpp.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
