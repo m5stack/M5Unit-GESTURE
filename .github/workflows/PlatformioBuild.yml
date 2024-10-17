@@ -2,29 +2,48 @@ name: PlatformIOBuild
 
 on:
   push:
+    tags-ignore:
+      - '*.*.*'
+    branches:
+      - '*'
     paths:
-    - '**.ino'
-    - '**.cpp'
-    - '**.hpp'
-    - '**.h'
-    - '**.c'
-    - '**PlatformioBuild.yml'
-    - '**platformio.ini'
+      - 'src/unit/**.cpp'
+      - 'src/unit/**.hpp'
+      - 'src/unit/**.h'
+      - 'src/unit/**.c'
+      - 'test/**.cpp'
+      - 'test/**.hpp'
+      - 'test/**.h'
+      - 'test/**.c'
+      - 'examples/UnitUnified/**.ino'
+      - 'examples/UnitUnified/**.cpp'
+      - 'examples/UnitUnified/**.hpp'
+      - 'examples/UnitUnified/**.h'
+      - 'examples/UnitUnified/**.c'
+      - '**PlatformioBuild.yml'
+      - '**platformio.ini'
   pull_request:
     paths:
-    - '**.ino'
-    - '**.cpp'
-    - '**.hpp'
-    - '**.h'
-    - '**.c'
-    - '**PlatformioBuild.yml'
-    - '**platformio.ini'
+      - 'src/unit/**.cpp'
+      - 'src/unit/**.hpp'
+      - 'src/unit/**.h'
+      - 'src/unit/**.c'
+      - 'test/**.cpp'
+      - 'test/**.hpp'
+      - 'test/**.h'
+      - 'test/**.c'
+      - 'examples/UnitUnified/**.ino'
+      - 'examples/UnitUnified/**.cpp'
+      - 'examples/UnitUnified/**.hpp'
+      - 'examples/UnitUnified/**.h'
+      - 'examples/UnitUnified/**.c'
+      - '**PlatformioBuild.yml'
+      - '**platformio.ini'
   workflow_dispatch:
 
 jobs:
   build:
     name: ${{ matrix.example }}@${{ matrix.board }}:${{ matrix.framework }}:${{ matrix.espressif32 }}
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -90,10 +109,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Configure git for authentication (Until each repository is published)
-        run: |
-          git config --global url."https://${{ secrets.TOKEN_M5UNITUNIFIED }}@github.com/".insteadOf "https://github.com/"
 
       - name: Build examples
         uses: karniv00l/platformio-run-action@v1
