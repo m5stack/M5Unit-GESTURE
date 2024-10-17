@@ -104,5 +104,5 @@ jobs:
           project-conf: "./platformio.ini"
           #jobs: 6
           #silent: false
-          #verbose: truee
+          #verbose: true
           #disable-auto-clean: false
