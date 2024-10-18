@@ -1,4 +1,4 @@
-name: ArduinoBuild(platform-version 2.x)
+name: Build(arduino-esp32:2.x)
 
 env:
   SKETCH_NAMES_FIND_START: ./examples/UnitUnified
@@ -24,7 +24,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_2.yml'
+      - '**arduino-esp-v2-build-check.yml'
   pull_request:
     paths:
       - 'src/unit/**.cpp'
@@ -40,7 +40,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_2.yml'
+      - '**arduino-esp-v2-build-check.yml'
   workflow_dispatch:
 
 jobs:
@@ -58,15 +58,23 @@ jobs:
         sketch:
           - PlotToSerial
 
+        unit:
+          - ''
+
         board:
+          - m5stack-atom
+          - m5stack-atoms3
           - m5stack-core-esp32
           - m5stack-core2
-          - m5stack-atoms3
+#          - m5stack-coreink
           - m5stack-cores3
+          - m5stack-fire
+#          - m5stack-station
+#          - m5stack-timer-cam
+#          - m5stamp-pico
+#          - m5stick-c
 
         platform-version:
-          #- 2.0.15
-          #- 2.0.16
           - 2.0.17
 
         platform:
@@ -92,5 +100,5 @@ jobs:
           extra-arduino-cli-args: ${{ matrix.cli-args }}
           #build-properties: ${{ toJson(matrix.build-properties) }}
           sketch-names: ${{ matrix.sketch }}.ino
-          sketch-names-find-start: ${{ env.SKETCH_NAMES_FIND_START }}
+          sketch-names-find-start: ${{ env.SKETCH_NAMES_FIND_START }}/${{ matrix.unit }}
           #sketches-exclude: ${{ matrix.sketches-exclude }}

@@ -1,4 +1,4 @@
-name: Build(m5stack)
+name: Build(arduino-m5stack)
 
 env:
   SKETCH_NAMES_FIND_START: ./examples/UnitUnified
@@ -24,7 +24,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_M5.yml'
+      - '**arduino-m5-build-check.yml'
   pull_request:
     paths:
       - 'src/unit/**.cpp'
@@ -40,7 +40,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_M5.yml'
+      - '**arduino-m5-build-check.yml'
   workflow_dispatch:
 
 jobs:

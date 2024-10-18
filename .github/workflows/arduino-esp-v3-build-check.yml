@@ -1,4 +1,4 @@
-name: ArduinoBuild(platform-version 3.x)
+name: Build(arduino-esp32:3.x)
 
 env:
   SKETCH_NAMES_FIND_START: ./examples/UnitUnified
@@ -24,7 +24,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_3.yml'
+      - '**arduino-esp-v3-build-check.yml'
   pull_request:
     paths:
       - 'src/unit/**.cpp'
@@ -40,7 +40,7 @@ on:
       - 'examples/UnitUnified/**.hpp'
       - 'examples/UnitUnified/**.h'
       - 'examples/UnitUnified/**.c'
-      - '**ArduinoBuild_3.yml'
+      - '**arduino-esp-v3-build-check.yml'
   workflow_dispatch:
 
 jobs:
@@ -58,21 +58,37 @@ jobs:
         sketch:
           - PlotToSerial
 
+        unit:
+          - ''
+
         board:
+          - m5stack_atom
+          - m5stack_atoms3
+          - m5stack_capsule
+#          - m5stack_cardputer
           - m5stack_core
           - m5stack_core2
-          - m5stack_atoms3
+#          - m5stack_coreink
           - m5stack_cores3
           - m5stack_dial
+#          - m5stack_dinmeter
+          - m5stack_fire
           - m5stack_nanoc6
           - m5stack_paper
+#          - m5stack_poe_cam
+#          - m5stack_stamp_c3
+#          - m5stack_stamp_pico
+          - m5stack_stamp_s3
+#          - m5stack_station
+#          - m5stack_stickc
           - m5stack_stickc_plus
+          - m5stack_stickc_plus2
+#          - m5stack_timer_cam
+#          - m5stack_tough
+#          - m5stack_unit_cam
+#          - m5stack_unit_cams3
 
         platform-version:
-          #- 3.0.0
-          #- 3.0.1
-          #- 3.0.2
-          #- 3.0.3
           - 3.0.4
 
         platform:
@@ -98,5 +114,5 @@ jobs:
           extra-arduino-cli-args: ${{ matrix.cli-args }}
           #build-properties: ${{ toJson(matrix.build-properties) }}
           sketch-names: ${{ matrix.sketch }}.ino
-          sketch-names-find-start: ${{ env.SKETCH_NAMES_FIND_START }}
+          sketch-names-find-start: ${{ env.SKETCH_NAMES_FIND_START }}/${{ matrix.unit }}
           #sketches-exclude: ${{ matrix.sketches-exclude }}
