@@ -8,6 +8,7 @@ on:
   push:
     tags-ignore:
       - '*.*.*'
+      - 'v*.*.*'
     branches:
       - '*'
     paths:
@@ -45,7 +46,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.sketch }}:${{matrix.board}}@${{matrix.platform-version}}
+    name: ${{ matrix.unit }}:${{ matrix.sketch }}:${{matrix.board}}@${{matrix.platform-version}}
     runs-on: ubuntu-latest
 
     strategy:
@@ -66,13 +67,9 @@ jobs:
           - m5stack-atoms3
           - m5stack-core-esp32
           - m5stack-core2
-#          - m5stack-coreink
+          - m5stack-coreink
           - m5stack-cores3
           - m5stack-fire
-#          - m5stack-station
-#          - m5stack-timer-cam
-#          - m5stamp-pico
-#          - m5stick-c
 
         platform-version:
           - 2.0.17

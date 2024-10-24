@@ -8,6 +8,7 @@ on:
   push:
     tags-ignore:
       - '*.*.*'
+      - 'v*.*.*'
     branches:
       - '*'
     paths:
@@ -45,7 +46,7 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.sketch }}:${{matrix.board}}@${{matrix.platform-version}}
+    name: ${{ matrix.unit }}:${{ matrix.sketch }}:${{matrix.board}}@${{matrix.platform-version}}
     runs-on: ubuntu-latest
 
     strategy:
@@ -68,10 +69,9 @@ jobs:
 #          - m5stack_cardputer
           - m5stack_core
           - m5stack_core2
-#          - m5stack_coreink
+          - m5stack_coreink
           - m5stack_cores3
           - m5stack_dial
-#          - m5stack_dinmeter
           - m5stack_fire
           - m5stack_nanoc6
           - m5stack_paper
