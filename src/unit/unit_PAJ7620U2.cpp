@@ -367,7 +367,7 @@ bool UnitPAJ7620U2::begin()
     }
 
     // Check chip ID and get version
-    if (!get_chip_id(id) || !get_version(ver)) {
+    if (!read_chip_id(id) || !read_version(ver)) {
         M5_LIB_LOGE("Failed to get id/version %x:%x", id, ver);
         return false;
     }
@@ -729,12 +729,12 @@ bool UnitPAJ7620U2::was_wakeup()
     return read_banked_register8(PART_ID_LOW, v) && (v == wakeup_value);
 }
 
-bool UnitPAJ7620U2::get_chip_id(uint16_t& id)
+bool UnitPAJ7620U2::read_chip_id(uint16_t& id)
 {
     return read_banked_register(PART_ID_LOW, (uint8_t*)&id, 2);
 }
 
-bool UnitPAJ7620U2::get_version(uint8_t& version)
+bool UnitPAJ7620U2::read_version(uint8_t& version)
 {
     return read_banked_register8(VERSION_ID, version);
 }

@@ -469,8 +469,8 @@ protected:
     bool read_cursor(paj7620u2::Data& d);
 
     bool was_wakeup();
-    bool get_chip_id(uint16_t& id);
-    bool get_version(uint8_t& version);
+    bool read_chip_id(uint16_t& id);
+    bool read_version(uint8_t& version);
 
 protected:
     uint8_t _current_bank{0xFF};
