@@ -703,11 +703,6 @@ bool UnitPAJ7620U2::read_banked_register8(const uint16_t reg, uint8_t& value)
     return select_bank((reg >> 8) & 1) && readRegister8((uint8_t)(reg & 0xFF), value, 1);
 }
 
-bool UnitPAJ7620U2::read_banked_register16(const uint16_t reg, uint16_t& value)
-{
-    return select_bank((reg >> 8) & 1) && readRegister16((uint8_t)(reg & 0xFF), value, 1);
-}
-
 bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len)
 {
     return select_bank((reg >> 8) & 1) && writeRegister((uint8_t)(reg & 0xFF), buf, len);
@@ -716,11 +711,6 @@ bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf
 bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg, const uint8_t value)
 {
     return select_bank((reg >> 8) & 1) && writeRegister8((uint8_t)(reg & 0xFF), value);
-}
-
-bool UnitPAJ7620U2::write_banked_register16(const uint16_t reg, const uint16_t value)
-{
-    return select_bank((reg >> 8) & 1) && writeRegister16((uint8_t)(reg & 0xFF), value);
 }
 
 bool UnitPAJ7620U2::was_wakeup()
