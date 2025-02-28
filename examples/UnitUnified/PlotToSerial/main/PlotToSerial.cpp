@@ -15,7 +15,7 @@ namespace {
 auto& lcd = M5.Display;
 
 m5::unit::UnitUnified Units;
-m5::unit::UnitGESTURE unit;
+m5::unit::UnitGesture unit;
 
 using gesture_t = m5::unit::paj7620u2::Gesture;
 

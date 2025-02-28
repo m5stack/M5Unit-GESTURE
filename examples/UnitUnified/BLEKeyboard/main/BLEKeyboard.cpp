@@ -24,7 +24,7 @@ namespace {
 auto& lcd = M5.Display;
 
 m5::unit::UnitUnified Units;
-m5::unit::UnitGESTURE unit;
+m5::unit::UnitGesture unit;
 
 BleKeyboard bleKeyboard{"PagerKB", "M5UU", 100};
 unsigned long inactive_to{};
