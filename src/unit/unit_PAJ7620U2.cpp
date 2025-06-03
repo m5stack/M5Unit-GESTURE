@@ -339,7 +339,7 @@ namespace unit {
 // class UnitPAJ7620U2
 const char UnitPAJ7620U2::name[] = "UnitPAJ7620U2";
 const types::uid_t UnitPAJ7620U2::uid{"UnitPAJ7620U2"_mmh3};
-const types::uid_t UnitPAJ7620U2::attr{0};
+const types::attr_t UnitPAJ7620U2::attr{attribute::AccessI2C};
 
 bool UnitPAJ7620U2::begin()
 {

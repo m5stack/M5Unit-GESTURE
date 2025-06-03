@@ -26,8 +26,6 @@ namespace m5 {
   @brief Unit-related namespace
  */
 namespace unit {
-using UnitGESTURE [[deprecated("Please use UnitGesture")]] = m5::unit::UnitPAJ7620U2;
-
 using UnitGesture = m5::unit::UnitPAJ7620U2;
 }  // namespace unit
 }  // namespace m5
