@@ -24,7 +24,7 @@ namespace {
 auto& lcd = M5.Display;
 
 m5::unit::UnitUnified Units;
-m5::unit::UnitGESTURE unit;
+m5::unit::UnitGesture unit;
 
 BleKeyboard bleKeyboard{"PagerKB", "M5UU", 100};
 unsigned long inactive_to{};
@@ -105,7 +105,7 @@ void loop()
     Units.update();
     if (connected != bleKeyboard.isConnected()) {
         connected = bleKeyboard.isConnected();
-        M5_LOGW("Change BLE connection:%u", connected);
+        M5.Log.printf("Change BLE connection:%u\n", connected);
         lcd.clear(connected ? TFT_DARKGREEN : TFT_DARKGRAY);
     }
     if (connected) {
@@ -120,7 +120,7 @@ void loop()
         if (unit.updated()) {
             auto key = gesture_to_key(unit.gesture());
             if (key) {
-                M5_LOGI("Send %x by %s", key, gesture_to_string(unit.gesture()));
+                M5.Log.printf("Send %x by %s\n", key, gesture_to_string(unit.gesture()));
                 bleKeyboard.write(key);
                 // Continuous input prevention period
                 inactive_to = m5::utility::millis() + INACTIVE_TIME;

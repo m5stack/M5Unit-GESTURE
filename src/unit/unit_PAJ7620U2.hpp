@@ -455,10 +455,8 @@ protected:
 
     bool read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len);
     bool read_banked_register8(const uint16_t reg, uint8_t& value);
-    bool read_banked_register16(const uint16_t reg, uint16_t& value);
     bool write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len);
     bool write_banked_register8(const uint16_t reg, const uint8_t value);
-    bool write_banked_register16(const uint16_t reg, const uint16_t value);
 
     bool update_gesture(paj7620u2::Data& d);
     bool update_proximity(paj7620u2::Data& d);

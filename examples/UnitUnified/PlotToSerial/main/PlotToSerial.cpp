@@ -15,7 +15,7 @@ namespace {
 auto& lcd = M5.Display;
 
 m5::unit::UnitUnified Units;
-m5::unit::UnitGESTURE unit;
+m5::unit::UnitGesture unit;
 
 using gesture_t = m5::unit::paj7620u2::Gesture;
 
@@ -111,7 +111,9 @@ void setup()
 void loop()
 {
     M5.update();
+    auto touch = M5.Touch.getDetail();
     Units.update();
+
     switch (unit.mode()) {
         case m5::unit::paj7620u2::Mode::Gesture: {
             static uint8_t noobj{};
@@ -124,38 +126,39 @@ void loop()
                 unit.readObjectSize(size);
                 unit.readObjectCenter(x, y);
 
-                M5_LOGI("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)", gesture_to_string(unit.gesture()), noobj,
-                        nomot, size, x, y);
+                M5.Log.printf("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)\n", gesture_to_string(unit.gesture()),
+                              noobj, nomot, size, x, y);
             }
             unit.readNoObjectCount(noobj);
 
             static Corner pc{};
             Corner c = detectCorner();
             if (c != pc) {
-                M5_LOGI("Obj:%s", cstr[(uint8_t)c]);
+                M5.Log.printf("Obj:%s\n", cstr[(uint8_t)c]);
                 pc = c;
             }
         } break;
         case m5::unit::paj7620u2::Mode::Proximity: {
             if (unit.updated()) {
-                M5_LOGI("%s brightness:%u approch:%u", gesture_to_string(unit.gesture()), unit.brightness(),
-                        unit.approach());
+                M5.Log.printf("%s brightness:%u approch:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
+                              unit.approach());
             }
         } break;
         case m5::unit::paj7620u2::Mode::Cursor: {
             if (unit.updated()) {
-                M5_LOGI("Cursor:%u,%u", unit.cursorX(), unit.cursorY());
+                M5.Log.printf("Cursor:%u,%u\n", unit.cursorX(), unit.cursorY());
             }
             delay(100);
         } break;
         default:
             break;
     }
-    if (M5.BtnA.wasClicked()) {
+
+    if (M5.BtnA.wasClicked() || touch.wasClicked()) {
         auto prev = detection;
         ++detection;
         if (unit.writeMode(detection)) {
-            M5_LOGI(">>> writeNMode %x", detection);
+            M5.Log.printf(">> writeNMode %x\n", detection);
             switch (unit.mode()) {
                 case m5::unit::paj7620u2::Mode::Gesture:
                     unit.writeFrequency(Frequency::Gaming);
