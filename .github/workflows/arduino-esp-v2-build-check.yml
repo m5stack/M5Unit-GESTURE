@@ -88,7 +88,7 @@ jobs:
             platform: esp32
             archi: esp32
             platform-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-            extra-libraries: ''
+            extra-libraries: ',NimBLE-Arduino'
 
     steps:
       - name: Checkout
@@ -103,7 +103,7 @@ jobs:
           arduino-cli config init
           arduino-cli config set library.enable_unsafe_install true
           arduino-cli lib update-index
-          arduino-cli lib install --git-url https://github.com/h2zero/NimBLE-Arduino.git
+          #arduino-cli lib install --git-url https://github.com/h2zero/NimBLE-Arduino.git
           arduino-cli lib install --git-url https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard.git
 
       # Build
