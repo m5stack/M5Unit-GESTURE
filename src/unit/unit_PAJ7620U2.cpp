@@ -358,37 +358,30 @@ bool UnitPAJ7620U2::begin()
 
     m5::utility::delay(2);  // Wait 700us for PAJ7620U2 to stabilize
 
-    // Use 100kHz for the wakeup sequence — NACK recovery is more
-    // reliable at lower clock speeds.
+    // Use 100kHz for the wakeup sequence — NACK recovery is morereliable at lower clock speeds.
     if (auto a = asAdapter<AdapterI2C>(Adapter::Type::I2C)) {
         a->setClock(100000);
     }
 
-    // If the sensor is still in Operation state (e.g. after ESP32 reset
-    // without power cycle), the wakeup sequence will fail. Try to force
-    // the sensor into Suspend state first, then wake it up normally.
-    // Retry multiple times because the sensor's I2C state may need time
-    // to recover after an unclean reset.
+    // If the sensor is still in Operation state (e.g. after ESP32 reset without power cycle), the wakeup sequence will
+    // fail. Try to force the sensor into Suspend state first, then wake it up normally. Retry multiple times because
+    // the sensor's I2C state may need time to recover after an unclean reset.
     constexpr int max_retries{10};
     bool woken = false;
     for (int attempt = 0; attempt < max_retries; ++attempt) {
         // Try wakeup (in case sensor is in Suspend/POR state)
         select_bank(0, true);  // May NACK if sleeping (OK)
         select_bank(0, true);
-
-        // Force into Suspend regardless of current state
-        write_banked_register8(R_TG_ENH, 0x00);        // Disable PAJ7620U2
-        write_banked_register8(SW_SUSPEND_ENL, 0x01);  // Enter Suspend
-        m5::utility::delay(10);
-
-        // Now wakeup from Suspend
-        select_bank(0, true);
-        select_bank(0, true);
         if (was_wakeup()) {
             M5_LIB_LOGV("Wakeup OK at attempt %d", attempt);
             woken = true;
             break;
         }
+
+        // Force into Suspend regardless of current state
+        write_banked_register8(R_TG_ENH, 0x00);        // Disable PAJ7620U2
+        write_banked_register8(SW_SUSPEND_ENL, 0x01);  // Enter Suspend
+        m5::utility::delay(10);
 
         M5_LIB_LOGD("Wakeup attempt %d/%d failed", attempt, max_retries);
         m5::utility::delay(100);
