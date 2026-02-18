@@ -107,34 +107,18 @@ void setup()
                 m5::utility::delay(10000);
             }
         }
-    } else if (board == m5::board_t::board_M5StickS3) {
-        // StickS3: Wire (I2C_NUM_0) is used internally for M5PM1/BMI270.
-        // Define STICKS3_USE_SOFT_I2C to use SoftwareI2C instead of Wire1.
-        M5_LOGI("getPin(StickS3): SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-#if defined(STICKS3_USE_SOFT_I2C)
-        m5::hal::bus::I2CBusConfig i2c_cfg;
-        i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
-        i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
-        auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
-        M5_LOGI("Bus:%d", i2c_bus.has_value());
-        if (!Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) || !Units.begin()) {
-#else
-        Wire1.end();
-        Wire1.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
-        if (!Units.add(unit, Wire1) || !Units.begin()) {
-#endif
-            M5_LOGE("Failed to begin");
-            lcd.fillScreen(TFT_RED);
-            while (true) {
-                m5::utility::delay(10000);
-            }
-        }
     } else {
+#if defined(CONFIG_IDF_TARGET_ESP32S3) && defined(SOC_I2C_NUM) && (SOC_I2C_NUM >= 2)
+        // StickS3: Wire (I2C_NUM_0) is used internally for M5PM1/BMI270.
+        auto& wire = (board == m5::board_t::board_M5StickS3) ? Wire1 : Wire;
+#else
+        auto& wire = Wire;
+#endif
         // Using TwoWire
         M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-        Wire.end();
-        Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
-        if (!Units.add(unit, Wire) || !Units.begin()) {
+        wire.end();
+        wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
+        if (!Units.add(unit, wire) || !Units.begin()) {
             M5_LOGE("Failed to begin");
             lcd.fillScreen(TFT_RED);
             while (true) {

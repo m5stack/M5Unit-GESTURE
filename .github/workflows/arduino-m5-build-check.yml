@@ -110,7 +110,9 @@ jobs:
             platform-version: 3.2.5
             platform: m5stack
             archi: esp32
-            extra-libraries: ',NimBLE-Arduino,ESP32 BLE Keyboard'
+            platform-url: https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
+            extra-libraries: ',NimBLE-Arduino'
+            extra-arduino-lib-install-args: '--git-url https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard.git'
 
     steps:
       - name: Checkout
@@ -125,6 +127,7 @@ jobs:
           platform-url: ${{ matrix.platform-url }}
           required-libraries: ${{ env.REQUIRED_LIBRARIES }}${{ matrix.extra-libraries }}
           extra-arduino-cli-args: ${{ matrix.cli-args }}
+          extra-arduino-lib-install-args: ${{ matrix.extra-arduino-lib-install-args }}
           #build-properties: ${{ toJson(matrix.build-properties) }}
           sketch-names: ${{ matrix.sketch }}.ino
           sketch-names-find-start: ${{ env.SKETCH_NAMES_FIND_START }}/${{ matrix.unit }}
