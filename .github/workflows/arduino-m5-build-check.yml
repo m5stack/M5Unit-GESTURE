@@ -111,8 +111,8 @@ jobs:
             platform: m5stack
             archi: esp32
             platform-url: https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
-            extra-libraries: ''
-            extra-arduino-lib-install-args: '--git-url https://github.com/h2zero/NimBLE-Arduino.git --git-url https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard.git'
+            skip-required-libraries: true
+            extra-arduino-lib-install-args: '--git-url https://github.com/m5stack/M5Unified.git --git-url https://github.com/m5stack/M5UnitUnified.git --git-url https://github.com/h2zero/NimBLE-Arduino.git --git-url https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard.git'
 
     steps:
       - name: Checkout
@@ -125,7 +125,7 @@ jobs:
           arduino-board-fqbn: ${{ matrix.platform }}:${{ matrix.archi }}:${{ matrix.board }}
           arduino-platform: ${{ matrix.platform }}:${{ matrix.archi }}@${{ matrix.platform-version }}
           platform-url: ${{ matrix.platform-url }}
-          required-libraries: ${{ env.REQUIRED_LIBRARIES }}${{ matrix.extra-libraries }}
+          required-libraries: ${{ !matrix.skip-required-libraries && format('{0}{1}', env.REQUIRED_LIBRARIES, matrix.extra-libraries) || '' }}
           extra-arduino-cli-args: ${{ matrix.cli-args }}
           extra-arduino-lib-install-args: ${{ matrix.extra-arduino-lib-install-args }}
           #build-properties: ${{ toJson(matrix.build-properties) }}
