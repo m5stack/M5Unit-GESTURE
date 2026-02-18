@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024 M5Stack Technology CO LTD
+ * SPDX-FileCopyrightText: 2026 M5Stack Technology CO LTD
  *
  * SPDX-License-Identifier: MIT
  */
@@ -9,7 +9,8 @@
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
 #include <M5UnitUnifiedGESTURE.h>
-#include <M5Utility.h>
+#include <Wire.h>
+#include <M5HAL.hpp>  // For NessoN1
 
 namespace {
 auto& lcd = M5.Display;
@@ -55,6 +56,7 @@ constexpr const char* cstr[] = {
     "None", "LeftTop", "RightTop", "LeftBottom", "RightBottom", "Center",
 };
 
+#if 0
 Corner detectCorner()
 {
     bool exists{};
@@ -81,43 +83,97 @@ Corner detectCorner()
     }
     return Corner::None;
 }
+#endif
 
 }  // namespace
 
 void setup()
 {
     M5.begin();
+    M5.setTouchButtonHeightByRatio(100);
+
+    // The screen shall be in landscape mode
+    if (lcd.height() > lcd.width()) {
+        lcd.setRotation(1);
+    }
+
+    auto board = M5.getBoard();
 
     auto pin_num_sda = M5.getPin(m5::pin_name_t::port_a_sda);
     auto pin_num_scl = M5.getPin(m5::pin_name_t::port_a_scl);
-    M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-
-    Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
-
-    if (!Units.add(unit, Wire) || !Units.begin()) {
-        M5_LOGE("Failed to begin");
-        lcd.clear(TFT_RED);
-        while (true) {
-            m5::utility::delay(10000);
+    // For NessoN1 GROVE
+    if (board == m5::board_t::board_ArduinoNessoN1) {
+        // Port A of the NessoN1 is QWIIC, then use portB (GROVE)
+        pin_num_sda = M5.getPin(m5::pin_name_t::port_b_out);
+        pin_num_scl = M5.getPin(m5::pin_name_t::port_b_in);
+        M5_LOGI("getPin(NessoN1): SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
+        // Wire is used internally, so SoftwareI2C handles the unit
+        m5::hal::bus::I2CBusConfig i2c_cfg;
+        i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
+        i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
+        auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
+        M5_LOGI("Bus:%d", i2c_bus.has_value());
+        if (!Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) || !Units.begin()) {
+            M5_LOGE("Failed to begin");
+            lcd.fillScreen(TFT_RED);
+            while (true) {
+                m5::utility::delay(10000);
+            }
+        }
+    } else if (board == m5::board_t::board_M5StickS3) {
+        // StickS3: Wire (I2C_NUM_0) is used internally for M5PM1/BMI270.
+        // Define STICKS3_USE_SOFT_I2C to use SoftwareI2C instead of Wire1.
+        M5_LOGI("getPin(StickS3): SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
+        //#define STICKS3_USE_SOFT_I2C
+#if defined(STICKS3_USE_SOFT_I2C)
+        m5::hal::bus::I2CBusConfig i2c_cfg;
+        i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
+        i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
+        auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
+        M5_LOGI("Bus:%d", i2c_bus.has_value());
+        if (!Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) || !Units.begin()) {
+#else
+        Wire1.end();
+        Wire1.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
+        if (!Units.add(unit, Wire1) || !Units.begin()) {
+#endif
+            M5_LOGE("Failed to begin");
+            lcd.fillScreen(TFT_RED);
+            while (true) {
+                m5::utility::delay(10000);
+            }
+        }
+    } else {
+        // Using TwoWire
+        M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
+        Wire.end();
+        Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
+        if (!Units.add(unit, Wire) || !Units.begin()) {
+            M5_LOGE("Failed to begin");
+            lcd.fillScreen(TFT_RED);
+            while (true) {
+                m5::utility::delay(10000);
+            }
         }
     }
 
     M5_LOGI("M5UnitUnified has been begun");
     M5_LOGI("%s", Units.debugInfo().c_str());
 
-    lcd.clear(TFT_DARKGREEN);
+    lcd.fillScreen(TFT_DARKGREEN);
 }
 
 void loop()
 {
-    M5.update();
-    auto touch = M5.Touch.getDetail();
+    //    M5.update();
     Units.update();
 
     switch (unit.mode()) {
         case m5::unit::paj7620u2::Mode::Gesture: {
+            // Detect gesture
             static uint8_t noobj{};
 
+            unit.readNoObjectCount(noobj);
             if (unit.updated()) {
                 uint8_t nomot{};
                 uint16_t size{};
@@ -125,26 +181,30 @@ void loop()
                 unit.readNoMotionCount(nomot);
                 unit.readObjectSize(size);
                 unit.readObjectCenter(x, y);
-
-                M5.Log.printf("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)\n", gesture_to_string(unit.gesture()),
-                              noobj, nomot, size, x, y);
+                const auto g = unit.gesture();
+                if (g != Gesture::None) {
+                    M5.Log.printf("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)\n", gesture_to_string(g), noobj,
+                                  nomot, size, x, y);
+                }
             }
-            unit.readNoObjectCount(noobj);
-
+#if 0
             static Corner pc{};
             Corner c = detectCorner();
             if (c != pc) {
                 M5.Log.printf("Obj:%s\n", cstr[(uint8_t)c]);
                 pc = c;
             }
+#endif
         } break;
         case m5::unit::paj7620u2::Mode::Proximity: {
+            // Detect proximity
             if (unit.updated()) {
                 M5.Log.printf("%s brightness:%u approch:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
                               unit.approach());
             }
         } break;
         case m5::unit::paj7620u2::Mode::Cursor: {
+            // Detect cursor
             if (unit.updated()) {
                 M5.Log.printf("Cursor:%u,%u\n", unit.cursorX(), unit.cursorY());
             }
@@ -154,11 +214,11 @@ void loop()
             break;
     }
 
-    if (M5.BtnA.wasClicked() || touch.wasClicked()) {
+    if (M5.BtnA.wasClicked()) {
         auto prev = detection;
         ++detection;
         if (unit.writeMode(detection)) {
-            M5.Log.printf(">> writeNMode %x\n", detection);
+            M5.Log.printf(">> writeMode %x\n", detection);
             switch (unit.mode()) {
                 case m5::unit::paj7620u2::Mode::Gesture:
                     unit.writeFrequency(Frequency::Gaming);
