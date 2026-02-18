@@ -124,19 +124,9 @@ void setup()
         // StickS3: Wire (I2C_NUM_0) is used internally for M5PM1/BMI270.
         // Define STICKS3_USE_SOFT_I2C to use SoftwareI2C instead of Wire1.
         M5_LOGI("getPin(StickS3): SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-        //#define STICKS3_USE_SOFT_I2C
-#if defined(STICKS3_USE_SOFT_I2C)
-        m5::hal::bus::I2CBusConfig i2c_cfg;
-        i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
-        i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
-        auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
-        M5_LOGI("Bus:%d", i2c_bus.has_value());
-        if (!Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) || !Units.begin()) {
-#else
         Wire1.end();
         Wire1.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
         if (!Units.add(unit, Wire1) || !Units.begin()) {
-#endif
             M5_LOGE("Failed to begin");
             lcd.fillScreen(TFT_RED);
             while (true) {

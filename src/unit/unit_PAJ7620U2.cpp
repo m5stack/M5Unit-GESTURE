@@ -385,12 +385,12 @@ bool UnitPAJ7620U2::begin()
         select_bank(0, true);
         select_bank(0, true);
         if (was_wakeup()) {
-            M5_LIB_LOGI("Wakeup OK at attempt %d", attempt);
+            M5_LIB_LOGV("Wakeup OK at attempt %d", attempt);
             woken = true;
             break;
         }
 
-        M5_LIB_LOGW("Wakeup attempt %d/%d failed", attempt, max_retries);
+        M5_LIB_LOGD("Wakeup attempt %d/%d failed", attempt, max_retries);
         m5::utility::delay(100);
     }
     if (!woken) {
