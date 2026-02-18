@@ -187,7 +187,7 @@ constexpr Pair register_for_gesture[] = {
     {0x74, 0x00},  // Set gesture mode
     {0xEF, 0x00},  // Bank 0
     {0x41, 0xFF},  // Re-enable interrupts for first 8 gestures
-    {0x42, 0x01},  // Re-e
+    {0x42, 0x01},  // Re-enable interrupts for wave gesture
 #else
     {0xEF, 0x00},  // Bank 0
     {0x41, 0x00},  // R_Int_1_En [7:0]
@@ -328,8 +328,8 @@ Gesture rotate_gesture(const Gesture g, const uint8_t rot)
 }
 
 constexpr uint8_t freq_table[] = {
-    0xAC,  // 120
-    0x30,  // 240
+    0x96,  // Normal  ~120Hz
+    0x13,  // Gaming  ~240Hz
 };
 
 }  // namespace
@@ -356,14 +356,51 @@ bool UnitPAJ7620U2::begin()
     uint16_t id{};
     uint8_t ver{};
 
-    m5::utility::delay(1);  // Wait 700us for PAJ7620U2 to stabilize
+    m5::utility::delay(2);  // Wait 700us for PAJ7620U2 to stabilize
 
-    // call select_bank twice for wakeup
-    select_bank(0, true);
-    select_bank(0, true);
-    if (!was_wakeup()) {
+    // Use 100kHz for the wakeup sequence — NACK recovery is more
+    // reliable at lower clock speeds.
+    if (auto a = asAdapter<AdapterI2C>(Adapter::Type::I2C)) {
+        a->setClock(100000);
+    }
+
+    // If the sensor is still in Operation state (e.g. after ESP32 reset
+    // without power cycle), the wakeup sequence will fail. Try to force
+    // the sensor into Suspend state first, then wake it up normally.
+    // Retry multiple times because the sensor's I2C state may need time
+    // to recover after an unclean reset.
+    constexpr int max_retries{10};
+    bool woken = false;
+    for (int attempt = 0; attempt < max_retries; ++attempt) {
+        // Try wakeup (in case sensor is in Suspend/POR state)
+        select_bank(0, true);  // May NACK if sleeping (OK)
+        select_bank(0, true);
+
+        // Force into Suspend regardless of current state
+        write_banked_register8(R_TG_ENH, 0x00);        // Disable PAJ7620U2
+        write_banked_register8(SW_SUSPEND_ENL, 0x01);  // Enter Suspend
+        m5::utility::delay(10);
+
+        // Now wakeup from Suspend
+        select_bank(0, true);
+        select_bank(0, true);
+        if (was_wakeup()) {
+            M5_LIB_LOGI("Wakeup OK at attempt %d", attempt);
+            woken = true;
+            break;
+        }
+
+        M5_LIB_LOGW("Wakeup attempt %d/%d failed", attempt, max_retries);
+        m5::utility::delay(100);
+    }
+    if (!woken) {
         M5_LIB_LOGE("Failed to wait wakeup");
         return false;
+    }
+
+    // Restore original config clock
+    if (auto a = asAdapter<AdapterI2C>(Adapter::Type::I2C)) {
+        a->setClock(component_config().clock);
     }
 
     // Check chip ID and get version
@@ -387,7 +424,7 @@ bool UnitPAJ7620U2::begin()
         }
     }
     if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode)) {
-        M5_LIB_LOGE("Fauled to settings");
+        M5_LIB_LOGE("Failed to settings");
         return false;
     }
 
@@ -544,7 +581,7 @@ bool UnitPAJ7620U2::readCursor(uint16_t& x, uint16_t& y)
     Data d{};
     if (update_cursor(d)) {
         x = d.cursorX();
-        y = cursorY();
+        y = d.cursorY();
         return true;
     }
     return false;
@@ -568,7 +605,7 @@ bool UnitPAJ7620U2::resume()
 bool UnitPAJ7620U2::readFrequency(uint8_t& raw)
 {
     raw = 0;
-    return read_banked_register8(R_REF_CLK_CNT_LOW, raw);
+    return read_banked_register8(R_IDLE_TIME_LOW, raw);
 }
 
 bool UnitPAJ7620U2::readFrequency(Frequency& f)
@@ -591,7 +628,7 @@ bool UnitPAJ7620U2::readFrequency(Frequency& f)
 
 bool UnitPAJ7620U2::writeFrequency(const Frequency f)
 {
-    if (f == Frequency::Unknown || !write_banked_register8(R_REF_CLK_CNT_LOW, freq_table[m5::stl::to_underlying(f)])) {
+    if (f == Frequency::Unknown || !write_banked_register8(R_IDLE_TIME_LOW, freq_table[m5::stl::to_underlying(f)])) {
         return false;
     }
     _frequency = f;

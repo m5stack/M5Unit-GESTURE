@@ -56,7 +56,7 @@ enum class Gesture : uint16_t {
 enum class Mode : uint8_t {
     Gesture,    //!< Detect gesture
     Proximity,  //!< Detect proximity
-    Cursor,     //!< Detect XY cordinate
+    Cursor,     //!< Detect XY coordinate
 };
 
 /*!
@@ -81,7 +81,7 @@ struct Data {
     // [0,1]:gesture
     // Proximity
     // [2]:proximity [3]:approach
-    // Cirosr
+    // Cursor
     // [2,3]:X [4,5]:Y
     std::array<uint8_t, 2 + 4> raw{};
     Gesture data_gesture{};
@@ -151,13 +151,13 @@ public:
     struct config_t {
         //! Start periodic measurement on begin?
         bool start_periodic{true};
-        //! Mode if start on bein
+        //! Mode if start on begin
         paj7620u2::Mode mode{paj7620u2::Mode::Gesture};
-        //! Frequency if start on bein
+        //! Frequency if start on begin
         paj7620u2::Frequency frequency{paj7620u2::Frequency::Normal};
-        //! Flip horizontal if start on bein
+        //! Flip horizontal if start on begin
         bool hflip{false};
-        //! Flip verticl if start on bein
+        //! Flip vertical if start on begin
         bool vflip{true};
         //! Rotation if start on begin
         uint8_t rotation{0};
@@ -258,14 +258,14 @@ public:
     /*!
       @brief Get the rotation
       @return Rotation [0...3]
-      @sa setRotatation
+      @sa setRotation
     */
     inline uint8_t rotation() const
     {
         return _rotation;
     }
     /*!
-      @brief Set the roptation
+      @brief Set the rotation
       @param rot Rotation [0...3]
       ```
       +-------++
@@ -314,8 +314,8 @@ public:
     bool readGesture(paj7620u2::Gesture& gesture);
     /*!
       @brief Object center position
-      @param[out] x X cordinate
-      @param[out] y Y cordinate
+      @param[out] x X coordinate
+      @param[out] y Y coordinate
       @return True if successful
      */
     bool readObjectCenter(uint16_t& x, uint16_t& y);
@@ -341,13 +341,13 @@ public:
     }
     /*!
       @brief State counter with no objects detected
-      @param[out] count(tiocks) [0...255]
+      @param[out] count(ticks) [0...255]
       @return True if successful
     */
     bool readNoObjectCount(uint8_t& cnt);
     /*!
       @brief State counter which a non-moving object is detected
-      @param[out] count(tiocks) [0...12]
+      @param[out] count(ticks) [0...12]
       @return True if successful
     */
     bool readNoMotionCount(uint8_t& cnt);
@@ -358,7 +358,7 @@ public:
     /*!
       @brief Read proximity
       @param[out] brightness 0:Out of bounds  [1:far ... 255:near]
-      @param[out] approarch Approach object
+      @param[out] approach Approach object
       @return True if successful
      */
     bool readProximity(uint8_t& brightness, uint8_t& approach);
@@ -366,7 +366,7 @@ public:
     /*!
       @brief Read the threshold for detect approach
       @param[out] high High threshold
-      @param[out] low Lowthreshold
+      @param[out] low Low threshold
       @note Approach:brightness >= high
       @note Not approach: brightness <= low
       @warning Only valid in Proximity mode
@@ -375,7 +375,7 @@ public:
     /*!
       @brief Write the threshold for detect approach
       @param high High threshold
-      @param low Lowthreshold
+      @param low Low threshold
       @note Approach:brightness >= high
       @note Not approach: brightness <= low
       @warning Only valid in Proximity mode
@@ -387,8 +387,8 @@ public:
     ///@{
     /*!
       @brief Cursor position
-      @param[out] x X cordinate
-      @param[out] y Y cordinate
+      @param[out] x X coordinate
+      @param[out] y Y coordinate
       @return True if successful
       @warning Only valid in Cursor mode
     */
@@ -484,7 +484,7 @@ protected:
 namespace paj7620u2 {
 namespace command {
 
-// Bnak 0/1
+// Bank 0/1
 constexpr uint8_t BANK_SEL{0xEF};
 // high byte:bank low byte: register
 // Bank 0
@@ -525,7 +525,7 @@ constexpr uint16_t VEL_Y_HIGH{0x00C4};
 
 // Bank1
 constexpr uint16_t LS_COMP_DAVG_V{0x0104};
-constexpr uint16_t R_REF_CLK_CNT_LOW{0x0165};
+constexpr uint16_t R_IDLE_TIME_LOW{0x0165};
 constexpr uint16_t R_TG_ENH{0x0172};
 }  // namespace command
 }  // namespace paj7620u2
