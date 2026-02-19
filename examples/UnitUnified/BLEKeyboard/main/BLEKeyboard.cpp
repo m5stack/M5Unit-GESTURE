@@ -108,17 +108,11 @@ void setup()
             }
         }
     } else {
-#if defined(CONFIG_IDF_TARGET_ESP32S3) && defined(SOC_I2C_NUM) && (SOC_I2C_NUM >= 2)
-        // StickS3: Wire (I2C_NUM_0) is used internally for M5PM1/BMI270.
-        auto& wire = (board == m5::board_t::board_M5StickS3) ? Wire1 : Wire;
-#else
-        auto& wire = Wire;
-#endif
         // Using TwoWire
         M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-        wire.end();
-        wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
-        if (!Units.add(unit, wire) || !Units.begin()) {
+        Wire.end();
+        Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
+        if (!Units.add(unit, Wire) || !Units.begin()) {
             M5_LOGE("Failed to begin");
             lcd.fillScreen(TFT_RED);
             while (true) {
