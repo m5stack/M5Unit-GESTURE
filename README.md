@@ -2,7 +2,7 @@
 
 ## Overview
 
-Library for UnitHUB using [M5UnitUnified](https://github.com/m5stack/M5UnitUnified).  
+Library for UnitGESTURE using [M5UnitUnified](https://github.com/m5stack/M5UnitUnified).  
 M5UnitUnified is a library for unified handling of various M5 units products.
 
 ### SKU:U127
@@ -27,7 +27,7 @@ See also examples using conventional methods here.
 
 ## License
 
-- [M5Unit-GESTURE- MIT](LICENSE)
+- [M5Unit-GESTURE - MIT](LICENSE)
 
 ## Examples
 See also [examples/UnitUnified](examples/UnitUnified)
@@ -45,6 +45,6 @@ It will output it under docs/html
 If you want to output Git commit hashes to html, do it for the git cloned folder.
 
 ### Required
-- [Doxyegn](https://www.doxygen.nl/)
+- [Doxygen](https://www.doxygen.nl/)
 - [pcregrep](https://formulae.brew.sh/formula/pcre2)
 - [Git](https://git-scm.com/) (Output commit hash to html)
