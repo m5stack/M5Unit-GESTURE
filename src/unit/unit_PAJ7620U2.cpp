@@ -40,76 +40,64 @@ struct Pair {
 constexpr Pair register_for_initialize[] = {
 #if defined(USING_REGISTER_VALUE_15)
     // Datasheet V1.5 (2022-01-05) register values
-    {0xEF, 0x00},  // Bank 0
-    {0x41, 0xFF},  // R_Int_1_En [7:0]
-    {0x42, 0x01},  // R_Int_2_En [7:0]
-    {0x46, 0x2D},  // R_AELedOff_UB [7:0]
-    {0x47, 0x0F},  // R_AELedOff_LB [7:0]
-    {0x48, 0x80},  // R_AE_Exposure_UB [7:0]
-    {0x49, 0x00},  // R_AE_Exposure_UB [15:8]
-    {0x4A, 0x40},  // R_AE_Exposure_LB [7:0]
-    {0x4B, 0x00},  // R_AE_Exposure_LB [15:8]
-    {0x4C, 0x20},  // R_AE_Gain_UB [7:0]
-    {0x4D, 0x00},  // R_AE_Gain_LB [7:0]
-    {0x51, 0x10},  // R_Manual_GG[0]
-    {0x5C, 0x02},
-    {0x5E, 0x10},  // TG___CLK_manual
-    {0x80, 0x41},  // Im_GPIO0
-    {0x81, 0x44},  // Tm_GPIO2_OEL
-    {0x82, 0x0C},  // Im_INT
-    {0x83, 0x20},  // R_LightThd [7:0]
-    {0x84, 0x20},
-    {0x85, 0x00},
-    {0x86, 0x10},
-    {0x87, 0x00},
-    {0x8B, 0x01},  // R_Cursor_ObjectSizeTh [7:0]
-    {0x8D, 0x00},
-    {0x90, 0x0C},  // R_NoMotionCountThd [6:0]
-    {0x91, 0x0C},
-    {0x93, 0x0D},
-    {0x94, 0x0A},
-    {0x95, 0x0A},  // R_ZDirectionThd [4:0]
-    {0x96, 0x0C},  // R_ZDirectionXYThd [4:0]
-    {0x97, 0x05},  // R_ZDirectionAngleThd [3:0]
-    {0x9A, 0x14},  // R_RotateXYThd [4:0]
-    {0x9C, 0x3F},  // R_FilterWeight [1:0], FilterDistThd [6:2]
-    {0x9F, 0xF9},  // R_RotateEnH
-    {0xA0, 0x48},
-    {0xA5, 0x19},  // R_FilterImage [0], R_FilterAverage_Mode [3:2]
-    {0xCC, 0x19},  // R_YtoZSum[5:0]
-    {0xCD, 0x0B},  // R_YtoZFactor[5:0]
-    {0xCE, 0x13},  // R_PositionFilterLength[2:0],R_ProcessFilterLength[6:4]
-    {0xCF, 0x62},  // R_WaveCountThd[3:0],R_WaveAngleThd[7:4]
-    {0xD0, 0x21},  // R_AbortCountThd[2:0],R_AbortXYRatio[7:3]
-    {0xEF, 0x01},  // Bank 1
-    {0x00, 0x1E},  // Cmd_HSize [5:0]
-    {0x01, 0x1E},  // Cmd_VSize [5:0]
-    {0x02, 0x0F},  // Cmd_HStart [5:0]
-    {0x03, 0x0F},  // Cmd_VStart [5:0]
-    {0x04, 0x02},  // R_HR_LS_Comp_DAvg_V
-    {0x25, 0x01},  // R_LensShadingComp_EnH [0]
-    {0x26, 0x00},
-    {0x27, 0x39},  // R_OffsetY [6:0]
-    {0x28, 0x7F},  // R_LSC [6:0]
-    {0x29, 0x08},  // R_LSFT [3:0]
-    {0x30, 0x03},
-    {0x3E, 0xFF},  // R_DebugPattern[7:0]
-    {0x5E, 0x3D},  // T_clamp_drv_ctrl
-    {0x65, 0xAC},  // R_IDLE_TIME [7:0] (~110 Hz)
-    {0x66, 0x00},  // R_IDLE_TIME [15:8]
-    {0x67, 0x97},  // R_IDLE_TIME_SLEEP_1 [7:0]
-    {0x68, 0x01},  // R_IDLE_TIME_SLEEP_1 [15:8]
-    {0x69, 0xCD},  // R_IDLE_TIME_SLEEP_2 [7:0]
-    {0x6A, 0x01},  // R_IDLE_TIME_SLEEP_2 [15:8]
-    {0x6B, 0xB0},  // R_Obj_TIME_1 [7:0]
-    {0x6C, 0x04},  // R_Obj_TIME_1 [15:8]
-    {0x6D, 0x2C},  // R_Obj_TIME_2 [7:0]
-    {0x6E, 0x01},  // R_Obj_TIME_2 [15:8]
-    {0x72, 0x01},  // R_TG_EnH Enable/Disable PAJ7620U2[0]
-    {0x73, 0x35},  // R_AUTO_SLEEP_Mode
-    {0x74, 0x00},  // R_WakeUpSig_Sel 0:gesture
-    {0x77, 0x01},  // R_SRAM_Read_EnH[0]
-    {0xEF, 0x00},  // Bank 0
+    {0xEF, 0x00},                                                          // Bank 0
+    {0x41, 0xFF},                                                          // R_Int_1_En [7:0]
+    {0x42, 0x01},                                                          // R_Int_2_En [7:0]
+    {0x46, 0x2D},                                                          // R_AELedOff_UB [7:0]
+    {0x47, 0x0F},                                                          // R_AELedOff_LB [7:0]
+    {0x48, 0x80},                                                          // R_AE_Exposure_UB [7:0]
+    {0x49, 0x00},                                                          // R_AE_Exposure_UB [15:8]
+    {0x4A, 0x40},                                                          // R_AE_Exposure_LB [7:0]
+    {0x4B, 0x00},                                                          // R_AE_Exposure_LB [15:8]
+    {0x4C, 0x20},                                                          // R_AE_Gain_UB [7:0]
+    {0x4D, 0x00},                                                          // R_AE_Gain_LB [7:0]
+    {0x51, 0x10},                                                          // R_Manual_GG[0]
+    {0x5C, 0x02}, {0x5E, 0x10},                                            // TG___CLK_manual
+    {0x80, 0x41},                                                          // Im_GPIO0
+    {0x81, 0x44},                                                          // Tm_GPIO2_OEL
+    {0x82, 0x0C},                                                          // Im_INT
+    {0x83, 0x20},                                                          // R_LightThd [7:0]
+    {0x84, 0x20}, {0x85, 0x00}, {0x86, 0x10}, {0x87, 0x00}, {0x8B, 0x01},  // R_Cursor_ObjectSizeTh [7:0]
+    {0x8D, 0x00}, {0x90, 0x0C},                                            // R_NoMotionCountThd [6:0]
+    {0x91, 0x0C}, {0x93, 0x0D}, {0x94, 0x0A}, {0x95, 0x0A},                // R_ZDirectionThd [4:0]
+    {0x96, 0x0C},                                                          // R_ZDirectionXYThd [4:0]
+    {0x97, 0x05},                                                          // R_ZDirectionAngleThd [3:0]
+    {0x9A, 0x14},                                                          // R_RotateXYThd [4:0]
+    {0x9C, 0x3F},                                                          // R_FilterWeight [1:0], FilterDistThd [6:2]
+    {0x9F, 0xF9},                                                          // R_RotateEnH
+    {0xA0, 0x48}, {0xA5, 0x19},  // R_FilterImage [0], R_FilterAverage_Mode [3:2]
+    {0xCC, 0x19},                // R_YtoZSum[5:0]
+    {0xCD, 0x0B},                // R_YtoZFactor[5:0]
+    {0xCE, 0x13},                // R_PositionFilterLength[2:0],R_ProcessFilterLength[6:4]
+    {0xCF, 0x62},                // R_WaveCountThd[3:0],R_WaveAngleThd[7:4]
+    {0xD0, 0x21},                // R_AbortCountThd[2:0],R_AbortXYRatio[7:3]
+    {0xEF, 0x01},                // Bank 1
+    {0x00, 0x1E},                // Cmd_HSize [5:0]
+    {0x01, 0x1E},                // Cmd_VSize [5:0]
+    {0x02, 0x0F},                // Cmd_HStart [5:0]
+    {0x03, 0x0F},                // Cmd_VStart [5:0]
+    {0x04, 0x02},                // R_HR_LS_Comp_DAvg_V
+    {0x25, 0x01},                // R_LensShadingComp_EnH [0]
+    {0x26, 0x00}, {0x27, 0x39},  // R_OffsetY [6:0]
+    {0x28, 0x7F},                // R_LSC [6:0]
+    {0x29, 0x08},                // R_LSFT [3:0]
+    {0x30, 0x03}, {0x3E, 0xFF},  // R_DebugPattern[7:0]
+    {0x5E, 0x3D},                // T_clamp_drv_ctrl
+    {0x65, 0xAC},                // R_IDLE_TIME [7:0] (~110 Hz)
+    {0x66, 0x00},                // R_IDLE_TIME [15:8]
+    {0x67, 0x97},                // R_IDLE_TIME_SLEEP_1 [7:0]
+    {0x68, 0x01},                // R_IDLE_TIME_SLEEP_1 [15:8]
+    {0x69, 0xCD},                // R_IDLE_TIME_SLEEP_2 [7:0]
+    {0x6A, 0x01},                // R_IDLE_TIME_SLEEP_2 [15:8]
+    {0x6B, 0xB0},                // R_Obj_TIME_1 [7:0]
+    {0x6C, 0x04},                // R_Obj_TIME_1 [15:8]
+    {0x6D, 0x2C},                // R_Obj_TIME_2 [7:0]
+    {0x6E, 0x01},                // R_Obj_TIME_2 [15:8]
+    {0x72, 0x01},                // R_TG_EnH Enable/Disable PAJ7620U2[0]
+    {0x73, 0x35},                // R_AUTO_SLEEP_Mode
+    {0x74, 0x00},                // R_WakeUpSig_Sel 0:gesture
+    {0x77, 0x01},                // R_SRAM_Read_EnH[0]
+    {0xEF, 0x00},                // Bank 0
 #else
     // Datasheet V0.7 (2014-05-22) register values
     {0xEF, 0x00},  // Bank 0
@@ -378,8 +366,8 @@ constexpr uint8_t freq_table[] = {
     0xAC,  // Normal  ~110Hz (V1.5)
     0x13,  // Gaming  ~240Hz
 #else
-    0x96,  // Normal  ~120Hz (V0.7)
-    0x13,  // Gaming  ~240Hz
+    0x96,          // Normal  ~120Hz (V0.7)
+    0x13,          // Gaming  ~240Hz
 #endif
 };
 
@@ -866,7 +854,7 @@ bool UnitPAJ7620U2::wakeup_with_gpio()
 {
     m5::utility::delay(2);  // Wait 700us for PAJ7620U2 to stabilize
 
-    auto ai2c = asAdapter<AdapterI2C>(Adapter::Type::I2C);
+    auto ai2c       = asAdapter<AdapterI2C>(Adapter::Type::I2C);
     int16_t sda_pin = ai2c ? ai2c->sda() : -1;
     int16_t scl_pin = ai2c ? ai2c->scl() : -1;
 
