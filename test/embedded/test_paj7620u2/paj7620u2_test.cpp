@@ -19,14 +19,11 @@ using namespace m5::unit;
 using namespace m5::unit::paj7620u2;
 using namespace m5::unit::paj7620u2::command;
 
-const ::testing::Environment* global_fixture = ::testing::AddGlobalTestEnvironment(new GlobalFixture<400000U>());
-
 struct TestParams {
-    bool hal;
     bool store_on_change;
 };
 
-class TestPAJ7620U2 : public ComponentTestBase<UnitPAJ7620U2, TestParams> {
+class TestPAJ7620U2 : public I2CComponentTestBase<UnitPAJ7620U2>, public ::testing::WithParamInterface<TestParams> {
 protected:
     virtual UnitPAJ7620U2* get_instance() override
     {
@@ -43,21 +40,9 @@ protected:
         }
         return ptr;
     }
-    virtual bool is_using_hal() const override
-    {
-        return GetParam().hal;
-    };
 };
 
-// INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
-//                          ::testing::Values(false, true));
-//  INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
-//  ::testing::Values(true));
-// INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
-// ::testing::Values(false));
-
-INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2,
-                         ::testing::Values(TestParams{false, true}, TestParams{false, false}));
+INSTANTIATE_TEST_SUITE_P(ParamValues, TestPAJ7620U2, ::testing::Values(TestParams{true}, TestParams{false}));
 
 using check_param_callback = void (*)(UnitPAJ7620U2*);
 
@@ -101,7 +86,7 @@ TEST_P(TestPAJ7620U2, Gesture)
     EXPECT_TRUE(unit->inPeriodic());
     EXPECT_EQ(unit->interval(), 10U);
 
-    test_periodic_measurement(unit.get(), 16, check_param_callback(nullptr), true);
+    collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
