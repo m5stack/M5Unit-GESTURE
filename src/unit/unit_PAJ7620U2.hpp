@@ -121,12 +121,12 @@ struct Data {
     ///@}
     ///@name Cursor mode
     ///@{
-    /*! @brief Gets the cursor X the any object */
+    /*! @brief Gets the cursor X of any object */
     inline uint16_t cursorX() const
     {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
     }
-    /*! @brief Gets the cursor Y the any object */
+    /*! @brief Gets the cursor Y of any object */
     inline uint16_t cursorY() const
     {
         return (data_mode == Mode::Cursor) ? cursor_y : 0xFFFF;
@@ -181,12 +181,12 @@ public:
 
     ///@name Settings for begin
     ///@{
-    /*! @brief Gets the configration */
+    /*! @brief Gets the configuration */
     inline config_t config()
     {
         return _cfg;
     }
-    //! @brief Set the configration
+    //! @brief Set the configuration
     inline void config(const config_t& cfg)
     {
         _cfg = cfg;
@@ -466,6 +466,9 @@ protected:
     bool read_proximity(paj7620u2::Data& d);
     bool read_cursor(paj7620u2::Data& d);
 
+    bool wakeup();
+    bool wakeup_with_gpio();
+    bool wakeup_gpio(const int16_t sda_pin, const int16_t scl_pin);
     bool was_wakeup();
     bool read_chip_id(uint16_t& id);
     bool read_version(uint8_t& version);
