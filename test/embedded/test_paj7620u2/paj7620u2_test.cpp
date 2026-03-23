@@ -52,6 +52,10 @@ TEST_P(TestPAJ7620U2, Suspend)
 
     EXPECT_TRUE(unit->suspend());
     EXPECT_TRUE(unit->resume());
+
+    // Verify sensor works after resume
+    Gesture ges{};
+    EXPECT_TRUE(unit->readGesture(ges));
 }
 
 TEST_P(TestPAJ7620U2, Gesture)
@@ -86,7 +90,11 @@ TEST_P(TestPAJ7620U2, Gesture)
     EXPECT_TRUE(unit->inPeriodic());
     EXPECT_EQ(unit->interval(), 10U);
 
-    collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
+    auto r = collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
+    // store_on_change=true: data doesn't change without actual gesture, so timeout is expected
+    if (!GetParam().store_on_change) {
+        EXPECT_FALSE(r.timed_out);
+    }
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
@@ -178,4 +186,88 @@ TEST_P(TestPAJ7620U2, Flip)
     EXPECT_TRUE(unit->writeVerticalFlip(!flip));
     EXPECT_TRUE(unit->readVerticalFlip(flip2));
     EXPECT_NE(flip, flip2);
+}
+
+TEST_P(TestPAJ7620U2, ProximityPeriodic)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_TRUE(unit->writeMode(Mode::Proximity));
+    EXPECT_TRUE(unit->startPeriodicMeasurement(10));
+    EXPECT_TRUE(unit->inPeriodic());
+
+    auto r = collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
+    if (!GetParam().store_on_change) {
+        EXPECT_FALSE(r.timed_out);
+    }
+
+    EXPECT_TRUE(unit->stopPeriodicMeasurement());
+    EXPECT_FALSE(unit->inPeriodic());
+}
+
+TEST_P(TestPAJ7620U2, StartPeriodicWithModeAndFreq)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_FALSE(unit->inPeriodic());
+    EXPECT_TRUE(unit->startPeriodicMeasurement(Mode::Proximity, Frequency::Normal, 10));
+    EXPECT_TRUE(unit->inPeriodic());
+    EXPECT_EQ(unit->mode(), Mode::Proximity);
+
+    EXPECT_TRUE(unit->stopPeriodicMeasurement());
+    EXPECT_FALSE(unit->inPeriodic());
+}
+
+TEST_P(TestPAJ7620U2, ExistsObject)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_TRUE(unit->writeMode(Mode::Gesture));
+
+    bool exists{};
+    EXPECT_TRUE(unit->existsObject(exists));
+}
+
+TEST_P(TestPAJ7620U2, ReadFrequency)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_TRUE(unit->writeMode(Mode::Gesture));
+
+    EXPECT_TRUE(unit->writeFrequency(Frequency::Normal));
+    Frequency f{};
+    EXPECT_TRUE(unit->readFrequency(f));
+    EXPECT_EQ(f, Frequency::Normal);
+
+    EXPECT_TRUE(unit->writeFrequency(Frequency::Gaming));
+    EXPECT_TRUE(unit->readFrequency(f));
+    EXPECT_EQ(f, Frequency::Gaming);
+
+    uint8_t raw{};
+    EXPECT_TRUE(unit->readFrequency(raw));
+}
+
+TEST_P(TestPAJ7620U2, Rotation)
+{
+    SCOPED_TRACE(ustr);
+
+    for (uint8_t r = 0; r < 4; ++r) {
+        unit->setRotate(r);
+        EXPECT_EQ(unit->rotation(), r);
+    }
+    // Wraps at 4
+    unit->setRotate(4);
+    EXPECT_EQ(unit->rotation(), 0);
+}
+
+TEST_P(TestPAJ7620U2, EnableDisable)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_TRUE(unit->disable());
+    EXPECT_TRUE(unit->enable());
+
+    // Verify sensor works after re-enable
+    Gesture ges{};
+    EXPECT_TRUE(unit->readGesture(ges));
 }
