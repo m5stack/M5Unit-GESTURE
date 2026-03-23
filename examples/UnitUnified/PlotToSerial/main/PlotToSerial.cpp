@@ -21,7 +21,7 @@ m5::unit::UnitGesture unit;
 using gesture_t = m5::unit::paj7620u2::Gesture;
 
 constexpr const char* gstr[] = {
-    "None", "Left ",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
+    "None", "Left",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
 const char* gesture_to_string(const gesture_t g)
@@ -147,7 +147,7 @@ void setup()
 
 void loop()
 {
-    //    M5.update();
+    M5.update();
     Units.update();
 
     switch (unit.mode()) {
@@ -181,7 +181,7 @@ void loop()
         case m5::unit::paj7620u2::Mode::Proximity: {
             // Detect proximity
             if (unit.updated()) {
-                M5.Log.printf("%s brightness:%u approch:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
+                M5.Log.printf("%s brightness:%u approach:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
                               unit.approach());
             }
         } break;
