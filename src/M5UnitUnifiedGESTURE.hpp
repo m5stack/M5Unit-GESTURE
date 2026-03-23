@@ -26,6 +26,7 @@ namespace m5 {
   @brief Unit-related namespace
  */
 namespace unit {
+//! @brief Alias for UnitPAJ7620U2
 using UnitGesture = m5::unit::UnitPAJ7620U2;
 }  // namespace unit
 }  // namespace m5

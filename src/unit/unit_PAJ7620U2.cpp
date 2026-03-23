@@ -10,6 +10,7 @@
 #include "unit_PAJ7620U2.hpp"
 #include <M5Utility.hpp>
 #include <array>
+#include <cstring>
 #include <driver/gpio.h>
 
 using namespace m5::utility::mmh3;
@@ -20,6 +21,7 @@ using namespace m5::unit::paj7620u2::command;
 namespace {
 constexpr uint16_t chip_id{0x7620};
 constexpr uint8_t wakeup_value{0x20};
+constexpr uint8_t enter_suspend{0x01};
 
 #if 0
 // Hz to IDLE_TIME
@@ -291,14 +293,14 @@ constexpr Pair register_for_proximity[] = {
 // cursor mode
 constexpr Pair register_for_cursor[] = {
     // restore
-    {0Xef, 0X00},
-    {0X48, 0X3C},
-    {0X49, 0X00},
-    {0X51, 0X10},
-    {0X83, 0X20},
-    {0X9f, 0XF9},
-    {0X69, 0X14},
-    {0X6a, 0X0A},
+    {0xEF, 0x00},
+    {0x48, 0x3C},
+    {0x49, 0x00},
+    {0x51, 0x10},
+    {0x83, 0x20},
+    {0x9F, 0xF9},
+    {0x69, 0x14},
+    {0x6A, 0x0A},
     {0xEF, 0x00},  // Set Bank 0
     {0x32, 0x29},  // R_CursorClampLeft
     {0x33, 0x01},  // R_PositionFilterStartSizeTh [7:0]
@@ -472,7 +474,9 @@ bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d)
 {
     if (read_gesture(d)) {
         d.data_mode    = Mode::Gesture;
-        d.data_gesture = rotate_gesture(static_cast<Gesture>(*(uint16_t*)d.raw.data()), _rotation);
+        uint16_t raw_gesture;
+        std::memcpy(&raw_gesture, d.raw.data(), sizeof(raw_gesture));
+        d.data_gesture = rotate_gesture(static_cast<Gesture>(raw_gesture), _rotation);
         return true;
     }
     return false;
@@ -494,8 +498,8 @@ bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d)
     // if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
     if (read_cursor(d)) {
         d.data_mode = Mode::Cursor;
-        d.cursor_x  = (((uint16_t)(d.raw[3] & 0X0F)) << 8) | d.raw[2];
-        d.cursor_y  = (((uint16_t)(d.raw[5] & 0X0F)) << 8) | d.raw[4];
+        d.cursor_x  = (((uint16_t)(d.raw[3] & 0x0F)) << 8) | d.raw[2];
+        d.cursor_y  = (((uint16_t)(d.raw[5] & 0x0F)) << 8) | d.raw[4];
         return true;
     }
     //    M5_LIB_LOGE(">>>> %x", d.gesture());
@@ -543,7 +547,12 @@ bool UnitPAJ7620U2::readNoMotionCount(uint8_t& cnt)
 bool UnitPAJ7620U2::readObjectSize(uint16_t& sz)
 {
     sz = 0;
-    return read_banked_register(OBJECT_SIZE_LOW, (uint8_t*)&sz, 2);
+    uint8_t buf[2]{};
+    if (!read_banked_register(OBJECT_SIZE_LOW, buf, 2)) {
+        return false;
+    }
+    sz = static_cast<uint16_t>(buf[1]) << 8 | buf[0];
+    return true;
 }
 
 bool UnitPAJ7620U2::readProximity(uint8_t& brightness, uint8_t& approach)
@@ -564,8 +573,8 @@ bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y)
     uint8_t xl{}, xh{}, yl{}, yh{};
     if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) && read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
         read_banked_register8(OBJECT_CENTER_Y_LOW, yl) && read_banked_register8(OBJECT_CENTER_Y_HIGH, yh)) {
-        x = (((uint16_t)(xh & 0X1F)) << 8) | xl;
-        y = (((uint16_t)(yh & 0X1F)) << 8) | yl;
+        x = (((uint16_t)(xh & 0x1F)) << 8) | xl;
+        y = (((uint16_t)(yh & 0x1F)) << 8) | yl;
         return true;
     }
     return false;
@@ -590,12 +599,12 @@ bool UnitPAJ7620U2::enable(const bool flag)
 
 bool UnitPAJ7620U2::suspend()
 {
-    return enable(false) && write_banked_register8(SW_SUSPEND_ENL, 0);
+    return enable(false) && write_banked_register8(SW_SUSPEND_ENL, enter_suspend);
 }
 
 bool UnitPAJ7620U2::resume()
 {
-    return was_wakeup() && enable(true);
+    return wakeup() && enable(true);
 }
 
 bool UnitPAJ7620U2::readFrequency(uint8_t& raw)
@@ -631,12 +640,12 @@ bool UnitPAJ7620U2::writeFrequency(const Frequency f)
     return true;
 }
 
-bool UnitPAJ7620U2::writeMode(const Mode m)
+bool UnitPAJ7620U2::writeMode(const Mode mode)
 {
-    auto idx       = m5::stl::to_underlying(m);
+    auto idx       = m5::stl::to_underlying(mode);
     const Pair* rv = idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
     if (!rv) {
-        M5_LIB_LOGE("Invalid mode:%x", m);
+        M5_LIB_LOGE("Invalid mode:%x", mode);
         return false;
     }
 
@@ -655,7 +664,7 @@ bool UnitPAJ7620U2::writeMode(const Mode m)
         }
         ++rv;
     }
-    _mode = m;
+    _mode = mode;
 
     // To resolve bank inconsistencies after register setting
     return select_bank(0, true) && ((_mode != Mode::Proximity) ? writeFrequency(_frequency) : true);
@@ -839,7 +848,7 @@ bool UnitPAJ7620U2::wakeup()
 
         // Force into Suspend regardless of current state
         write_banked_register8(R_TG_ENH, 0x00);        // Disable PAJ7620U2
-        write_banked_register8(SW_SUSPEND_ENL, 0x01);  // Enter Suspend
+        write_banked_register8(SW_SUSPEND_ENL, enter_suspend);  // Enter Suspend
         m5::utility::delay(10);
 
         M5_LIB_LOGI("Wakeup attempt %d/%d failed", attempt, max_retries);
@@ -899,7 +908,7 @@ bool UnitPAJ7620U2::wakeup_with_gpio()
 
         // Force into Suspend regardless of current state
         write_banked_register8(R_TG_ENH, 0x00);
-        write_banked_register8(SW_SUSPEND_ENL, 0x01);
+        write_banked_register8(SW_SUSPEND_ENL, enter_suspend);
         m5::utility::delay(10);
 
         M5_LIB_LOGI("GPIO wakeup attempt %d/%d failed", attempt, max_retries);
@@ -918,7 +927,12 @@ bool UnitPAJ7620U2::was_wakeup()
 
 bool UnitPAJ7620U2::read_chip_id(uint16_t& id)
 {
-    return read_banked_register(PART_ID_LOW, (uint8_t*)&id, 2);
+    uint8_t buf[2]{};
+    if (!read_banked_register(PART_ID_LOW, buf, 2)) {
+        return false;
+    }
+    id = static_cast<uint16_t>(buf[1]) << 8 | buf[0];
+    return true;
 }
 
 bool UnitPAJ7620U2::read_version(uint8_t& version)
