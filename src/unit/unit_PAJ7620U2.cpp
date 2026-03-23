@@ -368,8 +368,8 @@ constexpr uint8_t freq_table[] = {
     0xAC,  // Normal  ~110Hz (V1.5)
     0x13,  // Gaming  ~240Hz
 #else
-    0x96,          // Normal  ~120Hz (V0.7)
-    0x13,          // Gaming  ~240Hz
+    0x96,  // Normal  ~120Hz (V0.7)
+    0x13,  // Gaming  ~240Hz
 #endif
 };
 
@@ -473,7 +473,7 @@ void UnitPAJ7620U2::update(const bool force)
 bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d)
 {
     if (read_gesture(d)) {
-        d.data_mode    = Mode::Gesture;
+        d.data_mode = Mode::Gesture;
         uint16_t raw_gesture;
         std::memcpy(&raw_gesture, d.raw.data(), sizeof(raw_gesture));
         d.data_gesture = rotate_gesture(static_cast<Gesture>(raw_gesture), _rotation);
@@ -847,7 +847,7 @@ bool UnitPAJ7620U2::wakeup()
         }
 
         // Force into Suspend regardless of current state
-        write_banked_register8(R_TG_ENH, 0x00);        // Disable PAJ7620U2
+        write_banked_register8(R_TG_ENH, 0x00);                 // Disable PAJ7620U2
         write_banked_register8(SW_SUSPEND_ENL, enter_suspend);  // Enter Suspend
         m5::utility::delay(10);
 

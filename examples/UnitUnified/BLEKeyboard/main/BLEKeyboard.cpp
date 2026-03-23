@@ -32,7 +32,7 @@ unsigned long inactive_to{};
 constexpr decltype(inactive_to) INACTIVE_TIME{1500};  // Period of inactivity (ms)
 
 constexpr const char* gstr[] = {
-    "None", "Left",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
+    "None", "Left",     "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
 
