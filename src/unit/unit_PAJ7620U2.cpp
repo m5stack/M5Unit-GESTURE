@@ -368,8 +368,8 @@ constexpr uint8_t freq_table[] = {
     0xAC,  // Normal  ~110Hz (V1.5)
     0x13,  // Gaming  ~240Hz
 #else
-    0x96,  // Normal  ~120Hz (V0.7)
-    0x13,  // Gaming  ~240Hz
+    0x96,          // Normal  ~120Hz (V0.7)
+    0x13,          // Gaming  ~240Hz
 #endif
 };
 
