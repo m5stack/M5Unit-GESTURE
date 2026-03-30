@@ -21,7 +21,7 @@ m5::unit::UnitGesture unit;
 using gesture_t = m5::unit::paj7620u2::Gesture;
 
 constexpr const char* gstr[] = {
-    "None", "Left",     "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
+    "None", "Up",       "Down",      "Left",          "Right",   "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
 const char* gesture_to_string(const gesture_t g)

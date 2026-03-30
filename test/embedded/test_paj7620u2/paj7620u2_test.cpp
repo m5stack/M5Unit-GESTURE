@@ -94,6 +94,8 @@ TEST_P(TestPAJ7620U2, Gesture)
     // store_on_change=true: data doesn't change without actual gesture, so timeout is expected
     if (!GetParam().store_on_change) {
         EXPECT_FALSE(r.timed_out);
+        EXPECT_EQ(r.update_count, 16U);
+        EXPECT_LE(r.median(), r.expected_interval + 5);
     }
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
@@ -199,6 +201,8 @@ TEST_P(TestPAJ7620U2, ProximityPeriodic)
     auto r = collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
     if (!GetParam().store_on_change) {
         EXPECT_FALSE(r.timed_out);
+        EXPECT_EQ(r.update_count, 16U);
+        EXPECT_LE(r.median(), r.expected_interval + 5);
     }
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
@@ -243,8 +247,37 @@ TEST_P(TestPAJ7620U2, ReadFrequency)
     EXPECT_TRUE(unit->readFrequency(f));
     EXPECT_EQ(f, Frequency::Gaming);
 
-    uint8_t raw{};
+    uint16_t raw{};
     EXPECT_TRUE(unit->readFrequency(raw));
+}
+
+TEST_P(TestPAJ7620U2, FrequencyHz)
+{
+    SCOPED_TRACE(ustr);
+
+    // Write 120Hz and read back
+    EXPECT_TRUE(unit->writeFrequencyHz(120.0f));
+    float hz = unit->readFrequencyHz();
+    EXPECT_NEAR(hz, 120.0f, 1.0f);
+    // Should match Normal preset
+    EXPECT_EQ(unit->frequency(), Frequency::Normal);
+
+    // Write 240Hz and read back
+    EXPECT_TRUE(unit->writeFrequencyHz(240.0f));
+    hz = unit->readFrequencyHz();
+    EXPECT_NEAR(hz, 240.0f, 1.0f);
+    // Should match Gaming preset
+    EXPECT_EQ(unit->frequency(), Frequency::Gaming);
+
+    // Write arbitrary Hz (60Hz)
+    EXPECT_TRUE(unit->writeFrequencyHz(60.0f));
+    hz = unit->readFrequencyHz();
+    EXPECT_NEAR(hz, 60.0f, 1.0f);
+    // Not a preset
+    EXPECT_EQ(unit->frequency(), Frequency::Unknown);
+
+    // Restore to Normal
+    EXPECT_TRUE(unit->writeFrequency(Frequency::Normal));
 }
 
 TEST_P(TestPAJ7620U2, Rotation)
@@ -270,4 +303,78 @@ TEST_P(TestPAJ7620U2, EnableDisable)
     // Verify sensor works after re-enable
     Gesture ges{};
     EXPECT_TRUE(unit->readGesture(ges));
+}
+
+// Test that begin() applies config_t values
+struct BeginConfigParams {
+    Mode mode;
+    Frequency frequency;
+    bool hflip;
+    bool vflip;
+    uint8_t rotation;
+};
+
+class TestPAJ7620U2BeginConfig : public I2CComponentTestBase<UnitPAJ7620U2>,
+                                 public ::testing::WithParamInterface<BeginConfigParams> {
+protected:
+    virtual UnitPAJ7620U2* get_instance() override
+    {
+        auto ptr = new m5::unit::UnitPAJ7620U2();
+        if (ptr) {
+            auto ccfg        = ptr->component_config();
+            ccfg.stored_size = 8;
+            ptr->component_config(ccfg);
+
+            auto cfg           = ptr->config();
+            cfg.start_periodic = false;
+            cfg.mode           = GetParam().mode;
+            cfg.frequency      = GetParam().frequency;
+            cfg.hflip          = GetParam().hflip;
+            cfg.vflip          = GetParam().vflip;
+            cfg.rotation       = GetParam().rotation;
+            ptr->config(cfg);
+        }
+        return ptr;
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(ConfigValues, TestPAJ7620U2BeginConfig,
+                         ::testing::Values(
+                             // Default config
+                             BeginConfigParams{Mode::Gesture, Frequency::Normal, false, true, 0},
+                             // Non-default: Proximity, Gaming, flips inverted, rotation 2
+                             BeginConfigParams{Mode::Proximity, Frequency::Gaming, true, false, 2}));
+
+TEST_P(TestPAJ7620U2BeginConfig, BeginAppliesConfig)
+{
+    SCOPED_TRACE(ustr);
+    const auto& p = GetParam();
+
+    // Mode (memory)
+    EXPECT_EQ(unit->mode(), p.mode);
+
+    // Frequency (memory + register)
+    EXPECT_EQ(unit->frequency(), p.frequency);
+    if (p.mode != Mode::Proximity) {
+        Frequency f{};
+        EXPECT_TRUE(unit->readFrequency(f));
+        EXPECT_EQ(f, p.frequency);
+    } else {
+        // Proximity mode table overwrites R_IDLE_TIME; enum read returns Unknown
+        Frequency f{};
+        EXPECT_FALSE(unit->readFrequency(f));
+        // But raw read succeeds and Hz gives ~10Hz
+        float hz = unit->readFrequencyHz();
+        EXPECT_NEAR(hz, 10.0f, 1.0f);
+    }
+
+    // Flip (register)
+    bool h{}, v{};
+    EXPECT_TRUE(unit->readHorizontalFlip(h));
+    EXPECT_TRUE(unit->readVerticalFlip(v));
+    EXPECT_EQ(h, p.hflip);
+    EXPECT_EQ(v, p.vflip);
+
+    // Rotation (memory only, not stored in register)
+    EXPECT_EQ(unit->rotation(), p.rotation);
 }

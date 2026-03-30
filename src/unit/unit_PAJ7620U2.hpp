@@ -60,6 +60,7 @@ enum class Mode : uint8_t {
 };
 
 /*!
+  @enum Frequency
   @brief Frequency
   Operating frequency
 */
@@ -68,6 +69,38 @@ enum class Frequency : int8_t {
     Normal,        //!< 120Hz
     Gaming,        //!< 240Hz
 };
+
+/*!
+  @brief Convert R_IDLE_TIME register value to frequency in Hz
+  @param idle_time R_IDLE_TIME[15:0] register value
+  @return Frequency in Hz
+  @details Formula: Hz = 31250 / (77 + idle_time), where T = 256/8MHz = 32us
+*/
+inline float idle_time_to_hz(const uint16_t idle_time)
+{
+    return 31250.0f / (77 + idle_time);
+}
+
+/*!
+  @brief Convert frequency in Hz to R_IDLE_TIME register value
+  @param hz Frequency in Hz (must be > 0)
+  @return R_IDLE_TIME[15:0] register value, or 0 if out of range
+  @details Formula: idle_time = 31250 / Hz - 77
+*/
+inline uint16_t hz_to_idle_time(const float hz)
+{
+    if (hz <= 0.0f) {
+        return 0;
+    }
+    float v = 31250.0f / hz - 77.0f;
+    if (v < 0.0f) {
+        return 0;
+    }
+    if (v > 65535.0f) {
+        return 65535;
+    }
+    return static_cast<uint16_t>(v + 0.5f);
+}
 
 /*!
   @struct Data
@@ -83,16 +116,16 @@ struct Data {
     // [2]:proximity [3]:approach
     // Cursor
     // [2,3]:X [4,5]:Y
-    std::array<uint8_t, 2 + 4> raw{};
-    Gesture data_gesture{};
-    Mode data_mode{};
+    std::array<uint8_t, 2 + 4> raw{};  //!< Raw register data
+    Gesture data_gesture{};            //!< Detected gesture
+    Mode data_mode{};                  //!< Current operating mode
     union {
         struct {
-            uint8_t proximity_brightness;
-            bool proximity_approach;
+            uint8_t proximity_brightness;  //!< Proximity brightness (PS data)
+            bool proximity_approach;       //!< Proximity approach state
         };
         struct {
-            uint16_t cursor_x{}, cursor_y{};
+            uint16_t cursor_x{}, cursor_y{};  //!< Cursor XY coordinates
         };
     };
 
@@ -288,6 +321,7 @@ public:
       +--------+         down
       rot 1,2,3... Treat as 90 deg counter-clockwise rotation
       ```
+      @sa rotation
      */
     void setRotate(const uint8_t rot)
     {
@@ -300,11 +334,11 @@ public:
         return _frequency;
     }
     /*!
-      @brief Read the raw frequency
-      @param[out] raw raw frequency
+      @brief Read the raw R_IDLE_TIME register value
+      @param[out] raw R_IDLE_TIME[15:0]
       @return True if successful
      */
-    bool readFrequency(uint8_t& raw);
+    bool readFrequency(uint16_t& raw);
     /*!
       @brief Read the frequency
       @param[out] f Frequency
@@ -317,6 +351,17 @@ public:
       @return True if successful
     */
     bool writeFrequency(const paj7620u2::Frequency f);
+    /*!
+      @brief Read the current frequency in Hz from hardware
+      @return Frequency in Hz, or 0.0f on error
+     */
+    float readFrequencyHz();
+    /*!
+      @brief Write the frequency in Hz
+      @param hz Frequency in Hz (must be > 0)
+      @return True if successful
+     */
+    bool writeFrequencyHz(const float hz);
 
     ///@name For detect gesture
     ///@{
@@ -499,8 +544,6 @@ protected:
     bool read_cursor(paj7620u2::Data& d);
 
     bool wakeup();
-    bool wakeup_with_gpio();
-    bool wakeup_gpio(const int16_t sda_pin, const int16_t scl_pin);
     bool was_wakeup();
     bool read_chip_id(uint16_t& id);
     bool read_version(uint8_t& version);
@@ -561,6 +604,7 @@ constexpr uint16_t VEL_Y_HIGH{0x00C6};
 // Bank1
 constexpr uint16_t LS_COMP_DAVG_V{0x0104};
 constexpr uint16_t R_IDLE_TIME_LOW{0x0165};
+constexpr uint16_t R_IDLE_TIME_HIGH{0x0166};
 constexpr uint16_t R_TG_ENH{0x0172};
 }  // namespace command
 }  // namespace paj7620u2

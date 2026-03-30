@@ -7,7 +7,7 @@
   Example of sending identified gestures as keyboard commands via BLE
 
   Required:
-  - https://github.com/T-vK/ESP32-BLE-Keyboard
+  - https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard
   - https://github.com/h2zero/NimBLE-Arduino
 */
 #include <M5Unified.h>
@@ -32,7 +32,7 @@ unsigned long inactive_to{};
 constexpr decltype(inactive_to) INACTIVE_TIME{1500};  // Period of inactivity (ms)
 
 constexpr const char* gstr[] = {
-    "None", "Left",     "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
+    "None", "Up",       "Down",      "Left",          "Right",   "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
 
@@ -47,10 +47,10 @@ const char* gesture_to_string(const gesture_t g)
 // Gesture and keycode correspondence table
 constexpr uint8_t key_table[] = {
     0,               // None
+    0,               // Up
+    0,               // Down
     0,               // Left
     0,               // Right
-    0,               // Down
-    0,               // Up
     0,               // Forward
     0,               // Backward
     KEY_DOWN_ARROW,  // Clockwise

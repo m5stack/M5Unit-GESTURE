@@ -11,7 +11,6 @@
 #include <M5Utility.hpp>
 #include <array>
 #include <cstring>
-#include <driver/gpio.h>
 
 using namespace m5::utility::mmh3;
 using namespace m5::unit::types;
@@ -363,14 +362,11 @@ Gesture rotate_gesture(const Gesture g, const uint8_t rot)
     return static_cast<Gesture>(p[__builtin_ctz(gv)]);
 }
 
-constexpr uint8_t freq_table[] = {
-#if defined(USING_REGISTER_VALUE_15)
-    0xAC,  // Normal  ~110Hz (V1.5)
-    0x13,  // Gaming  ~240Hz
-#else
-    0x96,          // Normal  ~120Hz (V0.7)
-    0x13,          // Gaming  ~240Hz
-#endif
+// R_IDLE_TIME[15:0] values for each Frequency
+// Formula: Hz = 31250 / (77 + idle_time), idle_time = 31250 / Hz - 77
+constexpr uint16_t freq_table[] = {
+    183,  // Normal  120Hz (idle_time=183 -> 120.2Hz)
+    53,   // Gaming  240Hz (idle_time=53  -> 240.4Hz)
 };
 
 }  // namespace
@@ -421,7 +417,8 @@ bool UnitPAJ7620U2::begin()
             return false;
         }
     }
-    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode)) {
+    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode) ||
+        !writeHorizontalFlip(_cfg.hflip) || !writeVerticalFlip(_cfg.vflip)) {
         M5_LIB_LOGE("Failed to settings");
         return false;
     }
@@ -485,6 +482,9 @@ bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d)
 bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d)
 {
     if (read_gesture(d) && read_proximity(d)) {
+        uint16_t raw_gesture{};
+        std::memcpy(&raw_gesture, d.raw.data(), sizeof(raw_gesture));
+        d.data_gesture         = rotate_gesture(static_cast<Gesture>(raw_gesture), _rotation);
         d.data_mode            = Mode::Proximity;
         d.proximity_brightness = d.raw[2];
         d.proximity_approach   = d.raw[3];
@@ -498,8 +498,8 @@ bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d)
     // if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
     if (read_cursor(d)) {
         d.data_mode = Mode::Cursor;
-        d.cursor_x  = (((uint16_t)(d.raw[3] & 0x0F)) << 8) | d.raw[2];
-        d.cursor_y  = (((uint16_t)(d.raw[5] & 0x0F)) << 8) | d.raw[4];
+        d.cursor_x  = (static_cast<uint16_t>(d.raw[3] & 0x1F) << 8) | d.raw[2];
+        d.cursor_y  = (static_cast<uint16_t>(d.raw[5] & 0x1F) << 8) | d.raw[4];
         return true;
     }
     //    M5_LIB_LOGE(">>>> %x", d.gesture());
@@ -573,8 +573,8 @@ bool UnitPAJ7620U2::readObjectCenter(uint16_t& x, uint16_t& y)
     uint8_t xl{}, xh{}, yl{}, yh{};
     if (read_banked_register8(OBJECT_CENTER_X_LOW, xl) && read_banked_register8(OBJECT_CENTER_X_HIGH, xh) &&
         read_banked_register8(OBJECT_CENTER_Y_LOW, yl) && read_banked_register8(OBJECT_CENTER_Y_HIGH, yh)) {
-        x = (((uint16_t)(xh & 0x1F)) << 8) | xl;
-        y = (((uint16_t)(yh & 0x1F)) << 8) | yl;
+        x = (static_cast<uint16_t>(xh & 0x1F) << 8) | xl;
+        y = (static_cast<uint16_t>(yh & 0x1F) << 8) | yl;
         return true;
     }
     return false;
@@ -607,17 +607,22 @@ bool UnitPAJ7620U2::resume()
     return wakeup() && enable(true);
 }
 
-bool UnitPAJ7620U2::readFrequency(uint8_t& raw)
+bool UnitPAJ7620U2::readFrequency(uint16_t& raw)
 {
     raw = 0;
-    return read_banked_register8(R_IDLE_TIME_LOW, raw);
+    uint8_t lo{}, hi{};
+    if (read_banked_register8(R_IDLE_TIME_LOW, lo) && read_banked_register8(R_IDLE_TIME_HIGH, hi)) {
+        raw = (static_cast<uint16_t>(hi) << 8) | lo;
+        return true;
+    }
+    return false;
 }
 
 bool UnitPAJ7620U2::readFrequency(Frequency& f)
 {
     f = Frequency::Unknown;
 
-    uint8_t raw{};
+    uint16_t raw{};
     if (readFrequency(raw)) {
         int8_t idx{};
         for (auto&& e : freq_table) {
@@ -633,10 +638,47 @@ bool UnitPAJ7620U2::readFrequency(Frequency& f)
 
 bool UnitPAJ7620U2::writeFrequency(const Frequency f)
 {
-    if (f == Frequency::Unknown || !write_banked_register8(R_IDLE_TIME_LOW, freq_table[m5::stl::to_underlying(f)])) {
+    if (f == Frequency::Unknown) {
+        return false;
+    }
+    uint16_t idle_time = freq_table[m5::stl::to_underlying(f)];
+    if (!write_banked_register8(R_IDLE_TIME_LOW, static_cast<uint8_t>(idle_time & 0xFF)) ||
+        !write_banked_register8(R_IDLE_TIME_HIGH, static_cast<uint8_t>(idle_time >> 8))) {
         return false;
     }
     _frequency = f;
+    return true;
+}
+
+float UnitPAJ7620U2::readFrequencyHz()
+{
+    uint16_t raw{};
+    if (readFrequency(raw)) {
+        return idle_time_to_hz(raw);
+    }
+    return 0.0f;
+}
+
+bool UnitPAJ7620U2::writeFrequencyHz(const float hz)
+{
+    uint16_t idle_time = hz_to_idle_time(hz);
+    if (idle_time == 0 && hz > 0.0f) {
+        return false;  // hz too high
+    }
+    if (!write_banked_register8(R_IDLE_TIME_LOW, static_cast<uint8_t>(idle_time & 0xFF)) ||
+        !write_banked_register8(R_IDLE_TIME_HIGH, static_cast<uint8_t>(idle_time >> 8))) {
+        return false;
+    }
+    // Update _frequency if it matches a known preset
+    _frequency = Frequency::Unknown;
+    int8_t idx{};
+    for (auto&& e : freq_table) {
+        if (e == idle_time) {
+            _frequency = static_cast<Frequency>(idx);
+            break;
+        }
+        ++idx;
+    }
     return true;
 }
 
@@ -707,7 +749,7 @@ bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip)
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x01) | (flip ? 0x01 : 0x00);
-        return writeRegister8((uint8_t)(LS_COMP_DAVG_V & 0xFF), v);
+        return write_banked_register8(LS_COMP_DAVG_V, v);
     }
     return false;
 }
@@ -717,7 +759,7 @@ bool UnitPAJ7620U2::writeVerticalFlip(const bool flip)
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
         v = (v & ~0x02) | (flip ? 0x02 : 0x00);
-        return writeRegister8((uint8_t)(LS_COMP_DAVG_V & 0xFF), v);
+        return write_banked_register8(LS_COMP_DAVG_V, v);
     }
     return false;
 }
@@ -737,81 +779,22 @@ bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force)
 
 bool UnitPAJ7620U2::read_banked_register(const uint16_t reg, uint8_t* buf, const size_t len)
 {
-    return select_bank((reg >> 8) & 1) && readRegister((uint8_t)(reg & 0xFF), buf, len, 1);
+    return select_bank((reg >> 8) & 1) && readRegister(static_cast<uint8_t>(reg & 0xFF), buf, len, 1);
 }
 
 bool UnitPAJ7620U2::read_banked_register8(const uint16_t reg, uint8_t& value)
 {
-    return select_bank((reg >> 8) & 1) && readRegister8((uint8_t)(reg & 0xFF), value, 1);
+    return select_bank((reg >> 8) & 1) && readRegister8(static_cast<uint8_t>(reg & 0xFF), value, 1);
 }
 
 bool UnitPAJ7620U2::write_banked_register(const uint16_t reg, const uint8_t* buf, const size_t len)
 {
-    return select_bank((reg >> 8) & 1) && writeRegister((uint8_t)(reg & 0xFF), buf, len);
+    return select_bank((reg >> 8) & 1) && writeRegister(static_cast<uint8_t>(reg & 0xFF), buf, len);
 }
 
 bool UnitPAJ7620U2::write_banked_register8(const uint16_t reg, const uint8_t value)
 {
-    return select_bank((reg >> 8) & 1) && writeRegister8((uint8_t)(reg & 0xFF), value);
-}
-
-// GPIO bit-bang wakeup: sends START + slave_addr + W + STOP without using the I2C driver.
-// This avoids I2C driver entering INVALID_STATE from the expected NACK during wakeup.
-// Uses gpio_set_level/gpio_set_direction to avoid disrupting I2C peripheral pin ownership.
-bool UnitPAJ7620U2::wakeup_gpio(const int16_t sda_pin, const int16_t scl_pin)
-{
-    if (sda_pin < 0 || scl_pin < 0) {
-        M5_LIB_LOGE("Invalid pins for GPIO wakeup: SDA:%d SCL:%d", sda_pin, scl_pin);
-        return false;
-    }
-
-    uint8_t addr_byte = (address() << 1);  // W bit = 0
-    gpio_num_t sda    = (gpio_num_t)sda_pin;
-    gpio_num_t scl    = (gpio_num_t)scl_pin;
-
-    // Temporarily switch pins to GPIO open-drain output
-    gpio_set_direction(sda, GPIO_MODE_OUTPUT_OD);
-    gpio_set_direction(scl, GPIO_MODE_OUTPUT_OD);
-
-    // Idle state: both HIGH
-    gpio_set_level(sda, 1);
-    gpio_set_level(scl, 1);
-    delayMicroseconds(10);
-
-    // START condition: SDA goes LOW while SCL is HIGH
-    gpio_set_level(sda, 0);
-    delayMicroseconds(10);
-    gpio_set_level(scl, 0);
-    delayMicroseconds(10);
-
-    // Send address byte (MSB first)
-    for (int i = 7; i >= 0; --i) {
-        gpio_set_level(sda, (addr_byte >> i) & 1);
-        delayMicroseconds(5);
-        gpio_set_level(scl, 1);
-        delayMicroseconds(10);
-        gpio_set_level(scl, 0);
-        delayMicroseconds(5);
-    }
-
-    // ACK/NACK clock pulse (release SDA, NACK expected)
-    gpio_set_level(sda, 1);
-    delayMicroseconds(5);
-    gpio_set_level(scl, 1);
-    delayMicroseconds(10);
-    gpio_set_level(scl, 0);
-    delayMicroseconds(5);
-
-    // STOP condition: SDA goes HIGH while SCL is HIGH
-    gpio_set_level(sda, 0);
-    delayMicroseconds(5);
-    gpio_set_level(scl, 1);
-    delayMicroseconds(10);
-    gpio_set_level(sda, 1);
-    delayMicroseconds(10);
-
-    M5_LIB_LOGI("GPIO wakeup sent on SDA:%d SCL:%d addr:0x%02X", sda_pin, scl_pin, address());
-    return true;
+    return select_bank((reg >> 8) & 1) && writeRegister8(static_cast<uint8_t>(reg & 0xFF), value);
 }
 
 bool UnitPAJ7620U2::wakeup()
@@ -856,66 +839,6 @@ bool UnitPAJ7620U2::wakeup()
     }
 
     M5_LIB_LOGE("Failed to wait wakeup (I2C)");
-    return false;
-}
-
-bool UnitPAJ7620U2::wakeup_with_gpio()
-{
-    m5::utility::delay(2);  // Wait 700us for PAJ7620U2 to stabilize
-
-    auto ai2c       = asAdapter<AdapterI2C>(Adapter::Type::I2C);
-    int16_t sda_pin = ai2c ? ai2c->sda() : -1;
-    int16_t scl_pin = ai2c ? ai2c->scl() : -1;
-
-    if (sda_pin < 0 || scl_pin < 0) {
-        M5_LIB_LOGE("Cannot get SDA/SCL pins for GPIO wakeup");
-        return false;
-    }
-
-    // Use 100kHz for post-wakeup I2C verification
-    if (ai2c) {
-        ai2c->setClock(100000);
-    }
-
-    // Get Wire pointer (only available for WireImpl; nullptr for BusImpl/I2CClassImpl)
-    TwoWire* wire = ai2c ? ai2c->impl()->getWire() : nullptr;
-
-    constexpr int max_retries{10};
-    for (int attempt = 0; attempt < max_retries; ++attempt) {
-        // Release I2C driver before GPIO bit-bang (GPIO changes pin ownership)
-        if (wire) {
-            wire->end();
-        }
-
-        // GPIO bit-bang wakeup (NACK does not corrupt I2C driver state)
-        wakeup_gpio(sda_pin, scl_pin);
-        m5::utility::delay(2);  // Wait for sensor to wake up
-
-        // Re-initialize I2C driver (required: GPIO bit-bang invalidates pin ownership)
-        if (wire) {
-            wire->begin(sda_pin, scl_pin, 100000);
-        }
-
-        bool wu = was_wakeup();
-        M5_LIB_LOGW("GPIO attempt %d: wu=%d", attempt, wu);
-        if (wu) {
-            M5_LIB_LOGI("GPIO wakeup OK at attempt %d", attempt);
-            if (ai2c) {
-                ai2c->setClock(component_config().clock);
-            }
-            return true;
-        }
-
-        // Force into Suspend regardless of current state
-        write_banked_register8(R_TG_ENH, 0x00);
-        write_banked_register8(SW_SUSPEND_ENL, enter_suspend);
-        m5::utility::delay(10);
-
-        M5_LIB_LOGI("GPIO wakeup attempt %d/%d failed", attempt, max_retries);
-        m5::utility::delay(100);
-    }
-
-    M5_LIB_LOGE("Failed to wait wakeup (GPIO)");
     return false;
 }
 
