@@ -118,8 +118,7 @@ jobs:
           arduino-cli config init
           arduino-cli config set library.enable_unsafe_install true
           arduino-cli lib update-index
-          #arduino-cli lib install --git-url https://github.com/h2zero/NimBLE-Arduino.git
-          arduino-cli lib install --git-url https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard.git
+          arduino-cli lib install --git-url https://github.com/lewisxhe/ESP32-BLE-Keyboard-fork.git
 
       - name: Prepare libraries list
         id: libs
