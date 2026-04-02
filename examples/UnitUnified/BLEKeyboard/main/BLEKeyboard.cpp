@@ -156,7 +156,7 @@ void loop()
         if (unit.updated()) {
             auto key = gesture_to_key(unit.gesture());
             if (key) {
-                M5.Log.printf("Send %x by %s\n", key, gesture_to_string(unit.gesture()));
+                M5.Log.printf("Send [0X%X] Gesture:%s\n", key, gesture_to_string(unit.gesture()));
                 bleKeyboard.write(key);
                 // Continuous input prevention period
                 inactive_to = m5::utility::millis() + INACTIVE_TIME;
