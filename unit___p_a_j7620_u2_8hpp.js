@@ -31,5 +31,7 @@ var unit___p_a_j7620_u2_8hpp =
       [ "Gesture", "unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1a1b6fa9d2e0d8dde3cf63338c4f1f15af", null ],
       [ "Proximity", "unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1af8dfb524e6ddea9129cc2f955d55db19", null ],
       [ "Cursor", "unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1a9abdae4fa5d93330363a88ed8a5e7946", null ]
-    ] ]
+    ] ],
+    [ "hz_to_idle_time", "unit___p_a_j7620_u2_8hpp.html#a05bf3bb05997782f8a7f9a8a4b30091f", null ],
+    [ "idle_time_to_hz", "unit___p_a_j7620_u2_8hpp.html#ae7e1831bf80a4a926491c2387a22878a", null ]
 ];

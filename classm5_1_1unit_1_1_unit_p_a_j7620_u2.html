@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.1.0 git rev:73f5542</span>
+   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.2.0 git rev:70c2663</span>
    </div>
   </td>
  </tr>
@@ -125,58 +125,64 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aee436985a69fadf8a92ec95ffba28676" id="r_aee436985a69fadf8a92ec95ffba28676"><td class="memItemLeft" align="right" valign="top"><a id="aee436985a69fadf8a92ec95ffba28676" name="aee436985a69fadf8a92ec95ffba28676"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>UnitPAJ7620U2</b> (const uint8_t addr=DEFAULT_ADDRESS)</td></tr>
+<tr class="memitem:aee436985a69fadf8a92ec95ffba28676" id="r_aee436985a69fadf8a92ec95ffba28676"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee436985a69fadf8a92ec95ffba28676">UnitPAJ7620U2</a> (const uint8_t addr=DEFAULT_ADDRESS)</td></tr>
+<tr class="memdesc:aee436985a69fadf8a92ec95ffba28676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
 <tr class="separator:aee436985a69fadf8a92ec95ffba28676"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20f65d61a4adc1372da4cde54f462887" id="r_a20f65d61a4adc1372da4cde54f462887"><td class="memItemLeft" align="right" valign="top"><a id="a20f65d61a4adc1372da4cde54f462887" name="a20f65d61a4adc1372da4cde54f462887"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>begin</b> () override</td></tr>
+<tr class="memitem:a970bb38645e38882b3f81c50483db4e9" id="r_a970bb38645e38882b3f81c50483db4e9"><td class="memItemLeft" align="right" valign="top"><a id="a970bb38645e38882b3f81c50483db4e9" name="a970bb38645e38882b3f81c50483db4e9"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><b>~UnitPAJ7620U2</b> ()</td></tr>
+<tr class="memdesc:a970bb38645e38882b3f81c50483db4e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructor. <br /></td></tr>
+<tr class="separator:a970bb38645e38882b3f81c50483db4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20f65d61a4adc1372da4cde54f462887" id="r_a20f65d61a4adc1372da4cde54f462887"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20f65d61a4adc1372da4cde54f462887">begin</a> () override</td></tr>
+<tr class="memdesc:a20f65d61a4adc1372da4cde54f462887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Begin communication with the sensor.  <br /></td></tr>
 <tr class="separator:a20f65d61a4adc1372da4cde54f462887"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89bb588dff468e251628e0cd3faab70f" id="r_a89bb588dff468e251628e0cd3faab70f"><td class="memItemLeft" align="right" valign="top"><a id="a89bb588dff468e251628e0cd3faab70f" name="a89bb588dff468e251628e0cd3faab70f"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> (const bool force=false) override</td></tr>
+<tr class="memitem:a89bb588dff468e251628e0cd3faab70f" id="r_a89bb588dff468e251628e0cd3faab70f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89bb588dff468e251628e0cd3faab70f">update</a> (const bool force=false) override</td></tr>
+<tr class="memdesc:a89bb588dff468e251628e0cd3faab70f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update periodic measurement data.  <br /></td></tr>
 <tr class="separator:a89bb588dff468e251628e0cd3faab70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6bbd85428f2d8cfd9bed16f6c73e1db" id="r_aa6bbd85428f2d8cfd9bed16f6c73e1db"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa6bbd85428f2d8cfd9bed16f6c73e1db">rotation</a> () const</td></tr>
 <tr class="memdesc:aa6bbd85428f2d8cfd9bed16f6c73e1db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the rotation.  <br /></td></tr>
 <tr class="separator:aa6bbd85428f2d8cfd9bed16f6c73e1db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44da9a5d31501230a6f3f932ca1f39df" id="r_a44da9a5d31501230a6f3f932ca1f39df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a44da9a5d31501230a6f3f932ca1f39df">setRotate</a> (const uint8_t rot)</td></tr>
-<tr class="memdesc:a44da9a5d31501230a6f3f932ca1f39df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the roptation.  <br /></td></tr>
+<tr class="memdesc:a44da9a5d31501230a6f3f932ca1f39df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the rotation.  <br /></td></tr>
 <tr class="separator:a44da9a5d31501230a6f3f932ca1f39df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ecec4a2cfe83fbf47749031c66b0223" id="r_a2ecec4a2cfe83fbf47749031c66b0223"><td class="memItemLeft" align="right" valign="top"><a id="a2ecec4a2cfe83fbf47749031c66b0223" name="a2ecec4a2cfe83fbf47749031c66b0223"></a>
 <a class="el" href="unit___p_a_j7620_u2_8hpp.html#a06b0ffbc0b54e22d21e5e9028629b60e">paj7620u2::Frequency</a>&#160;</td><td class="memItemRight" valign="bottom"><b>frequency</b> () const</td></tr>
 <tr class="memdesc:a2ecec4a2cfe83fbf47749031c66b0223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the inner frequency. <br /></td></tr>
 <tr class="separator:a2ecec4a2cfe83fbf47749031c66b0223"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88c83b07724c94eb952a3d29d75dd2f8" id="r_a88c83b07724c94eb952a3d29d75dd2f8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88c83b07724c94eb952a3d29d75dd2f8">readFrequency</a> (uint8_t &amp;raw)</td></tr>
-<tr class="memdesc:a88c83b07724c94eb952a3d29d75dd2f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the raw frequency.  <br /></td></tr>
-<tr class="separator:a88c83b07724c94eb952a3d29d75dd2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4366716c4753e9eef151f002e6aee95" id="r_ab4366716c4753e9eef151f002e6aee95"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4366716c4753e9eef151f002e6aee95">readFrequency</a> (uint16_t &amp;raw)</td></tr>
+<tr class="memdesc:ab4366716c4753e9eef151f002e6aee95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the raw R_IDLE_TIME register value.  <br /></td></tr>
+<tr class="separator:ab4366716c4753e9eef151f002e6aee95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c16136522e489d0084b2895ab7d5834" id="r_a6c16136522e489d0084b2895ab7d5834"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6c16136522e489d0084b2895ab7d5834">readFrequency</a> (<a class="el" href="unit___p_a_j7620_u2_8hpp.html#a06b0ffbc0b54e22d21e5e9028629b60e">paj7620u2::Frequency</a> &amp;f)</td></tr>
 <tr class="memdesc:a6c16136522e489d0084b2895ab7d5834"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the frequency.  <br /></td></tr>
 <tr class="separator:a6c16136522e489d0084b2895ab7d5834"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7399669413b298255c0606ef4d5f7530" id="r_a7399669413b298255c0606ef4d5f7530"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7399669413b298255c0606ef4d5f7530">writeFrequency</a> (const <a class="el" href="unit___p_a_j7620_u2_8hpp.html#a06b0ffbc0b54e22d21e5e9028629b60e">paj7620u2::Frequency</a> f)</td></tr>
 <tr class="memdesc:a7399669413b298255c0606ef4d5f7530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the frequency.  <br /></td></tr>
 <tr class="separator:a7399669413b298255c0606ef4d5f7530"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa8a5f75eb516232a0fe0a89fd7a0365" id="r_aaa8a5f75eb516232a0fe0a89fd7a0365"><td class="memItemLeft" align="right" valign="top"><a id="aaa8a5f75eb516232a0fe0a89fd7a0365" name="aaa8a5f75eb516232a0fe0a89fd7a0365"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>readHorizontalFlip</b> (bool &amp;flip)</td></tr>
-<tr class="memdesc:aaa8a5f75eb516232a0fe0a89fd7a0365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the horizontal flipping. <br /></td></tr>
+<tr class="memitem:acdeb8fa43208cfddc6a062f7f91c2411" id="r_acdeb8fa43208cfddc6a062f7f91c2411"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdeb8fa43208cfddc6a062f7f91c2411">readFrequencyHz</a> ()</td></tr>
+<tr class="memdesc:acdeb8fa43208cfddc6a062f7f91c2411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the current frequency in Hz from hardware.  <br /></td></tr>
+<tr class="separator:acdeb8fa43208cfddc6a062f7f91c2411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3a354f8465adb6499bde9dfdc4ce1d1" id="r_af3a354f8465adb6499bde9dfdc4ce1d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af3a354f8465adb6499bde9dfdc4ce1d1">writeFrequencyHz</a> (const float hz)</td></tr>
+<tr class="memdesc:af3a354f8465adb6499bde9dfdc4ce1d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the frequency in Hz.  <br /></td></tr>
+<tr class="separator:af3a354f8465adb6499bde9dfdc4ce1d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa8a5f75eb516232a0fe0a89fd7a0365" id="r_aaa8a5f75eb516232a0fe0a89fd7a0365"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa8a5f75eb516232a0fe0a89fd7a0365">readHorizontalFlip</a> (bool &amp;flip)</td></tr>
+<tr class="memdesc:aaa8a5f75eb516232a0fe0a89fd7a0365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the horizontal flipping.  <br /></td></tr>
 <tr class="separator:aaa8a5f75eb516232a0fe0a89fd7a0365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a482d4c09935b62bf120448b2ea7f79" id="r_a5a482d4c09935b62bf120448b2ea7f79"><td class="memItemLeft" align="right" valign="top"><a id="a5a482d4c09935b62bf120448b2ea7f79" name="a5a482d4c09935b62bf120448b2ea7f79"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>readVerticalFlip</b> (bool &amp;flip)</td></tr>
-<tr class="memdesc:a5a482d4c09935b62bf120448b2ea7f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the vertical flipping. <br /></td></tr>
+<tr class="memitem:a5a482d4c09935b62bf120448b2ea7f79" id="r_a5a482d4c09935b62bf120448b2ea7f79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a482d4c09935b62bf120448b2ea7f79">readVerticalFlip</a> (bool &amp;flip)</td></tr>
+<tr class="memdesc:a5a482d4c09935b62bf120448b2ea7f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the vertical flipping.  <br /></td></tr>
 <tr class="separator:a5a482d4c09935b62bf120448b2ea7f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f1cb422a8d2605245bf3c522b41935f" id="r_a5f1cb422a8d2605245bf3c522b41935f"><td class="memItemLeft" align="right" valign="top"><a id="a5f1cb422a8d2605245bf3c522b41935f" name="a5f1cb422a8d2605245bf3c522b41935f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeHorizontalFlip</b> (const bool flip)</td></tr>
-<tr class="memdesc:a5f1cb422a8d2605245bf3c522b41935f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the horizontal flipping. <br /></td></tr>
+<tr class="memitem:a5f1cb422a8d2605245bf3c522b41935f" id="r_a5f1cb422a8d2605245bf3c522b41935f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5f1cb422a8d2605245bf3c522b41935f">writeHorizontalFlip</a> (const bool flip)</td></tr>
+<tr class="memdesc:a5f1cb422a8d2605245bf3c522b41935f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the horizontal flipping.  <br /></td></tr>
 <tr class="separator:a5f1cb422a8d2605245bf3c522b41935f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5230d39b50ae23d802f7fe449c40885a" id="r_a5230d39b50ae23d802f7fe449c40885a"><td class="memItemLeft" align="right" valign="top"><a id="a5230d39b50ae23d802f7fe449c40885a" name="a5230d39b50ae23d802f7fe449c40885a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>writeVerticalFlip</b> (const bool flip)</td></tr>
-<tr class="memdesc:a5230d39b50ae23d802f7fe449c40885a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the vertical flipping. <br /></td></tr>
+<tr class="memitem:a5230d39b50ae23d802f7fe449c40885a" id="r_a5230d39b50ae23d802f7fe449c40885a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5230d39b50ae23d802f7fe449c40885a">writeVerticalFlip</a> (const bool flip)</td></tr>
+<tr class="memdesc:a5230d39b50ae23d802f7fe449c40885a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the vertical flipping.  <br /></td></tr>
 <tr class="separator:a5230d39b50ae23d802f7fe449c40885a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Settings for begin</div></td></tr>
 <tr class="memitem:a4d34055c98519a13d63e1667f4983fdb" id="r_a4d34055c98519a13d63e1667f4983fdb"><td class="memItemLeft" align="right" valign="top"><a id="a4d34055c98519a13d63e1667f4983fdb" name="a4d34055c98519a13d63e1667f4983fdb"></a>
 <a class="el" href="structm5_1_1unit_1_1_unit_p_a_j7620_u2_1_1config__t.html">config_t</a>&#160;</td><td class="memItemRight" valign="bottom"><b>config</b> ()</td></tr>
-<tr class="memdesc:a4d34055c98519a13d63e1667f4983fdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the configration. <br /></td></tr>
+<tr class="memdesc:a4d34055c98519a13d63e1667f4983fdb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the configuration. <br /></td></tr>
 <tr class="separator:a4d34055c98519a13d63e1667f4983fdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fabc85c91528def464047adf41edc7e" id="r_a4fabc85c91528def464047adf41edc7e"><td class="memItemLeft" align="right" valign="top"><a id="a4fabc85c91528def464047adf41edc7e" name="a4fabc85c91528def464047adf41edc7e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>config</b> (const <a class="el" href="structm5_1_1unit_1_1_unit_p_a_j7620_u2_1_1config__t.html">config_t</a> &amp;cfg)</td></tr>
-<tr class="memdesc:a4fabc85c91528def464047adf41edc7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the configration. <br /></td></tr>
+<tr class="memdesc:a4fabc85c91528def464047adf41edc7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the configuration. <br /></td></tr>
 <tr class="separator:a4fabc85c91528def464047adf41edc7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Measurement data by periodic</div></td></tr>
 <tr class="memitem:afb7624eabdd9a9f1926c06707152f1d0" id="r_afb7624eabdd9a9f1926c06707152f1d0"><td class="memItemLeft" align="right" valign="top"><a id="afb7624eabdd9a9f1926c06707152f1d0" name="afb7624eabdd9a9f1926c06707152f1d0"></a>
@@ -247,9 +253,9 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>cursorY</b> () co
 <a class="el" href="unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1">paj7620u2::Mode</a>&#160;</td><td class="memItemRight" valign="bottom"><b>mode</b> () const</td></tr>
 <tr class="memdesc:a62eb4df54c1708dc103729ce3520de71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the detection mode. <br /></td></tr>
 <tr class="separator:a62eb4df54c1708dc103729ce3520de71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfc737f18000f4ea7deb4cf7e8d332b3" id="r_abfc737f18000f4ea7deb4cf7e8d332b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abfc737f18000f4ea7deb4cf7e8d332b3">writeMode</a> (const <a class="el" href="unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1">paj7620u2::Mode</a> m)</td></tr>
-<tr class="memdesc:abfc737f18000f4ea7deb4cf7e8d332b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the detection mode.  <br /></td></tr>
-<tr class="separator:abfc737f18000f4ea7deb4cf7e8d332b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd30f68b065eb06de993db5a23488d2" id="r_a7bd30f68b065eb06de993db5a23488d2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bd30f68b065eb06de993db5a23488d2">writeMode</a> (const <a class="el" href="unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1">paj7620u2::Mode</a> <a class="el" href="#a62eb4df54c1708dc103729ce3520de71">mode</a>)</td></tr>
+<tr class="memdesc:a7bd30f68b065eb06de993db5a23488d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write the detection mode.  <br /></td></tr>
+<tr class="separator:a7bd30f68b065eb06de993db5a23488d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">General purpose</div></td></tr>
 <tr class="memitem:a23fd804bba6981c2a3dcc97baddeffab" id="r_a23fd804bba6981c2a3dcc97baddeffab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23fd804bba6981c2a3dcc97baddeffab">enable</a> (const bool flag)</td></tr>
 <tr class="memdesc:a23fd804bba6981c2a3dcc97baddeffab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable/disable sensor.  <br /></td></tr>
@@ -318,6 +324,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>read_proximity</b> (<
 <tr class="memitem:a7365718987c3ee5e08f0b1a323568450" id="r_a7365718987c3ee5e08f0b1a323568450"><td class="memItemLeft" align="right" valign="top"><a id="a7365718987c3ee5e08f0b1a323568450" name="a7365718987c3ee5e08f0b1a323568450"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>read_cursor</b> (<a class="el" href="structm5_1_1unit_1_1paj7620u2_1_1_data.html">paj7620u2::Data</a> &amp;d)</td></tr>
 <tr class="separator:a7365718987c3ee5e08f0b1a323568450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7fae322837259ecc3ade7fc778412f4" id="r_af7fae322837259ecc3ade7fc778412f4"><td class="memItemLeft" align="right" valign="top"><a id="af7fae322837259ecc3ade7fc778412f4" name="af7fae322837259ecc3ade7fc778412f4"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>wakeup</b> ()</td></tr>
+<tr class="separator:af7fae322837259ecc3ade7fc778412f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a456e61ac483f3157b3c8291eef00fe2f" id="r_a456e61ac483f3157b3c8291eef00fe2f"><td class="memItemLeft" align="right" valign="top"><a id="a456e61ac483f3157b3c8291eef00fe2f" name="a456e61ac483f3157b3c8291eef00fe2f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>was_wakeup</b> ()</td></tr>
 <tr class="separator:a456e61ac483f3157b3c8291eef00fe2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -351,7 +360,69 @@ std::unique_ptr&lt; m5::container::CircularBuffer&lt; <a class="el" href="struct
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>PAJ7620U2 unit. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aee436985a69fadf8a92ec95ffba28676" name="aee436985a69fadf8a92ec95ffba28676"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee436985a69fadf8a92ec95ffba28676">&#9670;&#160;</a></span>UnitPAJ7620U2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">m5::unit::UnitPAJ7620U2::UnitPAJ7620U2 </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t</td>          <td class="paramname"><span class="paramname"><em>addr</em></span><span class="paramdefsep"> = </span><span class="paramdefval">DEFAULT_ADDRESS</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>I2C address (default: 0x73) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a20f65d61a4adc1372da4cde54f462887" name="a20f65d61a4adc1372da4cde54f462887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20f65d61a4adc1372da4cde54f462887">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::begin </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Begin communication with the sensor. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
 <a id="a23fd804bba6981c2a3dcc97baddeffab" name="a23fd804bba6981c2a3dcc97baddeffab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23fd804bba6981c2a3dcc97baddeffab">&#9670;&#160;</a></span>enable()</h2>
 
@@ -435,10 +506,11 @@ std::unique_ptr&lt; m5::container::CircularBuffer&lt; <a class="el" href="struct
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">high</td><td>High threshold </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">low</td><td>Lowthreshold </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">low</td><td>Low threshold </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Approach:brightness &gt;= high </dd>
 <dd>
 Not approach: brightness &lt;= low </dd></dl>
@@ -468,8 +540,8 @@ Not approach: brightness &lt;= low </dd></dl>
 <p>Cursor position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>X cordinate </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Y cordinate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>X coordinate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Y coordinate </td></tr>
   </table>
   </dd>
 </dl>
@@ -504,8 +576,8 @@ Not approach: brightness &lt;= low </dd></dl>
 
 </div>
 </div>
-<a id="a88c83b07724c94eb952a3d29d75dd2f8" name="a88c83b07724c94eb952a3d29d75dd2f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88c83b07724c94eb952a3d29d75dd2f8">&#9670;&#160;</a></span>readFrequency() <span class="overload">[2/2]</span></h2>
+<a id="ab4366716c4753e9eef151f002e6aee95" name="ab4366716c4753e9eef151f002e6aee95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4366716c4753e9eef151f002e6aee95">&#9670;&#160;</a></span>readFrequency() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -513,20 +585,40 @@ Not approach: brightness &lt;= low </dd></dl>
         <tr>
           <td class="memname">bool m5::unit::UnitPAJ7620U2::readFrequency </td>
           <td>(</td>
-          <td class="paramtype">uint8_t &amp;</td>          <td class="paramname"><span class="paramname"><em>raw</em></span></td><td>)</td>
+          <td class="paramtype">uint16_t &amp;</td>          <td class="paramname"><span class="paramname"><em>raw</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Read the raw frequency. </p>
+<p>Read the raw R_IDLE_TIME register value. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">raw</td><td>raw frequency </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">raw</td><td>R_IDLE_TIME[15:0] </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="acdeb8fa43208cfddc6a062f7f91c2411" name="acdeb8fa43208cfddc6a062f7f91c2411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdeb8fa43208cfddc6a062f7f91c2411">&#9670;&#160;</a></span>readFrequencyHz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float m5::unit::UnitPAJ7620U2::readFrequencyHz </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the current frequency in Hz from hardware. </p>
+<dl class="section return"><dt>Returns</dt><dd>Frequency in Hz, or 0.0f on error </dd></dl>
 
 </div>
 </div>
@@ -548,7 +640,33 @@ Not approach: brightness &lt;= low </dd></dl>
 <p>Read gesture. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">gesture</td><td></td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">gesture</td><td>Detected gesture result </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="aaa8a5f75eb516232a0fe0a89fd7a0365" name="aaa8a5f75eb516232a0fe0a89fd7a0365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa8a5f75eb516232a0fe0a89fd7a0365">&#9670;&#160;</a></span>readHorizontalFlip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::readHorizontalFlip </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;</td>          <td class="paramname"><span class="paramname"><em>flip</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the horizontal flipping. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">flip</td><td>Horizontal flip state </td></tr>
   </table>
   </dd>
 </dl>
@@ -574,7 +692,7 @@ Not approach: brightness &lt;= low </dd></dl>
 <p>State counter which a non-moving object is detected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">count(tiocks)</td><td>[0...12] </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">cnt</td><td>Count in ticks [0...12] </td></tr>
   </table>
   </dd>
 </dl>
@@ -600,7 +718,7 @@ Not approach: brightness &lt;= low </dd></dl>
 <p>State counter with no objects detected. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">count(tiocks)</td><td>[0...255] </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">cnt</td><td>Count in ticks [0...255] </td></tr>
   </table>
   </dd>
 </dl>
@@ -630,8 +748,8 @@ Not approach: brightness &lt;= low </dd></dl>
 <p>Object center position. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>X cordinate </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Y cordinate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">x</td><td>X coordinate </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">y</td><td>Y coordinate </td></tr>
   </table>
   </dd>
 </dl>
@@ -688,7 +806,33 @@ Not approach: brightness &lt;= low </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">brightness</td><td>0:Out of bounds [1:far ... 255:near] </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">approarch</td><td>Approach object </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">approach</td><td>Approach object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="a5a482d4c09935b62bf120448b2ea7f79" name="a5a482d4c09935b62bf120448b2ea7f79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a482d4c09935b62bf120448b2ea7f79">&#9670;&#160;</a></span>readVerticalFlip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::readVerticalFlip </td>
+          <td>(</td>
+          <td class="paramtype">bool &amp;</td>          <td class="paramname"><span class="paramname"><em>flip</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read the vertical flipping. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">flip</td><td>Vertical flip state </td></tr>
   </table>
   </dd>
 </dl>
@@ -721,7 +865,7 @@ Not approach: brightness &lt;= low </dd></dl>
 
 <p>Get the rotation. </p>
 <dl class="section return"><dt>Returns</dt><dd>Rotation [0...3] </dd></dl>
-<dl class="section see"><dt>See also</dt><dd>setRotatation </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#a44da9a5d31501230a6f3f932ca1f39df" title="Set the rotation.">setRotate</a> </dd></dl>
 
 </div>
 </div>
@@ -748,7 +892,7 @@ Not approach: brightness &lt;= low </dd></dl>
 </table>
 </div><div class="memdoc">
 
-<p>Set the roptation. </p>
+<p>Set the rotation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">rot</td><td>Rotation [0...3] <div class="fragment"><div class="line">+-------++</div>
@@ -756,11 +900,12 @@ Not approach: brightness &lt;= low </dd></dl>
 <div class="line">|||   O  |      left  right</div>
 <div class="line">+--------+         down</div>
 <div class="line">rot 1,2,3... Treat as 90 deg counter-clockwise <a class="code hl_function" href="#aa6bbd85428f2d8cfd9bed16f6c73e1db">rotation</a></div>
-<div class="ttc" id="aclassm5_1_1unit_1_1_unit_p_a_j7620_u2_html_aa6bbd85428f2d8cfd9bed16f6c73e1db"><div class="ttname"><a href="#aa6bbd85428f2d8cfd9bed16f6c73e1db">m5::unit::UnitPAJ7620U2::rotation</a></div><div class="ttdeci">uint8_t rotation() const</div><div class="ttdoc">Get the rotation.</div><div class="ttdef"><b>Definition</b> unit_PAJ7620U2.hpp:263</div></div>
+<div class="ttc" id="aclassm5_1_1unit_1_1_unit_p_a_j7620_u2_html_aa6bbd85428f2d8cfd9bed16f6c73e1db"><div class="ttname"><a href="#aa6bbd85428f2d8cfd9bed16f6c73e1db">m5::unit::UnitPAJ7620U2::rotation</a></div><div class="ttdeci">uint8_t rotation() const</div><div class="ttdoc">Get the rotation.</div><div class="ttdef"><b>Definition</b> unit_PAJ7620U2.hpp:310</div></div>
 </div><!-- fragment --> </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="#aa6bbd85428f2d8cfd9bed16f6c73e1db" title="Get the rotation.">rotation</a> </dd></dl>
 
 </div>
 </div>
@@ -871,6 +1016,39 @@ Not approach: brightness &lt;= low </dd></dl>
 
 </div>
 </div>
+<a id="a89bb588dff468e251628e0cd3faab70f" name="a89bb588dff468e251628e0cd3faab70f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89bb588dff468e251628e0cd3faab70f">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void m5::unit::UnitPAJ7620U2::update </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>force</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update periodic measurement data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">force</td><td>If true, force update regardless of interval </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a38356220b7ee9d0c58a5d3afafdeedb3" name="a38356220b7ee9d0c58a5d3afafdeedb3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a38356220b7ee9d0c58a5d3afafdeedb3">&#9670;&#160;</a></span>writeApproachThreshold()</h2>
 
@@ -894,10 +1072,11 @@ Not approach: brightness &lt;= low </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">high</td><td>High threshold </td></tr>
-    <tr><td class="paramname">low</td><td>Lowthreshold </td></tr>
+    <tr><td class="paramname">low</td><td>Low threshold </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>Approach:brightness &gt;= high </dd>
 <dd>
 Not approach: brightness &lt;= low </dd></dl>
@@ -931,8 +1110,60 @@ Not approach: brightness &lt;= low </dd></dl>
 
 </div>
 </div>
-<a id="abfc737f18000f4ea7deb4cf7e8d332b3" name="abfc737f18000f4ea7deb4cf7e8d332b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfc737f18000f4ea7deb4cf7e8d332b3">&#9670;&#160;</a></span>writeMode()</h2>
+<a id="af3a354f8465adb6499bde9dfdc4ce1d1" name="af3a354f8465adb6499bde9dfdc4ce1d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3a354f8465adb6499bde9dfdc4ce1d1">&#9670;&#160;</a></span>writeFrequencyHz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::writeFrequencyHz </td>
+          <td>(</td>
+          <td class="paramtype">const float</td>          <td class="paramname"><span class="paramname"><em>hz</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write the frequency in Hz. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hz</td><td>Frequency in Hz (must be &gt; 0) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="a5f1cb422a8d2605245bf3c522b41935f" name="a5f1cb422a8d2605245bf3c522b41935f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5f1cb422a8d2605245bf3c522b41935f">&#9670;&#160;</a></span>writeHorizontalFlip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::writeHorizontalFlip </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>flip</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write the horizontal flipping. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">flip</td><td>Horizontal flip state </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="a7bd30f68b065eb06de993db5a23488d2" name="a7bd30f68b065eb06de993db5a23488d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd30f68b065eb06de993db5a23488d2">&#9670;&#160;</a></span>writeMode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -940,7 +1171,7 @@ Not approach: brightness &lt;= low </dd></dl>
         <tr>
           <td class="memname">bool m5::unit::UnitPAJ7620U2::writeMode </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1">paj7620u2::Mode</a></td>          <td class="paramname"><span class="paramname"><em>m</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="unit___p_a_j7620_u2_8hpp.html#ae71dbced26134cd2aaa6c2bd9fef4aa1">paj7620u2::Mode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -950,6 +1181,32 @@ Not approach: brightness &lt;= low </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">mode</td><td>detection mode </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if successful </dd></dl>
+
+</div>
+</div>
+<a id="a5230d39b50ae23d802f7fe449c40885a" name="a5230d39b50ae23d802f7fe449c40885a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5230d39b50ae23d802f7fe449c40885a">&#9670;&#160;</a></span>writeVerticalFlip()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool m5::unit::UnitPAJ7620U2::writeVerticalFlip </td>
+          <td>(</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>flip</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write the vertical flipping. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">flip</td><td>Vertical flip state </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,8 +1,17 @@
 var searchData=
 [
-  ['writeapproachthreshold_0',['writeApproachThreshold',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a38356220b7ee9d0c58a5d3afafdeedb3',1,'m5::unit::UnitPAJ7620U2']]],
-  ['writefrequency_1',['writeFrequency',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a7399669413b298255c0606ef4d5f7530',1,'m5::unit::UnitPAJ7620U2']]],
-  ['writehorizontalflip_2',['writeHorizontalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5f1cb422a8d2605245bf3c522b41935f',1,'m5::unit::UnitPAJ7620U2']]],
-  ['writemode_3',['writeMode',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#abfc737f18000f4ea7deb4cf7e8d332b3',1,'m5::unit::UnitPAJ7620U2']]],
-  ['writeverticalflip_4',['writeVerticalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5230d39b50ae23d802f7fe449c40885a',1,'m5::unit::UnitPAJ7620U2']]]
+  ['readapproachthreshold_0',['readApproachThreshold',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5679286c2ec751d8a9820a09b85816db',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readcursor_1',['readCursor',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a584efcef7d2aff4a061745ba22a07a57',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readfrequency_2',['readFrequency',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#ab4366716c4753e9eef151f002e6aee95',1,'m5::unit::UnitPAJ7620U2::readFrequency(uint16_t &amp;raw)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a6c16136522e489d0084b2895ab7d5834',1,'m5::unit::UnitPAJ7620U2::readFrequency(paj7620u2::Frequency &amp;f)']]],
+  ['readfrequencyhz_3',['readFrequencyHz',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#acdeb8fa43208cfddc6a062f7f91c2411',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readgesture_4',['readGesture',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4d2b9e9b02f9cf89f0f3fabde706e95c',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readhorizontalflip_5',['readHorizontalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aaa8a5f75eb516232a0fe0a89fd7a0365',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readnomotioncount_6',['readNoMotionCount',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5a2f89f7517ae65fb8b17d970fb94a13',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readnoobjectcount_7',['readNoObjectCount',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a1faa443875dd6df9c13ed421c6e1f0bc',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readobjectcenter_8',['readObjectCenter',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a877d17040931640e17ff9b6b60cf77b0',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readobjectsize_9',['readObjectSize',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#ad0651ecf1bf44a5cc8bc0f1a5432f1de',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readproximity_10',['readProximity',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a0132d1e007a4a28fcf78377617b0cead',1,'m5::unit::UnitPAJ7620U2']]],
+  ['readverticalflip_11',['readVerticalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5a482d4c09935b62bf120448b2ea7f79',1,'m5::unit::UnitPAJ7620U2']]],
+  ['resume_12',['resume',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a474404e87cca236491a83c8b3ad16b14',1,'m5::unit::UnitPAJ7620U2']]],
+  ['rotation_13',['rotation',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aa6bbd85428f2d8cfd9bed16f6c73e1db',1,'m5::unit::UnitPAJ7620U2']]]
 ];

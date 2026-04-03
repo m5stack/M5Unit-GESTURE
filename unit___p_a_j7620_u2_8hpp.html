@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.1.0 git rev:73f5542</span>
+   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.2.0 git rev:70c2663</span>
    </div>
   </td>
  </tr>
@@ -99,7 +99,8 @@ $(function(){initNavTree('unit___p_a_j7620_u2_8hpp.html',''); initResizable(true
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">unit_PAJ7620U2.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -155,7 +156,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="#a1c0d3ab5e6165d9e444614e049c0a9c2a9e2a63ffeeafaa6edf839f1478a4da60">WakeupTrigger</a> = 1U &lt;&lt; 11
 , <a class="el" href="#a1c0d3ab5e6165d9e444614e049c0a9c2a70d9be9b139893aa6c69b5e77e614311">Confirm</a> = 1U &lt;&lt; 12
 , <a class="el" href="#a1c0d3ab5e6165d9e444614e049c0a9c2a727b63583e01fa2b3952dab580c84dc2">Abort</a> = 1U &lt;&lt; 13
-, <b>Reserve</b> = 1U &lt;&lt; 14
+, <a class="el" href="#a1c0d3ab5e6165d9e444614e049c0a9c2a66f9c6c5b672ee16deeef6e4503cb4bc">Reserve</a> = 1U &lt;&lt; 14
 , <br />
 &#160;&#160;<a class="el" href="#a1c0d3ab5e6165d9e444614e049c0a9c2a2eb77d01e076bd5afcb90d5c331573aa">NoObject</a> = 1U &lt;&lt; 15
 <br />
@@ -174,6 +175,15 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a06b0ffbc0b54e22d21e5e9028629b60e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frequency Operating frequency.  <a href="#a06b0ffbc0b54e22d21e5e9028629b60e">More...</a><br /></td></tr>
 <tr class="separator:a06b0ffbc0b54e22d21e5e9028629b60e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:ae7e1831bf80a4a926491c2387a22878a" id="r_ae7e1831bf80a4a926491c2387a22878a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7e1831bf80a4a926491c2387a22878a">m5::unit::paj7620u2::idle_time_to_hz</a> (const uint16_t idle_time)</td></tr>
+<tr class="memdesc:ae7e1831bf80a4a926491c2387a22878a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert R_IDLE_TIME register value to frequency in Hz.  <br /></td></tr>
+<tr class="separator:ae7e1831bf80a4a926491c2387a22878a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05bf3bb05997782f8a7f9a8a4b30091f" id="r_a05bf3bb05997782f8a7f9a8a4b30091f"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a05bf3bb05997782f8a7f9a8a4b30091f">m5::unit::paj7620u2::hz_to_idle_time</a> (const float hz)</td></tr>
+<tr class="memdesc:a05bf3bb05997782f8a7f9a8a4b30091f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert frequency in Hz to R_IDLE_TIME register value.  <br /></td></tr>
+<tr class="separator:a05bf3bb05997782f8a7f9a8a4b30091f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>PAJ7620U2 Unit for M5UnitUnified. </p>
@@ -263,6 +273,8 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2a727b63583e01fa2b3952dab580c84dc2" name="a1c0d3ab5e6165d9e444614e049c0a9c2a727b63583e01fa2b3952dab580c84dc2"></a>Abort&#160;</td><td class="fielddoc"><p>Abort (confirm mode) </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2a66f9c6c5b672ee16deeef6e4503cb4bc" name="a1c0d3ab5e6165d9e444614e049c0a9c2a66f9c6c5b672ee16deeef6e4503cb4bc"></a>Reserve&#160;</td><td class="fielddoc"><p>Reserved. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2a2eb77d01e076bd5afcb90d5c331573aa" name="a1c0d3ab5e6165d9e444614e049c0a9c2a2eb77d01e076bd5afcb90d5c331573aa"></a>NoObject&#160;</td><td class="fielddoc"><p>No object (cursor mode) </p>
 </td></tr>
 </table>
@@ -295,9 +307,80 @@ Enumerations</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ae71dbced26134cd2aaa6c2bd9fef4aa1af8dfb524e6ddea9129cc2f955d55db19" name="ae71dbced26134cd2aaa6c2bd9fef4aa1af8dfb524e6ddea9129cc2f955d55db19"></a>Proximity&#160;</td><td class="fielddoc"><p>Detect proximity. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ae71dbced26134cd2aaa6c2bd9fef4aa1a9abdae4fa5d93330363a88ed8a5e7946" name="ae71dbced26134cd2aaa6c2bd9fef4aa1a9abdae4fa5d93330363a88ed8a5e7946"></a>Cursor&#160;</td><td class="fielddoc"><p>Detect XY cordinate. </p>
+<tr><td class="fieldname"><a id="ae71dbced26134cd2aaa6c2bd9fef4aa1a9abdae4fa5d93330363a88ed8a5e7946" name="ae71dbced26134cd2aaa6c2bd9fef4aa1a9abdae4fa5d93330363a88ed8a5e7946"></a>Cursor&#160;</td><td class="fielddoc"><p>Detect XY coordinate. </p>
 </td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a05bf3bb05997782f8a7f9a8a4b30091f" name="a05bf3bb05997782f8a7f9a8a4b30091f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a05bf3bb05997782f8a7f9a8a4b30091f">&#9670;&#160;</a></span>hz_to_idle_time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t m5::unit::paj7620u2::hz_to_idle_time </td>
+          <td>(</td>
+          <td class="paramtype">const float</td>          <td class="paramname"><span class="paramname"><em>hz</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert frequency in Hz to R_IDLE_TIME register value. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hz</td><td>Frequency in Hz (must be &gt; 0) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>R_IDLE_TIME[15:0] register value, or 0 if out of range</dd></dl>
+<p>Formula: idle_time = 31250 / Hz - 77 </p>
+
+</div>
+</div>
+<a id="ae7e1831bf80a4a926491c2387a22878a" name="ae7e1831bf80a4a926491c2387a22878a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7e1831bf80a4a926491c2387a22878a">&#9670;&#160;</a></span>idle_time_to_hz()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float m5::unit::paj7620u2::idle_time_to_hz </td>
+          <td>(</td>
+          <td class="paramtype">const uint16_t</td>          <td class="paramname"><span class="paramname"><em>idle_time</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Convert R_IDLE_TIME register value to frequency in Hz. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">idle_time</td><td>R_IDLE_TIME[15:0] register value </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Frequency in Hz</dd></dl>
+<p>Formula: Hz = 31250 / (77 + idle_time), where T = 256/8MHz = 32us </p>
 
 </div>
 </div>
