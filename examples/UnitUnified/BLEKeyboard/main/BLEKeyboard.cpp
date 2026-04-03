@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: 2024 M5Stack Technology CO LTD
+ * SPDX-FileCopyrightText: 2026 M5Stack Technology CO LTD
  *
  * SPDX-License-Identifier: MIT
  */
@@ -7,13 +7,14 @@
   Example of sending identified gestures as keyboard commands via BLE
 
   Required:
-  - https://github.com/T-vK/ESP32-BLE-Keyboard
+  - https://github.com/wakwak-koba/ESP32-NimBLE-Keyboard
   - https://github.com/h2zero/NimBLE-Arduino
 */
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
 #include <M5UnitUnifiedGESTURE.h>
-#include <M5Utility.h>
+#include <Wire.h>
+#include <M5HAL.hpp>  // For NessoN1
 
 #define USE_NIMBLE  // Define it if using NIMBLE
 #include <BleKeyboard.h>
@@ -31,7 +32,7 @@ unsigned long inactive_to{};
 constexpr decltype(inactive_to) INACTIVE_TIME{1500};  // Period of inactivity (ms)
 
 constexpr const char* gstr[] = {
-    "None", "Left ",    "Right",     "Down",          "Up",      "Forward", "Backward", "Clockwise", "CounterClockwise",
+    "None", "Up",       "Down",      "Left",          "Right",   "Forward", "Backward", "Clockwise", "CounterClockwise",
     "Wave", "Approach", "HasObject", "WakeupTrigger", "Confirm", "Abort",   "Reserve",  "NoObject",
 };
 
@@ -46,17 +47,17 @@ const char* gesture_to_string(const gesture_t g)
 // Gesture and keycode correspondence table
 constexpr uint8_t key_table[] = {
     0,               // None
-    0,               // Left
-    0,               // Right
     0,               // Up
     0,               // Down
+    0,               // Left
+    0,               // Right
     0,               // Forward
     0,               // Backward
     KEY_DOWN_ARROW,  // Clockwise
     KEY_UP_ARROW,    // CounterClockwise
     0,               // Wave
     0,               // Approach
-    0,               // HasObjectt
+    0,               // HasObject
     0,               // WakeupTrigger
     0,               // Confirm
     0,               // Abort
@@ -76,15 +77,50 @@ uint8_t gesture_to_key(const gesture_t g)
 void setup()
 {
     M5.begin();
+    M5.setTouchButtonHeightByRatio(100);
 
-    auto pin_num_sda = M5.getPin(m5::pin_name_t::port_a_sda);
-    auto pin_num_scl = M5.getPin(m5::pin_name_t::port_a_scl);
-    M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
-    Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000);
+    // The screen shall be in landscape mode
+    if (lcd.height() > lcd.width()) {
+        lcd.setRotation(1);
+    }
 
-    if (!Units.add(unit, Wire) || !Units.begin()) {
+    auto board = M5.getBoard();
+
+    // NessoN1: Arduino Wire (I2C_NUM_0) cannot be used for GROVE port.
+    //   Wire is used by M5Unified In_I2C for internal devices (IOExpander etc.).
+    //   Wire1 exists but is reserved for HatPort — cannot be used for GROVE.
+    //   Reconfiguring Wire to GROVE pins breaks In_I2C, causing ESP_ERR_INVALID_STATE in M5.update().
+    //   Solution: Use SoftwareI2C via M5HAL (bit-banging) for the GROVE port.
+    // NanoC6: Wire.begin() on GROVE pins conflicts with m5::I2C_Class registered by Ex_I2C.setPort()
+    //   on the same I2C_NUM_0, causing sporadic NACK errors.
+    //   Solution: Use M5.Ex_I2C (m5::I2C_Class) directly instead of Arduino Wire.
+    bool unit_ready{};
+    if (board == m5::board_t::board_ArduinoNessoN1) {
+        // NessoN1: GROVE is on port_b (GPIO 5/4), not port_a (which maps to Wire pins 8/10)
+        auto pin_num_sda = M5.getPin(m5::pin_name_t::port_b_out);
+        auto pin_num_scl = M5.getPin(m5::pin_name_t::port_b_in);
+        M5_LOGI("getPin(M5HAL): SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
+        m5::hal::bus::I2CBusConfig i2c_cfg;
+        i2c_cfg.pin_sda = m5::hal::gpio::getPin(pin_num_sda);
+        i2c_cfg.pin_scl = m5::hal::gpio::getPin(pin_num_scl);
+        auto i2c_bus    = m5::hal::bus::i2c::getBus(i2c_cfg);
+        M5_LOGI("Bus:%d", i2c_bus.has_value());
+        unit_ready = Units.add(unit, i2c_bus ? i2c_bus.value() : nullptr) && Units.begin();
+    } else if (board == m5::board_t::board_M5NanoC6) {
+        // NanoC6: Use M5.Ex_I2C (m5::I2C_Class, not Arduino Wire)
+        M5_LOGI("Using M5.Ex_I2C");
+        unit_ready = Units.add(unit, M5.Ex_I2C) && Units.begin();
+    } else {
+        auto pin_num_sda = M5.getPin(m5::pin_name_t::port_a_sda);
+        auto pin_num_scl = M5.getPin(m5::pin_name_t::port_a_scl);
+        M5_LOGI("getPin: SDA:%u SCL:%u", pin_num_sda, pin_num_scl);
+        Wire.end();
+        Wire.begin(pin_num_sda, pin_num_scl, 400 * 1000U);
+        unit_ready = Units.add(unit, Wire) && Units.begin();
+    }
+    if (!unit_ready) {
         M5_LOGE("Failed to begin");
-        lcd.clear(TFT_RED);
+        lcd.fillScreen(TFT_RED);
         while (true) {
             m5::utility::delay(10000);
         }
@@ -93,7 +129,7 @@ void setup()
     M5_LOGI("M5UnitUnified has been begun");
     M5_LOGI("%s", Units.debugInfo().c_str());
 
-    lcd.clear(TFT_DARKGRAY);
+    lcd.fillScreen(TFT_DARKGRAY);
     bleKeyboard.begin();
 }
 
@@ -106,7 +142,7 @@ void loop()
     if (connected != bleKeyboard.isConnected()) {
         connected = bleKeyboard.isConnected();
         M5.Log.printf("Change BLE connection:%u\n", connected);
-        lcd.clear(connected ? TFT_DARKGREEN : TFT_DARKGRAY);
+        lcd.fillScreen(connected ? TFT_DARKGREEN : TFT_DARKGRAY);
     }
     if (connected) {
         if (inactive_to) {
@@ -114,17 +150,17 @@ void loop()
                 return;
             }
             inactive_to = 0;
-            lcd.clear(TFT_DARKGREEN);
+            lcd.fillScreen(TFT_DARKGREEN);
         }
 
         if (unit.updated()) {
             auto key = gesture_to_key(unit.gesture());
             if (key) {
-                M5.Log.printf("Send %x by %s\n", key, gesture_to_string(unit.gesture()));
+                M5.Log.printf("Send [0X%X] Gesture:%s\n", key, gesture_to_string(unit.gesture()));
                 bleKeyboard.write(key);
                 // Continuous input prevention period
                 inactive_to = m5::utility::millis() + INACTIVE_TIME;
-                lcd.clear(TFT_ORANGE);
+                lcd.fillScreen(TFT_ORANGE);
             }
         }
     } else {

@@ -45,7 +45,7 @@ enum class Gesture : uint16_t {
     WakeupTrigger    = 1U << 11,  //!< Wakeup (trigger mode)
     Confirm          = 1U << 12,  //!< Confirm (confirm mode)
     Abort            = 1U << 13,  //!< Abort (confirm mode)
-    Reserve          = 1U << 14,
+    Reserve          = 1U << 14,  //!< Reserved
     NoObject         = 1U << 15,  //!< No object (cursor mode)
 };
 
@@ -56,10 +56,11 @@ enum class Gesture : uint16_t {
 enum class Mode : uint8_t {
     Gesture,    //!< Detect gesture
     Proximity,  //!< Detect proximity
-    Cursor,     //!< Detect XY cordinate
+    Cursor,     //!< Detect XY coordinate
 };
 
 /*!
+  @enum Frequency
   @brief Frequency
   Operating frequency
 */
@@ -68,6 +69,38 @@ enum class Frequency : int8_t {
     Normal,        //!< 120Hz
     Gaming,        //!< 240Hz
 };
+
+/*!
+  @brief Convert R_IDLE_TIME register value to frequency in Hz
+  @param idle_time R_IDLE_TIME[15:0] register value
+  @return Frequency in Hz
+  @details Formula: Hz = 31250 / (77 + idle_time), where T = 256/8MHz = 32us
+*/
+inline float idle_time_to_hz(const uint16_t idle_time)
+{
+    return 31250.0f / (77 + idle_time);
+}
+
+/*!
+  @brief Convert frequency in Hz to R_IDLE_TIME register value
+  @param hz Frequency in Hz (must be > 0)
+  @return R_IDLE_TIME[15:0] register value, or 0 if out of range
+  @details Formula: idle_time = 31250 / Hz - 77
+*/
+inline uint16_t hz_to_idle_time(const float hz)
+{
+    if (hz <= 0.0f) {
+        return 0;
+    }
+    float v = 31250.0f / hz - 77.0f;
+    if (v < 0.0f) {
+        return 0;
+    }
+    if (v > 65535.0f) {
+        return 65535;
+    }
+    return static_cast<uint16_t>(v + 0.5f);
+}
 
 /*!
   @struct Data
@@ -81,18 +114,18 @@ struct Data {
     // [0,1]:gesture
     // Proximity
     // [2]:proximity [3]:approach
-    // Cirosr
+    // Cursor
     // [2,3]:X [4,5]:Y
-    std::array<uint8_t, 2 + 4> raw{};
-    Gesture data_gesture{};
-    Mode data_mode{};
+    std::array<uint8_t, 2 + 4> raw{};  //!< Raw register data
+    Gesture data_gesture{};            //!< Detected gesture
+    Mode data_mode{};                  //!< Current operating mode
     union {
         struct {
-            uint8_t proximity_brightness;
-            bool proximity_approach;
+            uint8_t proximity_brightness;  //!< Proximity brightness (PS data)
+            bool proximity_approach;       //!< Proximity approach state
         };
         struct {
-            uint16_t cursor_x{}, cursor_y{};
+            uint16_t cursor_x{}, cursor_y{};  //!< Cursor XY coordinates
         };
     };
 
@@ -121,12 +154,12 @@ struct Data {
     ///@}
     ///@name Cursor mode
     ///@{
-    /*! @brief Gets the cursor X the any object */
+    /*! @brief Gets the cursor X of any object */
     inline uint16_t cursorX() const
     {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
     }
-    /*! @brief Gets the cursor Y the any object */
+    /*! @brief Gets the cursor Y of any object */
     inline uint16_t cursorY() const
     {
         return (data_mode == Mode::Cursor) ? cursor_y : 0xFFFF;
@@ -151,13 +184,13 @@ public:
     struct config_t {
         //! Start periodic measurement on begin?
         bool start_periodic{true};
-        //! Mode if start on bein
+        //! Mode if start on begin
         paj7620u2::Mode mode{paj7620u2::Mode::Gesture};
-        //! Frequency if start on bein
+        //! Frequency if start on begin
         paj7620u2::Frequency frequency{paj7620u2::Frequency::Normal};
-        //! Flip horizontal if start on bein
+        //! Flip horizontal if start on begin
         bool hflip{false};
-        //! Flip verticl if start on bein
+        //! Flip vertical if start on begin
         bool vflip{true};
         //! Rotation if start on begin
         uint8_t rotation{0};
@@ -165,6 +198,10 @@ public:
         bool store_on_change{true};
     };
 
+    /*!
+      @brief Constructor
+      @param addr I2C address (default: 0x73)
+    */
     explicit UnitPAJ7620U2(const uint8_t addr = DEFAULT_ADDRESS)
         : Component(addr), _data{new m5::container::CircularBuffer<paj7620u2::Data>(1)}
     {
@@ -172,21 +209,30 @@ public:
         ccfg.clock = 400 * 1000U;
         component_config(ccfg);
     }
+    //! @brief Destructor
     virtual ~UnitPAJ7620U2()
     {
     }
 
+    /*!
+      @brief Begin communication with the sensor
+      @return True if successful
+    */
     virtual bool begin() override;
+    /*!
+      @brief Update periodic measurement data
+      @param force If true, force update regardless of interval
+    */
     virtual void update(const bool force = false) override;
 
     ///@name Settings for begin
     ///@{
-    /*! @brief Gets the configration */
+    /*! @brief Gets the configuration */
     inline config_t config()
     {
         return _cfg;
     }
-    //! @brief Set the configration
+    //! @brief Set the configuration
     inline void config(const config_t& cfg)
     {
         _cfg = cfg;
@@ -243,7 +289,8 @@ public:
     bool startPeriodicMeasurement(const paj7620u2::Mode mode, const paj7620u2::Frequency freq,
                                   const uint32_t intervalMs)
     {
-        return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(intervalMs);
+        return PeriodicMeasurementAdapter<UnitPAJ7620U2, paj7620u2::Data>::startPeriodicMeasurement(mode, freq,
+                                                                                                    intervalMs);
     }
     /*!
       @brief Stop periodic measurement
@@ -258,14 +305,14 @@ public:
     /*!
       @brief Get the rotation
       @return Rotation [0...3]
-      @sa setRotatation
+      @sa setRotate
     */
     inline uint8_t rotation() const
     {
         return _rotation;
     }
     /*!
-      @brief Set the roptation
+      @brief Set the rotation
       @param rot Rotation [0...3]
       ```
       +-------++
@@ -274,6 +321,7 @@ public:
       +--------+         down
       rot 1,2,3... Treat as 90 deg counter-clockwise rotation
       ```
+      @sa rotation
      */
     void setRotate(const uint8_t rot)
     {
@@ -286,11 +334,11 @@ public:
         return _frequency;
     }
     /*!
-      @brief Read the raw frequency
-      @param[out] raw raw frequency
+      @brief Read the raw R_IDLE_TIME register value
+      @param[out] raw R_IDLE_TIME[15:0]
       @return True if successful
      */
-    bool readFrequency(uint8_t& raw);
+    bool readFrequency(uint16_t& raw);
     /*!
       @brief Read the frequency
       @param[out] f Frequency
@@ -303,19 +351,30 @@ public:
       @return True if successful
     */
     bool writeFrequency(const paj7620u2::Frequency f);
+    /*!
+      @brief Read the current frequency in Hz from hardware
+      @return Frequency in Hz, or 0.0f on error
+     */
+    float readFrequencyHz();
+    /*!
+      @brief Write the frequency in Hz
+      @param hz Frequency in Hz (must be > 0)
+      @return True if successful
+     */
+    bool writeFrequencyHz(const float hz);
 
     ///@name For detect gesture
     ///@{
     /*!
       @brief Read gesture
-      @param[out] gesture
+      @param[out] gesture Detected gesture result
       @return True if successful
     */
     bool readGesture(paj7620u2::Gesture& gesture);
     /*!
       @brief Object center position
-      @param[out] x X cordinate
-      @param[out] y Y cordinate
+      @param[out] x X coordinate
+      @param[out] y Y coordinate
       @return True if successful
      */
     bool readObjectCenter(uint16_t& x, uint16_t& y);
@@ -341,13 +400,13 @@ public:
     }
     /*!
       @brief State counter with no objects detected
-      @param[out] count(tiocks) [0...255]
+      @param[out] cnt Count in ticks [0...255]
       @return True if successful
     */
     bool readNoObjectCount(uint8_t& cnt);
     /*!
       @brief State counter which a non-moving object is detected
-      @param[out] count(tiocks) [0...12]
+      @param[out] cnt Count in ticks [0...12]
       @return True if successful
     */
     bool readNoMotionCount(uint8_t& cnt);
@@ -358,7 +417,7 @@ public:
     /*!
       @brief Read proximity
       @param[out] brightness 0:Out of bounds  [1:far ... 255:near]
-      @param[out] approarch Approach object
+      @param[out] approach Approach object
       @return True if successful
      */
     bool readProximity(uint8_t& brightness, uint8_t& approach);
@@ -366,7 +425,8 @@ public:
     /*!
       @brief Read the threshold for detect approach
       @param[out] high High threshold
-      @param[out] low Lowthreshold
+      @param[out] low Low threshold
+      @return True if successful
       @note Approach:brightness >= high
       @note Not approach: brightness <= low
       @warning Only valid in Proximity mode
@@ -375,7 +435,8 @@ public:
     /*!
       @brief Write the threshold for detect approach
       @param high High threshold
-      @param low Lowthreshold
+      @param low Low threshold
+      @return True if successful
       @note Approach:brightness >= high
       @note Not approach: brightness <= low
       @warning Only valid in Proximity mode
@@ -387,8 +448,8 @@ public:
     ///@{
     /*!
       @brief Cursor position
-      @param[out] x X cordinate
-      @param[out] y Y cordinate
+      @param[out] x X coordinate
+      @param[out] y Y coordinate
       @return True if successful
       @warning Only valid in Cursor mode
     */
@@ -407,16 +468,32 @@ public:
       @param mode detection mode
       @return True if successful
      */
-    bool writeMode(const paj7620u2::Mode m);
+    bool writeMode(const paj7620u2::Mode mode);
     ///@}
 
-    //! @brief Read the horizontal flipping
+    /*!
+      @brief Read the horizontal flipping
+      @param[out] flip Horizontal flip state
+      @return True if successful
+    */
     bool readHorizontalFlip(bool& flip);
-    //! @brief Read the vertical flipping
+    /*!
+      @brief Read the vertical flipping
+      @param[out] flip Vertical flip state
+      @return True if successful
+    */
     bool readVerticalFlip(bool& flip);
-    //! @brief Write the horizontal flipping
+    /*!
+      @brief Write the horizontal flipping
+      @param flip Horizontal flip state
+      @return True if successful
+    */
     bool writeHorizontalFlip(const bool flip);
-    //! @brief Write the vertical flipping
+    /*!
+      @brief Write the vertical flipping
+      @param flip Vertical flip state
+      @return True if successful
+    */
     bool writeVerticalFlip(const bool flip);
 
     ///@name General purpose
@@ -466,6 +543,7 @@ protected:
     bool read_proximity(paj7620u2::Data& d);
     bool read_cursor(paj7620u2::Data& d);
 
+    bool wakeup();
     bool was_wakeup();
     bool read_chip_id(uint16_t& id);
     bool read_version(uint8_t& version);
@@ -484,7 +562,7 @@ protected:
 namespace paj7620u2 {
 namespace command {
 
-// Bnak 0/1
+// Bank 0/1
 constexpr uint8_t BANK_SEL{0xEF};
 // high byte:bank low byte: register
 // Bank 0
@@ -493,25 +571,25 @@ constexpr uint16_t PART_ID_HIGH{0x0001};
 constexpr uint16_t VERSION_ID{0x0002};
 constexpr uint16_t SW_SUSPEND_ENL{0x0003};
 
-constexpr uint16_t CURSOR_CLAMP_CENTER_X_LOW{0X003B};
-constexpr uint16_t CURSOR_CLAMP_CENTER_X_HIGH{0X003C};
-constexpr uint16_t CURSOR_CLAMP_CENTER_Y_LOW{0X003D};
-constexpr uint16_t CURSOR_CLAMP_CENTER_Y_HIGH{0X003E};
+constexpr uint16_t CURSOR_CLAMP_CENTER_X_LOW{0x003B};
+constexpr uint16_t CURSOR_CLAMP_CENTER_X_HIGH{0x003C};
+constexpr uint16_t CURSOR_CLAMP_CENTER_Y_LOW{0x003D};
+constexpr uint16_t CURSOR_CLAMP_CENTER_Y_HIGH{0x003E};
 
 constexpr uint16_t INT_FLAG_1{0x0043};
 constexpr uint16_t INT_FLAG_2{0x0044};
 
-const uint16_t R_POX_UB{0X0069};
-const uint16_t R_POX_LB{0X006A};
+constexpr uint16_t R_POX_UB{0x0069};
+constexpr uint16_t R_POX_LB{0x006A};
 constexpr uint16_t S_STATE{0x006B};
 constexpr uint16_t S_AVGY{0x006C};
 
-constexpr uint16_t OBJECT_CENTER_X_LOW{0X00AC};
-constexpr uint16_t OBJECT_CENTER_X_HIGH{0X00AD};
-constexpr uint16_t OBJECT_CENTER_Y_LOW{0X00AE};
-constexpr uint16_t OBJECT_CENTER_Y_HIGH{0X00AF};
+constexpr uint16_t OBJECT_CENTER_X_LOW{0x00AC};
+constexpr uint16_t OBJECT_CENTER_X_HIGH{0x00AD};
+constexpr uint16_t OBJECT_CENTER_Y_LOW{0x00AE};
+constexpr uint16_t OBJECT_CENTER_Y_HIGH{0x00AF};
 
-constexpr uint16_t OBJECT_AVG_Y{0X00B0};
+constexpr uint16_t OBJECT_AVG_Y{0x00B0};
 constexpr uint16_t OBJECT_SIZE_LOW{0x00B1};
 constexpr uint16_t OBJECT_SIZE_HIGH{0x00B2};
 constexpr uint16_t WAVE_ABORT_COUNT{0x00B7};
@@ -520,12 +598,13 @@ constexpr uint16_t NO_MOTION_COUNT{0x00B9};
 
 constexpr uint16_t VEL_X_LOW{0x00C3};
 constexpr uint16_t VEL_X_HIGH{0x00C4};
-constexpr uint16_t VEL_Y_LOW{0x00C3};
-constexpr uint16_t VEL_Y_HIGH{0x00C4};
+constexpr uint16_t VEL_Y_LOW{0x00C5};
+constexpr uint16_t VEL_Y_HIGH{0x00C6};
 
 // Bank1
 constexpr uint16_t LS_COMP_DAVG_V{0x0104};
-constexpr uint16_t R_REF_CLK_CNT_LOW{0x0165};
+constexpr uint16_t R_IDLE_TIME_LOW{0x0165};
+constexpr uint16_t R_IDLE_TIME_HIGH{0x0166};
 constexpr uint16_t R_TG_ENH{0x0172};
 }  // namespace command
 }  // namespace paj7620u2
