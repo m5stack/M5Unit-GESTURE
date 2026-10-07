@@ -7,9 +7,11 @@
   Example using M5UnitUnified for UnitGESTURE
 
   Serial output is always produced. When the board has a screen, the latest gesture is drawn large at the top
-  and the previous ones are listed below it. BtnA cycles the mode (Gesture / Proximity / Cursor).
+  and the previous ones are listed below it. BtnA cycles the mode (Gesture / Proximity / Cursor); in Proximity
+  mode the brightness and the approach state are drawn, and in Cursor mode the object position is drawn as a dot.
 */
 #include <algorithm>
+#include <cstdio>
 
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
@@ -136,15 +138,92 @@ void draw_gesture(const gesture_t g)
     lcd.endWrite();
 }
 
+// Draw a text line of the history size below the mode name
+void draw_value_line(const uint32_t row, const char* text, const uint16_t color)
+{
+    const int32_t y = history_top + row * history_line_height;
+    lcd.fillRect(0, y, lcd.width(), history_line_height, BG_COLOR);
+    lcd.setTextSize(history_text_size);
+    lcd.setTextColor(color);
+    lcd.drawString(text, lcd.width() / 2, y);
+}
+
+void draw_proximity(const uint8_t brightness, const bool approach)
+{
+    char buf[24]{};
+    lcd.startWrite();
+    lcd.setTextDatum(top_center);
+    snprintf(buf, sizeof(buf), "Bright:%3u", brightness);
+    draw_value_line(0, buf, TFT_WHITE);
+
+    // Brightness bar (0 - 255)
+    const int32_t bar_x = lcd.width() / 8;
+    const int32_t bar_w = lcd.width() - bar_x * 2;
+    const int32_t bar_y = history_top + history_line_height;
+    const int32_t bar_h = history_line_height - 2;
+    const int32_t fill  = bar_w * brightness / 255;
+    lcd.fillRect(bar_x, bar_y, fill, bar_h, TFT_ORANGE);
+    lcd.fillRect(bar_x + fill, bar_y, bar_w - fill, bar_h, BG_COLOR);
+    lcd.drawRect(bar_x, bar_y, bar_w, bar_h, TFT_WHITE);
+
+    draw_value_line(2, approach ? "Approach" : "-", approach ? TFT_RED : TFT_LIGHTGRAY);
+    lcd.endWrite();
+}
+
+//! Cursor field: the area below the coordinate line where the object position is drawn as a dot
+int32_t field_x{}, field_y{}, field_w{}, field_h{}, dot_r{};
+int32_t dot_x{-1}, dot_y{-1};
+//! The cursor is the object center on the 30x30 sensor array in 1/128 pixel units (R_PositionResolution = 7),
+//! so it ranges from 0 to 29 * 128 = 3712
+constexpr uint16_t CURSOR_MAX{29 * 128};
+
+void layout_cursor_field()
+{
+    dot_r = std::max<int32_t>(2, history_text_size * 2);
+    // Square field, kept inside the screen and the bottom margin (round screen)
+    const int32_t top    = history_top + history_line_height;
+    const int32_t bottom = lcd.height() - current_top;
+    const int32_t size   = std::max<int32_t>(0, std::min<int32_t>(lcd.width() - current_top * 2, bottom - top));
+    field_w              = size;
+    field_h              = size;
+    field_x              = (lcd.width() - size) / 2;
+    field_y              = top;
+}
+
+void draw_cursor(const uint16_t cx, const uint16_t cy)
+{
+    char buf[24]{};
+    lcd.startWrite();
+    lcd.setTextDatum(top_center);
+    snprintf(buf, sizeof(buf), "X:%4u Y:%4u", cx, cy);
+    draw_value_line(0, buf, TFT_WHITE);
+
+    if (field_w > dot_r * 2) {
+        if (dot_x >= 0) {
+            lcd.fillCircle(dot_x, dot_y, dot_r, BG_COLOR);
+        }
+        const int32_t range = field_w - dot_r * 2 - 2;
+        dot_x               = field_x + dot_r + 1 + range * std::min(cx, CURSOR_MAX) / CURSOR_MAX;
+        dot_y               = field_y + dot_r + 1 + range * std::min(cy, CURSOR_MAX) / CURSOR_MAX;
+        lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
+        lcd.fillCircle(dot_x, dot_y, dot_r, TFT_YELLOW);
+    }
+    lcd.endWrite();
+}
+
 // Show the mode name and start a fresh history
 void draw_mode(const Mode m)
 {
     current_label = nullptr;
     history_count = 0;
+    dot_x         = -1;
     lcd.startWrite();
     lcd.fillScreen(BG_COLOR);
     lcd.setTextDatum(top_center);
     draw_current(mode_to_string(m), TFT_CYAN);
+    if (m == Mode::Cursor && field_w > 0) {
+        lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
+    }
     lcd.endWrite();
 }
 
@@ -214,6 +293,7 @@ void setup()
     has_lcd = (lcd.width() > 8 && lcd.height() > 8);
     if (has_lcd) {
         layout();
+        layout_cursor_field();
         draw_mode(detection);
     }
 }
@@ -259,12 +339,18 @@ void loop()
             if (unit.updated()) {
                 M5.Log.printf("%s brightness:%u approach:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
                               unit.approach());
+                if (has_lcd) {
+                    draw_proximity(unit.brightness(), unit.approach());
+                }
             }
         } break;
         case m5::unit::paj7620u2::Mode::Cursor: {
             // Detect cursor
             if (unit.updated()) {
                 M5.Log.printf("Cursor:%u,%u\n", unit.cursorX(), unit.cursorY());
+                if (has_lcd) {
+                    draw_cursor(unit.cursorX(), unit.cursorY());
+                }
             }
             m5::utility::delay(100);
         } break;
