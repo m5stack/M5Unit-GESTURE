@@ -48,8 +48,17 @@ dependencies.lock
 .vscode/
 .clangd
 
+# clangd index cache
+.cache/
+
 # macOS
 .DS_Store
 
 # Temporary
 tmp/
+
+# Secrets
+.env*
+*.pem
+*.key
+*.cert
