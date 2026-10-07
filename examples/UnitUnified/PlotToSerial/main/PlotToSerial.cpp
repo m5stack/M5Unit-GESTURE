@@ -58,7 +58,8 @@ const char* mode_to_string(const Mode m)
 //! True when the board has a real screen (Atom / NanoC6 / NanoH2 / NessoN1 have none)
 bool has_lcd{};
 
-constexpr uint32_t BG_COLOR{TFT_DARKGREEN};
+// RGB565 (uint16_t). M5GFX treats a uint32_t color as RGB888, so the TFT_* values must not be widened
+constexpr uint16_t BG_COLOR{TFT_DARKGREEN};
 
 //! Layout scaled by the screen size, so that the same code fits Stick (80 px high) up to Tab5 (720 px high)
 int32_t history_text_size{}, current_text_size{};
@@ -98,7 +99,7 @@ void layout()
         std::min<int32_t>(HISTORY_MAX, std::max<int32_t>(0, (h - current_top - history_top) / history_line_height));
 }
 
-void draw_current(const char* label, const uint32_t color)
+void draw_current(const char* label, const uint16_t color)
 {
     lcd.fillRect(0, current_top, lcd.width(), current_height, BG_COLOR);
     lcd.setTextSize(current_text_size);
