@@ -45,6 +45,14 @@ idf.py build flash monitor
 
 `BLEKeyboard` depends on an Arduino-only BLE keyboard library, so it is available for Arduino only.
 
+## Support via [PaHub](https://docs.m5stack.com/en/unit/Unit-PaHub%20v2.1)
+
+|Unit|Support|Note|
+|---|---|---|
+|UnitGesture|OK|See the `ViaPaHub` example|
+
+See also [M5Unit-HUB](https://github.com/m5stack/M5Unit-HUB)
+
 ## Doxygen document
 [GitHub Pages](https://m5stack.github.io/M5Unit-GESTURE/)
 

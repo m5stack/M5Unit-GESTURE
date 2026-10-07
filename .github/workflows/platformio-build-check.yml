@@ -91,6 +91,11 @@ jobs:
             board: Core
             framework: Arduino
             espressif32: latest
+          # ViaPaHub (Core only)
+          - example: ViaPaHub
+            board: Core
+            framework: Arduino
+            espressif32: latest
 #          - '5_4_0'
 #          - '4_4_0'
 
