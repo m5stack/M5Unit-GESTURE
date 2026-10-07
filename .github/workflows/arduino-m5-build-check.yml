@@ -76,7 +76,7 @@ jobs:
           - m5stack_dinmeter
           - m5stack_fire
           - m5stack_nano_c6
-#          - m5stack_nano_h2
+          - m5stack_nano_h2
           - m5stack_paper
           - m5stack_papers3
 #          - m5stack_poe_cam
@@ -98,7 +98,7 @@ jobs:
 #          - m5stack_unit_cams3
 
         platform-version:
-          - 3.2.5
+          - 3.3.9
 
         platform:
           - m5stack
@@ -109,7 +109,7 @@ jobs:
         include:
           - sketch: BLEKeyboard
             board: m5stack_core
-            platform-version: 3.2.5
+            platform-version: 3.3.9
             platform: m5stack
             archi: esp32
             platform-url: https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
