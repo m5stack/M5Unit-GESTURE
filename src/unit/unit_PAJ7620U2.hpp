@@ -357,6 +357,22 @@ public:
      */
     bool readFrequency(uint16_t& raw);
     /*!
+      @brief Read the lower byte of R_IDLE_TIME
+      @param[out] raw R_IDLE_TIME[7:0]
+      @return True if successful
+      @deprecated R_IDLE_TIME is 16 bits. Use readFrequency(uint16_t&) instead
+     */
+    [[deprecated("Use readFrequency(uint16_t&) instead")]] bool readFrequency(uint8_t& raw)
+    {
+        uint16_t v{};
+        raw = 0;
+        if (readFrequency(v)) {
+            raw = static_cast<uint8_t>(v & 0xFF);
+            return true;
+        }
+        return false;
+    }
+    /*!
       @brief Read the frequency
       @param[out] f Frequency
       @return True if successful. False (f = Unknown) if the register value matches no preset

@@ -294,6 +294,14 @@ TEST_P(TestPAJ7620U2, ReadFrequency)
 
     uint16_t raw{};
     EXPECT_TRUE(unit->readFrequency(raw));
+
+    // Deprecated 8-bit overload returns the lower byte of R_IDLE_TIME
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    uint8_t raw8{};
+    EXPECT_TRUE(unit->readFrequency(raw8));
+#pragma GCC diagnostic pop
+    EXPECT_EQ(raw8, static_cast<uint8_t>(raw & 0xFF));
 }
 
 TEST_P(TestPAJ7620U2, FrequencyHz)
