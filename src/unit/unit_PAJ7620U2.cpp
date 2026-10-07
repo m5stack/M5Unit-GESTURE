@@ -406,8 +406,10 @@ bool UnitPAJ7620U2::begin()
             return false;
         }
     }
-    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode) ||
-        !writeHorizontalFlip(_cfg.hflip) || !writeVerticalFlip(_cfg.vflip)) {
+    // writeMode() applies the flip settings after the mode table
+    _hflip = _cfg.hflip;
+    _vflip = _cfg.vflip;
+    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode)) {
         M5_LIB_LOGE("Failed to apply settings");
         return false;
     }
@@ -691,7 +693,14 @@ bool UnitPAJ7620U2::writeMode(const Mode mode)
     _mode = mode;
 
     // To resolve bank inconsistencies after register setting
-    return select_bank(0, true) && ((_mode != Mode::Proximity) ? writeFrequency(_frequency) : true);
+    if (!select_bank(0, true)) {
+        return false;
+    }
+    // The mode table also writes the flip bits, so restore the flip settings
+    if (!apply_flip()) {
+        return false;
+    }
+    return (_mode != Mode::Proximity) ? writeFrequency(_frequency) : true;
 }
 
 bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low)
@@ -728,19 +737,31 @@ bool UnitPAJ7620U2::readVerticalFlip(bool& flip)
 
 bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip)
 {
-    uint8_t v{};
-    if (read_banked_register8(LS_COMP_DAVG_V, v)) {
-        v = (v & ~0x01) | (flip ? 0x01 : 0x00);
-        return write_banked_register8(LS_COMP_DAVG_V, v);
+    const bool prev = _hflip;
+    _hflip          = flip;
+    if (apply_flip()) {
+        return true;
     }
+    _hflip = prev;
     return false;
 }
 
 bool UnitPAJ7620U2::writeVerticalFlip(const bool flip)
 {
+    const bool prev = _vflip;
+    _vflip          = flip;
+    if (apply_flip()) {
+        return true;
+    }
+    _vflip = prev;
+    return false;
+}
+
+bool UnitPAJ7620U2::apply_flip()
+{
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
-        v = (v & ~0x02) | (flip ? 0x02 : 0x00);
+        v = (v & ~0x03) | (_hflip ? 0x01 : 0x00) | (_vflip ? 0x02 : 0x00);  // HFlip bit:0, VFlip bit:1
         return write_banked_register8(LS_COMP_DAVG_V, v);
     }
     return false;

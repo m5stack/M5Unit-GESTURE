@@ -201,6 +201,29 @@ TEST_P(TestPAJ7620U2, Flip)
     EXPECT_NE(flip, flip2);
 }
 
+TEST_P(TestPAJ7620U2, FlipKeptAcrossMode)
+{
+    SCOPED_TRACE(ustr);
+
+    // The mode tables also write the flip bits; the flip settings must survive a mode change
+    constexpr Mode modes[] = {Mode::Cursor, Mode::Proximity, Mode::Gesture};
+    for (const bool hf : {false, true}) {
+        for (const bool vf : {false, true}) {
+            EXPECT_TRUE(unit->writeHorizontalFlip(hf));
+            EXPECT_TRUE(unit->writeVerticalFlip(vf));
+            for (auto&& m : modes) {
+                SCOPED_TRACE(m5::utility::formatString("H:%u V:%u Mode:%u", hf, vf, m5::stl::to_underlying(m)));
+                EXPECT_TRUE(unit->writeMode(m));
+                bool h{}, v{};
+                EXPECT_TRUE(unit->readHorizontalFlip(h));
+                EXPECT_TRUE(unit->readVerticalFlip(v));
+                EXPECT_EQ(h, hf);
+                EXPECT_EQ(v, vf);
+            }
+        }
+    }
+}
+
 TEST_P(TestPAJ7620U2, ProximityPeriodic)
 {
     SCOPED_TRACE(ustr);

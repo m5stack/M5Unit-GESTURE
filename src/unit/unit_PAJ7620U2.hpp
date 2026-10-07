@@ -500,6 +500,7 @@ public:
       @brief Write the detection mode
       @param mode detection mode
       @return True if successful
+      @note The horizontal / vertical flip settings are kept across mode changes
      */
     bool writeMode(const paj7620u2::Mode mode);
     ///@}
@@ -576,6 +577,8 @@ protected:
     bool read_proximity(paj7620u2::Data& d);
     bool read_cursor(paj7620u2::Data& d);
 
+    bool apply_flip();
+
     bool wakeup();
     bool was_wakeup();
     bool read_chip_id(uint16_t& id);
@@ -586,6 +589,7 @@ protected:
     paj7620u2::Mode _mode{};
     paj7620u2::Frequency _frequency{};
     uint8_t _rotation{};
+    bool _hflip{}, _vflip{true};
 
     std::unique_ptr<m5::container::CircularBuffer<paj7620u2::Data>> _data{};
     config_t _cfg{};
