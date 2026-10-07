@@ -5,7 +5,12 @@
  */
 /*
   Example using M5UnitUnified for UnitGESTURE
+
+  Serial output is always produced. When the board has a screen, the latest gesture is drawn large at the top
+  and the previous ones are listed below it. BtnA cycles the mode (Gesture / Proximity / Cursor).
 */
+#include <algorithm>
+
 #include <M5Unified.h>
 #include <M5UnitUnified.h>
 #include <M5UnitUnifiedGESTURE.h>
@@ -42,6 +47,105 @@ Mode& operator++(Mode& m)
     return m;
 }
 Mode detection{Mode::Gesture};
+
+constexpr const char* mstr[] = {"Gesture", "Proximity", "Cursor"};
+const char* mode_to_string(const Mode m)
+{
+    const auto idx = m5::stl::to_underlying(m);
+    return idx < m5::stl::size(mstr) ? mstr[idx] : "ERR";
+}
+
+//! True when the board has a real screen (Atom / NanoC6 / NanoH2 / NessoN1 have none)
+bool has_lcd{};
+
+constexpr uint32_t BG_COLOR{TFT_DARKGREEN};
+
+//! Layout scaled by the screen size, so that the same code fits Stick (80 px high) up to Tab5 (720 px high)
+int32_t history_text_size{}, current_text_size{};
+int32_t current_top{}, current_height{};
+int32_t history_top{}, history_line_height{};
+constexpr uint32_t HISTORY_MAX{32};
+uint32_t history_rows{}, history_count{};
+const char* history[HISTORY_MAX]{};
+const char* current_label{};
+
+// Shorten the long names so that they fit on narrow screens
+const char* gesture_label(const gesture_t g)
+{
+    switch (g) {
+        case Gesture::Clockwise:
+            return "CW";
+        case Gesture::CounterClockwise:
+            return "CCW";
+        default:
+            return gesture_to_string(g);
+    }
+}
+
+void layout()
+{
+    const int32_t w = lcd.width();
+    const int32_t h = lcd.height();
+    // 6x8 font scaled by the screen size; the current gesture is twice the size of the history
+    history_text_size = std::max<int32_t>(1, std::min(w / 160, h / 120));
+    current_text_size = history_text_size * 2;
+    // The top margin keeps the text inside a round screen (Dial)
+    current_top         = h / 16;
+    current_height      = 8 * current_text_size + 4 * history_text_size;
+    history_top         = current_top + current_height;
+    history_line_height = 8 * history_text_size + 2;
+    history_rows =
+        std::min<int32_t>(HISTORY_MAX, std::max<int32_t>(0, (h - current_top - history_top) / history_line_height));
+}
+
+void draw_current(const char* label, const uint32_t color)
+{
+    lcd.fillRect(0, current_top, lcd.width(), current_height, BG_COLOR);
+    lcd.setTextSize(current_text_size);
+    lcd.setTextColor(color);
+    lcd.drawString(label, lcd.width() / 2, current_top);
+}
+
+void draw_history()
+{
+    lcd.fillRect(0, history_top, lcd.width(), history_rows * history_line_height, BG_COLOR);
+    lcd.setTextSize(history_text_size);
+    lcd.setTextColor(TFT_LIGHTGRAY);
+    for (uint32_t i = 0; i < history_count; ++i) {
+        lcd.drawString(history[i], lcd.width() / 2, history_top + i * history_line_height);
+    }
+}
+
+void draw_gesture(const gesture_t g)
+{
+    // The previous gesture moves to the top of the history (newest first)
+    if (current_label && history_rows) {
+        history_count = std::min(history_count + 1, history_rows);
+        for (uint32_t i = history_count - 1; i > 0; --i) {
+            history[i] = history[i - 1];
+        }
+        history[0] = current_label;
+    }
+    current_label = gesture_label(g);
+
+    lcd.startWrite();
+    lcd.setTextDatum(top_center);
+    draw_current(current_label, TFT_YELLOW);
+    draw_history();
+    lcd.endWrite();
+}
+
+// Show the mode name and start a fresh history
+void draw_mode(const Mode m)
+{
+    current_label = nullptr;
+    history_count = 0;
+    lcd.startWrite();
+    lcd.fillScreen(BG_COLOR);
+    lcd.setTextDatum(top_center);
+    draw_current(mode_to_string(m), TFT_CYAN);
+    lcd.endWrite();
+}
 
 enum class Corner : uint8_t {
     None,
@@ -105,7 +209,12 @@ void setup()
     M5_LOGI("M5UnitUnified has been begun");
     M5_LOGI("%s", Units.debugInfo().c_str());
 
-    lcd.fillScreen(TFT_DARKGREEN);
+    // A board without a screen reports a 1x1 dummy display
+    has_lcd = (lcd.width() > 8 && lcd.height() > 8);
+    if (has_lcd) {
+        layout();
+        draw_mode(detection);
+    }
 }
 
 void loop()
@@ -130,6 +239,9 @@ void loop()
                 if (g != Gesture::None) {
                     M5.Log.printf("Gesture:%s noobject:%u nomotion:%u size:%u (%u,%u)\n", gesture_to_string(g), noobj,
                                   nomot, size, x, y);
+                    if (has_lcd) {
+                        draw_gesture(g);
+                    }
                 }
             }
 #if 0
@@ -164,6 +276,9 @@ void loop()
         ++detection;
         if (unit.writeMode(detection)) {
             M5.Log.printf(">> writeMode %x\n", detection);
+            if (has_lcd) {
+                draw_mode(detection);
+            }
             switch (unit.mode()) {
                 case m5::unit::paj7620u2::Mode::Gesture:
                     unit.writeFrequency(Frequency::Gaming);
