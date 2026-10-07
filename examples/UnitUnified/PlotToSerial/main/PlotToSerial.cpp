@@ -7,10 +7,12 @@
   Example using M5UnitUnified for UnitGESTURE
 
   Serial output is always produced. When the board has a screen, the latest gesture is drawn large at the top
-  and the previous ones are listed below it. BtnA cycles the mode (Gesture / Proximity / Cursor); in Proximity
-  mode the brightness and the approach state are drawn, and in Cursor mode the object position is drawn as a dot.
+  and the previous ones are listed below it. BtnA cycles the view (Gesture / Proximity / Cursor / Corner); in Proximity
+  the brightness and the approach state are drawn, in Cursor the object position is drawn as a dot, and in Corner
+  the area where the object is (corners or center, read with existsObject / readObjectCenter in Gesture mode) is drawn.
 */
 #include <algorithm>
+#include <cstdlib>
 #include <cstdio>
 
 #include <M5Unified.h>
@@ -39,22 +41,38 @@ const char* gesture_to_string(const gesture_t g)
 }
 
 using namespace m5::unit::paj7620u2;
-Mode& operator++(Mode& m)
-{
-    uint8_t v = m5::stl::to_underlying(m) + 1;
-    if (v > m5::stl::to_underlying(Mode::Cursor)) {
-        v = 0;
-    }
-    m = static_cast<Mode>(v);
-    return m;
-}
-Mode detection{Mode::Gesture};
 
-constexpr const char* mstr[] = {"Gesture", "Proximity", "Cursor"};
-const char* mode_to_string(const Mode m)
+// What this example shows. Corner is not a sensor mode: it reads the object center in Gesture mode
+enum class View : uint8_t { Gesture, Proximity, Cursor, Corner };
+View& operator++(View& v)
 {
-    const auto idx = m5::stl::to_underlying(m);
-    return idx < m5::stl::size(mstr) ? mstr[idx] : "ERR";
+    uint8_t n = m5::stl::to_underlying(v) + 1;
+    if (n > m5::stl::to_underlying(View::Corner)) {
+        n = 0;
+    }
+    v = static_cast<View>(n);
+    return v;
+}
+View view{View::Gesture};
+
+constexpr const char* vstr[] = {"Gesture", "Proximity", "Cursor", "Corner"};
+const char* view_to_string(const View v)
+{
+    const auto idx = m5::stl::to_underlying(v);
+    return idx < m5::stl::size(vstr) ? vstr[idx] : "ERR";
+}
+
+// Sensor mode used by each view
+Mode view_to_mode(const View v)
+{
+    switch (v) {
+        case View::Proximity:
+            return Mode::Proximity;
+        case View::Cursor:
+            return Mode::Cursor;
+        default:
+            return Mode::Gesture;
+    }
 }
 
 //! True when the board has a real screen (Atom / NanoC6 / NanoH2 / NessoN1 have none)
@@ -211,22 +229,6 @@ void draw_cursor(const uint16_t cx, const uint16_t cy)
     lcd.endWrite();
 }
 
-// Show the mode name and start a fresh history
-void draw_mode(const Mode m)
-{
-    current_label = nullptr;
-    history_count = 0;
-    dot_x         = -1;
-    lcd.startWrite();
-    lcd.fillScreen(BG_COLOR);
-    lcd.setTextDatum(top_center);
-    draw_current(mode_to_string(m), TFT_CYAN);
-    if (m == Mode::Cursor && field_w > 0) {
-        lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
-    }
-    lcd.endWrite();
-}
-
 enum class Corner : uint8_t {
     None,
     LeftTop,
@@ -234,39 +236,123 @@ enum class Corner : uint8_t {
     LeftBottom,
     RightBottom,
     Center,
+    TooClose,
 };
 constexpr const char* cstr[] = {
-    "None", "LeftTop", "RightTop", "LeftBottom", "RightBottom", "Center",
+    "None", "LeftTop", "RightTop", "LeftBottom", "RightBottom", "Center", "TooClose",
 };
 
-#if 0
-Corner detectCorner()
-{
-    bool exists{};
-    uint16_t x{}, y{};
+// Classify the object center (readObjectCenter: 0 - 3712, 30x30 sensor array in 1/128 pixel units).
+// Seen from the front of the unit in Gesture mode, X runs from right to left and Y from top to bottom.
+constexpr uint16_t CENTER_MAX{29 * 128};
+constexpr uint16_t CENTER_MID{CENTER_MAX / 2};
+constexpr uint16_t CENTER_RANGE{600};  // Within +-600 of the middle on both axes is the center
+constexpr uint16_t SIZE_FULL{900};     // The object covers the whole 30x30 array (too close)
 
-    if (unit.existsObject(exists) && unit.readObjectCenter(x, y) && exists) {
-        // Determined by upper 5 bits
-        x >>= 8;
-        y >>= 8;
-        //        M5_LOGW("%d:(%u,%u)", exists, x, y);
-        if (x >= 9 && y <= 5) {
-            return Corner::LeftBottom;
-        }
-        if (x >= 9 && y >= 9) {
-            return Corner::RightBottom;
-        }
-        if (x <= 5 && y <= 5) {
-            return Corner::LeftTop;
-        }
-        if (x <= 5 && y >= 9) {
-            return Corner::RightTop;
-        }
+Corner detectCorner(const bool exists, const uint16_t size, const uint16_t cx, const uint16_t cy)
+{
+    if (!exists) {
+        return Corner::None;
+    }
+    if (size >= SIZE_FULL) {
+        return Corner::TooClose;
+    }
+    const uint16_t h = CENTER_MAX - std::min(cx, CENTER_MAX);  // 0: left, CENTER_MAX: right
+    const uint16_t v = std::min(cy, CENTER_MAX);               // 0: top, CENTER_MAX: bottom
+    if (std::abs(static_cast<int32_t>(h) - CENTER_MID) <= CENTER_RANGE &&
+        std::abs(static_cast<int32_t>(v) - CENTER_MID) <= CENTER_RANGE) {
         return Corner::Center;
     }
-    return Corner::None;
+    const bool left = h < CENTER_MID;
+    const bool top  = v < CENTER_MID;
+    return top ? (left ? Corner::LeftTop : Corner::RightTop) : (left ? Corner::LeftBottom : Corner::RightBottom);
 }
-#endif
+
+//! Corner view state
+constexpr uint32_t CORNER_INTERVAL_MS{50};
+m5::utility::elapsed_time_t corner_at{};
+Corner last_corner{Corner::None};
+uint16_t last_cx{0xFFFF}, last_cy{0xFFFF};
+
+// Corner field (shares the area of the cursor field): 2x2 quadrants and a center box
+void draw_corner_field(const Corner c)
+{
+    if (field_w <= 0) {
+        return;
+    }
+    const int32_t half = field_w / 2;
+    const int32_t cw   = field_w / 3;
+    const int32_t cx   = field_x + (field_w - cw) / 2;
+    const int32_t cy   = field_y + (field_h - cw) / 2;
+    lcd.fillRect(field_x, field_y, field_w, field_h, BG_COLOR);
+    switch (c) {
+        case Corner::LeftTop:
+            lcd.fillRect(field_x, field_y, half, half, TFT_YELLOW);
+            break;
+        case Corner::RightTop:
+            lcd.fillRect(field_x + half, field_y, field_w - half, half, TFT_YELLOW);
+            break;
+        case Corner::LeftBottom:
+            lcd.fillRect(field_x, field_y + half, half, field_h - half, TFT_YELLOW);
+            break;
+        case Corner::RightBottom:
+            lcd.fillRect(field_x + half, field_y + half, field_w - half, field_h - half, TFT_YELLOW);
+            break;
+        case Corner::Center:
+            lcd.fillRect(cx, cy, cw, cw, TFT_YELLOW);
+            break;
+        case Corner::TooClose:
+            lcd.fillRect(field_x, field_y, field_w, field_h, TFT_ORANGE);
+            break;
+        default:
+            break;
+    }
+    lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
+    lcd.drawFastHLine(field_x, field_y + half, field_w, TFT_DARKGREY);
+    lcd.drawFastVLine(field_x + half, field_y, field_h, TFT_DARKGREY);
+    lcd.drawRect(cx, cy, cw, cw, TFT_DARKGREY);
+}
+
+void draw_corner(const Corner c, const uint16_t cx, const uint16_t cy)
+{
+    char buf[24]{};
+    lcd.startWrite();
+    lcd.setTextDatum(top_center);
+    if (c == Corner::None) {
+        draw_value_line(0, "No object", TFT_LIGHTGRAY);
+    } else {
+        snprintf(buf, sizeof(buf), "X:%4u Y:%4u", cx, cy);
+        draw_value_line(0, buf, TFT_WHITE);
+    }
+    draw_corner_field(c);
+    // Name of the area in the middle of the field
+    if (field_w > 0) {
+        lcd.setTextDatum(middle_center);
+        lcd.setTextSize(history_text_size);
+        lcd.setTextColor(c == Corner::None ? TFT_LIGHTGRAY : TFT_WHITE);
+        lcd.drawString(cstr[m5::stl::to_underlying(c)], field_x + field_w / 2, field_y + field_h / 2);
+    }
+    lcd.endWrite();
+}
+
+// Show the view name and start a fresh history
+void draw_view(const View v)
+{
+    current_label = nullptr;
+    history_count = 0;
+    dot_x         = -1;
+    lcd.startWrite();
+    lcd.fillScreen(BG_COLOR);
+    lcd.setTextDatum(top_center);
+    draw_current(view_to_string(v), TFT_CYAN);
+    if (v == View::Cursor && field_w > 0) {
+        lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
+    }
+    if (v == View::Corner) {
+        draw_corner_field(Corner::None);
+    }
+    lcd.endWrite();
+}
 
 }  // namespace
 
@@ -294,7 +380,7 @@ void setup()
     if (has_lcd) {
         layout();
         layout_cursor_field();
-        draw_mode(detection);
+        draw_view(view);
     }
 }
 
@@ -303,8 +389,8 @@ void loop()
     M5.update();
     Units.update();
 
-    switch (unit.mode()) {
-        case m5::unit::paj7620u2::Mode::Gesture: {
+    switch (view) {
+        case View::Gesture: {
             // Detect gesture
             static uint8_t noobj{};
 
@@ -325,16 +411,8 @@ void loop()
                     }
                 }
             }
-#if 0
-            static Corner pc{};
-            Corner c = detectCorner();
-            if (c != pc) {
-                M5.Log.printf("Obj:%s\n", cstr[(uint8_t)c]);
-                pc = c;
-            }
-#endif
         } break;
-        case m5::unit::paj7620u2::Mode::Proximity: {
+        case View::Proximity: {
             // Detect proximity
             if (unit.updated()) {
                 M5.Log.printf("%s brightness:%u approach:%u\n", gesture_to_string(unit.gesture()), unit.brightness(),
@@ -344,7 +422,7 @@ void loop()
                 }
             }
         } break;
-        case m5::unit::paj7620u2::Mode::Cursor: {
+        case View::Cursor: {
             // Detect cursor
             if (unit.updated()) {
                 M5.Log.printf("Cursor:%u,%u\n", unit.cursorX(), unit.cursorY());
@@ -354,17 +432,45 @@ void loop()
             }
             m5::utility::delay(100);
         } break;
+        case View::Corner: {
+            // Detect the area where the object is (polled, as the object center is not part of the periodic data)
+            if (m5::utility::hasElapsed(corner_at, CORNER_INTERVAL_MS)) {
+                corner_at = m5::utility::millis();
+                bool exists{};
+                uint16_t cx{}, cy{};
+                uint16_t size{};
+                if (unit.existsObject(exists) &&
+                    (!exists || (unit.readObjectCenter(cx, cy) && unit.readObjectSize(size)))) {
+                    const Corner c = detectCorner(exists, size, cx, cy);
+                    if (!exists) {
+                        cx = cy = 0;
+                    }
+                    if (c != last_corner || cx != last_cx || cy != last_cy) {
+                        last_corner = c;
+                        last_cx     = cx;
+                        last_cy     = cy;
+                        M5.Log.printf("Corner:%s center:%u,%u size:%u\n", cstr[m5::stl::to_underlying(c)], cx, cy,
+                                      size);
+                        if (has_lcd) {
+                            draw_corner(c, cx, cy);
+                        }
+                    }
+                }
+            }
+        } break;
         default:
             break;
     }
 
     if (M5.BtnA.wasClicked()) {
-        auto prev = detection;
-        ++detection;
-        if (unit.writeMode(detection)) {
-            M5.Log.printf(">> writeMode %x\n", m5::stl::to_underlying(detection));
+        const auto prev = view;
+        ++view;
+        if (unit.writeMode(view_to_mode(view))) {
+            M5.Log.printf(">> view %s (mode %x)\n", view_to_string(view), m5::stl::to_underlying(unit.mode()));
+            last_corner = Corner::None;
+            last_cx = last_cy = 0xFFFF;
             if (has_lcd) {
-                draw_mode(detection);
+                draw_view(view);
             }
             switch (unit.mode()) {
                 case m5::unit::paj7620u2::Mode::Gesture:
@@ -380,8 +486,8 @@ void loop()
                     break;
             }
         } else {
-            M5_LOGE("Failed to writeMode %x", m5::stl::to_underlying(detection));
-            detection = prev;
+            M5_LOGE("Failed to writeMode %x", m5::stl::to_underlying(view_to_mode(view)));
+            view = prev;
         }
     }
 }
