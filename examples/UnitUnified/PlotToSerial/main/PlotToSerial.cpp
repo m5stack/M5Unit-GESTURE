@@ -286,7 +286,7 @@ void setup()
         m5::unit::wiring::failStop();
     }
 
-    M5_LOGI("M5UnitUnified has been begun");
+    M5_LOGI("M5UnitUnified initialized");
     M5_LOGI("%s", Units.debugInfo().c_str());
 
     // A board without a screen reports a 1x1 dummy display
@@ -362,7 +362,7 @@ void loop()
         auto prev = detection;
         ++detection;
         if (unit.writeMode(detection)) {
-            M5.Log.printf(">> writeMode %x\n", detection);
+            M5.Log.printf(">> writeMode %x\n", m5::stl::to_underlying(detection));
             if (has_lcd) {
                 draw_mode(detection);
             }
@@ -380,7 +380,7 @@ void loop()
                     break;
             }
         } else {
-            M5_LOGE("Failed to writeMode %x", detection);
+            M5_LOGE("Failed to writeMode %x", m5::stl::to_underlying(detection));
             detection = prev;
         }
     }
@@ -396,12 +396,12 @@ void loop()
 // runs and feeds the task watchdog (default 5 s).
 static inline void feedIdleTaskPeriodically(void)
 {
-    constexpr uint32_t FEED_INTERVAL_MS   = 2000;
-    constexpr TickType_t FEED_SLEEP_TICKS = pdMS_TO_TICKS(5);
-    static uint32_t s_next_feed_ms        = 0;
-    const uint32_t now_ms                 = static_cast<uint32_t>(esp_timer_get_time() / 1000);
-    if (now_ms >= s_next_feed_ms) {
-        s_next_feed_ms = now_ms + FEED_INTERVAL_MS;
+    constexpr uint32_t FEED_INTERVAL_MS{2000};
+    constexpr TickType_t FEED_SLEEP_TICKS{pdMS_TO_TICKS(5)};
+    static uint32_t s_last_feed_ms{};
+    const uint32_t now_ms{static_cast<uint32_t>(esp_timer_get_time() / 1000)};
+    if (now_ms - s_last_feed_ms >= FEED_INTERVAL_MS) {
+        s_last_feed_ms = now_ms;
         vTaskDelay(FEED_SLEEP_TICKS);
     }
 }
