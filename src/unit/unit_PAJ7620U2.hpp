@@ -154,12 +154,18 @@ struct Data {
     ///@}
     ///@name Cursor mode
     ///@{
-    /*! @brief Gets the cursor X of any object */
+    /*!
+      @brief Gets the cursor X of any object
+      @return Object center X on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode
+     */
     inline uint16_t cursorX() const
     {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
     }
-    /*! @brief Gets the cursor Y of any object */
+    /*!
+      @brief Gets the cursor Y of any object
+      @return Object center Y on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode
+     */
     inline uint16_t cursorY() const
     {
         return (data_mode == Mode::Cursor) ? cursor_y : 0xFFFF;
@@ -256,12 +262,20 @@ public:
     {
         return !empty() ? oldest().approach() : false;
     }
-    //! @brief Oldest cursor X if Cursor mode
+    /*!
+      @brief Oldest cursor X if Cursor mode
+      @return Object center X on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if empty or not
+      Cursor mode
+     */
     uint16_t cursorX() const
     {
         return !empty() ? oldest().cursorX() : 0xFFFF;
     }
-    //! @brief Oldest cursor Y if Cursor mode
+    /*!
+      @brief Oldest cursor Y if Cursor mode
+      @return Object center Y on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if empty or not
+      Cursor mode
+     */
     uint16_t cursorY() const
     {
         return !empty() ? oldest().cursorY() : 0xFFFF;
@@ -373,8 +387,8 @@ public:
     bool readGesture(paj7620u2::Gesture& gesture);
     /*!
       @brief Object center position
-      @param[out] x X coordinate
-      @param[out] y Y coordinate
+      @param[out] x X coordinate on the 30x30 sensor array in 1/128 pixel units (0 - 3712)
+      @param[out] y Y coordinate on the 30x30 sensor array in 1/128 pixel units (0 - 3712)
       @return True if successful
      */
     bool readObjectCenter(uint16_t& x, uint16_t& y);

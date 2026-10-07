@@ -301,7 +301,7 @@ constexpr Pair register_for_cursor[] = {
     {0x69, 0x14},
     {0x6A, 0x0A},
     {0xEF, 0x00},  // Set Bank 0
-    {0x32, 0x29},  // R_CursorClampLeft
+    {0x32, 0x29},  // R_CursorUseTop / R_CursorUseBGModel / R_CursorInvertY / R_CursorInvertX / R_CursorTopRatio
     {0x33, 0x01},  // R_PositionFilterStartSizeTh [7:0]
     {0x34, 0x00},  // R_PositionFilterStartSizeTh [8]
     {0x35, 0x01},  // R_ProcessFilterStartSizeTh [7:0]
