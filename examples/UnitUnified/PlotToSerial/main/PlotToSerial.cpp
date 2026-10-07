@@ -221,8 +221,9 @@ void draw_cursor(const uint16_t cx, const uint16_t cy)
             lcd.fillCircle(dot_x, dot_y, dot_r, BG_COLOR);
         }
         const int32_t range = field_w - dot_r * 2 - 2;
-        dot_x               = field_x + dot_r + 1 + range * std::min(cx, CURSOR_MAX) / CURSOR_MAX;
-        dot_y               = field_y + dot_r + 1 + range * std::min(cy, CURSOR_MAX) / CURSOR_MAX;
+        // Seen from the front of the unit, X runs from right to left (same as the object center in Gesture mode)
+        dot_x = field_x + dot_r + 1 + range * (CURSOR_MAX - std::min(cx, CURSOR_MAX)) / CURSOR_MAX;
+        dot_y = field_y + dot_r + 1 + range * std::min(cy, CURSOR_MAX) / CURSOR_MAX;
         lcd.drawRect(field_x, field_y, field_w, field_h, TFT_DARKGREY);
         lcd.fillCircle(dot_x, dot_y, dot_r, TFT_YELLOW);
     }
