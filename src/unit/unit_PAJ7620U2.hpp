@@ -38,7 +38,7 @@ enum class Gesture : uint16_t {
     Forward          = 1U << 4,   //!< Closer to the sensor
     Backward         = 1U << 5,   //!< Away from the sensor
     Clockwise        = 1U << 6,   //!< Clockwise
-    CounterClockwise = 1U << 7,   //!< Counter clock wise
+    CounterClockwise = 1U << 7,   //!< Counterclockwise
     Wave             = 1U << 8,   //!< Wave
     Approach         = 1U << 9,   //!< Approach (proximity mode)
     HasObject        = 1U << 10,  //!< Has object (cursor mode)
@@ -84,7 +84,7 @@ inline float idle_time_to_hz(const uint16_t idle_time)
 /*!
   @brief Convert frequency in Hz to R_IDLE_TIME register value
   @param hz Frequency in Hz (must be > 0)
-  @return R_IDLE_TIME[15:0] register value, or 0 if out of range
+  @return R_IDLE_TIME[15:0] register value. 0 if hz <= 0 or too high (> about 405.8 Hz), 65535 if too low
   @details Formula: idle_time = 31250 / Hz - 77
 */
 inline uint16_t hz_to_idle_time(const float hz)
@@ -146,7 +146,7 @@ struct Data {
     {
         return (data_mode == Mode::Proximity) ? proximity_brightness : 0;
     }
-    /*! @brief Detect the approach? */
+    /*! @brief Gets the approach state (true: approach) */
     inline bool approach() const
     {
         return (data_mode == Mode::Proximity) ? proximity_approach : false;
@@ -200,7 +200,7 @@ public:
         bool vflip{true};
         //! Rotation if start on begin
         uint8_t rotation{0};
-        //! Store only when value is a change
+        //! Store only when the value changes
         bool store_on_change{true};
     };
 
@@ -234,11 +234,14 @@ public:
     ///@name Settings for begin
     ///@{
     /*! @brief Gets the configuration */
-    inline config_t config()
+    inline config_t config() const
     {
         return _cfg;
     }
-    //! @brief Set the configuration
+    /*!
+      @brief Set the configuration
+      @param cfg Configuration
+     */
     inline void config(const config_t& cfg)
     {
         _cfg = cfg;
@@ -356,7 +359,7 @@ public:
     /*!
       @brief Read the frequency
       @param[out] f Frequency
-      @return True if successful
+      @return True if successful. False (f = Unknown) if the register value matches no preset
      */
     bool readFrequency(paj7620u2::Frequency& f);
     /*!
@@ -373,7 +376,7 @@ public:
     /*!
       @brief Write the frequency in Hz
       @param hz Frequency in Hz (must be > 0)
-      @return True if successful
+      @return True if successful (false if hz <= 0 or too high)
      */
     bool writeFrequencyHz(const float hz);
 
@@ -431,7 +434,7 @@ public:
     /*!
       @brief Read proximity
       @param[out] brightness 0:Out of bounds  [1:far ... 255:near]
-      @param[out] approach Approach object
+      @param[out] approach 1: approach, 0: not approach
       @return True if successful
      */
     bool readProximity(uint8_t& brightness, uint8_t& approach);
