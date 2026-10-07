@@ -5,6 +5,7 @@
  */
 /*!
   @file M5UnitUnifiedGESTURE.h
+  @brief Main header of M5UnitUnifiedGESTURE (C++ guard wrapper)
  */
 #ifndef M5_UNIT_UNIFIED_GESTURE_H
 #define M5_UNIT_UNIFIED_GESTURE_H
