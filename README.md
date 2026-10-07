@@ -15,7 +15,6 @@ Up, Down, Left, Right, Forward, Backward, Clockwise, CounterClockwise, Wave
 
 
 ## Related Link
-See also examples using conventional methods here.
 
 - [Unit GESTURE & Datasheet](https://docs.m5stack.com/en/unit/Gesture)
 
@@ -31,6 +30,20 @@ See also examples using conventional methods here.
 
 ## Examples
 See also [examples/UnitUnified](examples/UnitUnified)
+
+### For ESP-IDF settings
+
+> **NOTE:** The ESP-IDF native build (`idf.py`) targets ESP-IDF **5.1 or later** (5.x and 6.x).
+
+This library covers a single unit, so the examples need no Kconfig choice. Build them directly:
+
+```sh
+cd examples/UnitUnified/PlotToSerial
+idf.py set-target esp32s3               # or esp32 / esp32c5 / esp32c6 / esp32h2 / esp32p4 / ...
+idf.py build flash monitor
+```
+
+`BLEKeyboard` depends on an Arduino-only BLE keyboard library, so it is available for Arduino only.
 
 ## Doxygen document
 [GitHub Pages](https://m5stack.github.io/M5Unit-GESTURE/)
