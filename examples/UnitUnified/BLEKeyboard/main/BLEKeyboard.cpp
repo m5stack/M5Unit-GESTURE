@@ -27,8 +27,9 @@ m5::unit::UnitUnified Units;
 m5::unit::UnitGesture unit;
 
 BleKeyboard bleKeyboard{"PagerKB", "M5UU", 100};
-unsigned long inactive_to{};
-constexpr decltype(inactive_to) INACTIVE_TIME{1500};  // Period of inactivity (ms)
+bool inactive{};                                            // In the continuous input prevention period
+m5::utility::elapsed_time_t inactive_at{};                  // When the last key was sent
+constexpr m5::utility::elapsed_time_t INACTIVE_TIME{1500};  // Period of inactivity (ms)
 
 constexpr const char* gstr[] = {
     "None", "Up",       "Down",      "Left",          "Right",   "Forward", "Backward", "Clockwise", "CounterClockwise",
@@ -89,7 +90,7 @@ void setup()
         m5::unit::wiring::failStop();
     }
 
-    M5_LOGI("M5UnitUnified has been begun");
+    M5_LOGI("M5UnitUnified initialized");
     M5_LOGI("%s", Units.debugInfo().c_str());
 
     lcd.fillScreen(TFT_DARKGRAY);
@@ -108,11 +109,11 @@ void loop()
         lcd.fillScreen(connected ? TFT_DARKGREEN : TFT_DARKGRAY);
     }
     if (connected) {
-        if (inactive_to) {
-            if (m5::utility::millis() < inactive_to) {
+        if (inactive) {
+            if (!m5::utility::hasElapsed(inactive_at, INACTIVE_TIME)) {
                 return;
             }
-            inactive_to = 0;
+            inactive = false;
             lcd.fillScreen(TFT_DARKGREEN);
         }
 
@@ -122,7 +123,8 @@ void loop()
                 M5.Log.printf("Send [0X%X] Gesture:%s\n", key, gesture_to_string(unit.gesture()));
                 bleKeyboard.write(key);
                 // Continuous input prevention period
-                inactive_to = m5::utility::millis() + INACTIVE_TIME;
+                inactive    = true;
+                inactive_at = m5::utility::millis();
                 lcd.fillScreen(TFT_ORANGE);
             }
         }
