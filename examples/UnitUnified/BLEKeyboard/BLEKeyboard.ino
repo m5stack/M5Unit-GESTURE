@@ -5,9 +5,9 @@
  */
 /*
   Example of sending identified gestures as keyboard commands via BLE
-  Required
-  - M5Unified
-  - NimBLE-Arduino
-  - BLE-keyboard
+  The BLE HID keyboard is implemented directly on NimBLE-Arduino (NimBLEHIDDevice).
+
+  Required:
+  - https://github.com/h2zero/NimBLE-Arduino
 */
 #include "main/BLEKeyboard.cpp"

@@ -98,15 +98,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install BLE libraries
-        if: matrix.sketch == 'BLEKeyboard'
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
-          arduino-cli config init
-          arduino-cli config set library.enable_unsafe_install true
-          arduino-cli lib update-index
-          arduino-cli lib install --git-url https://github.com/lewisxhe/ESP32-BLE-Keyboard-fork.git
-
       - name: Prepare libraries list
         id: libs
         run: |
