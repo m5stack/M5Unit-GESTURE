@@ -2,7 +2,7 @@ description: Library for M5Stack UNIT GESTURE (PAJ7620U2) using M5UnitUnified.
 url: https://github.com/m5stack/M5Unit-GESTURE
 issues: https://github.com/m5stack/M5Unit-GESTURE/issues
 license: MIT
-version: "0.2.0"
+version: "0.3.0"
 
 dependencies:
   idf: ">=5.1"
