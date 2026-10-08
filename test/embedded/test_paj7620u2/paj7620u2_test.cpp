@@ -78,7 +78,9 @@ TEST_P(TestPAJ7620U2, Gesture)
     EXPECT_TRUE(unit->readNoObjectCount(noobj));
     EXPECT_TRUE(unit->readNoMotionCount(nomot));
 
+    // Not in periodic: nothing is stored, so the accessors return the empty-buffer defaults
     unit->update();
+    EXPECT_TRUE(unit->empty());
     EXPECT_EQ(unit->brightness(), 0);
     EXPECT_FALSE(unit->approach());
     EXPECT_EQ(unit->cursorX(), 0xFFFF);
@@ -95,7 +97,11 @@ TEST_P(TestPAJ7620U2, Gesture)
     if (!GetParam().store_on_change) {
         EXPECT_FALSE(r.timed_out);
         EXPECT_EQ(r.update_count, 16U);
+        // +5 ms covers every board, including SoftwareI2C (NessoN1)
         EXPECT_LE(r.median(), r.expected_interval + 5);
+    } else {
+        // The first sample is always stored
+        EXPECT_GE(r.update_count, 1U);
     }
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
@@ -109,13 +115,13 @@ TEST_P(TestPAJ7620U2, Gesture)
     if (GetParam().store_on_change) {
         EXPECT_FALSE(unit->full());
         EXPECT_FALSE(unit->empty());
-        EXPECT_EQ(unit->available(), 1);
+        EXPECT_EQ(unit->available(), 1U);
 
         while (unit->available()) {
             ++cnt;
             unit->discard();
         }
-        EXPECT_EQ(cnt, 1);
+        EXPECT_EQ(cnt, 1U);
         EXPECT_TRUE(unit->empty());
         EXPECT_FALSE(unit->full());
         EXPECT_EQ(unit->available(), 0U);
@@ -123,14 +129,14 @@ TEST_P(TestPAJ7620U2, Gesture)
     } else {
         EXPECT_TRUE(unit->full());
         EXPECT_FALSE(unit->empty());
-        EXPECT_EQ(unit->available(), 8);
+        EXPECT_EQ(unit->available(), 8U);
 
         while (unit->available()) {
             ++cnt;
             unit->discard();
             EXPECT_EQ(unit->available(), 8U - cnt);
         }
-        EXPECT_EQ(cnt, 8);
+        EXPECT_EQ(cnt, 8U);
         EXPECT_TRUE(unit->empty());
         EXPECT_FALSE(unit->full());
         EXPECT_EQ(unit->available(), 0U);
@@ -147,6 +153,7 @@ TEST_P(TestPAJ7620U2, Proximity)
     uint8_t brightness{}, approach{};
     EXPECT_TRUE(unit->readGesture(ges));
     EXPECT_TRUE(unit->readProximity(brightness, approach));
+    EXPECT_LE(approach, 1U);  // S_State: 1 = approach, 0 = not approach
 
     EXPECT_TRUE(unit->writeApproachThreshold(98, 76));
     uint8_t high{}, low{};
@@ -154,7 +161,9 @@ TEST_P(TestPAJ7620U2, Proximity)
     EXPECT_EQ(high, 98);
     EXPECT_EQ(low, 76);
 
+    // Not in periodic: nothing is stored, so the accessors return the empty-buffer defaults
     unit->update();
+    EXPECT_TRUE(unit->empty());
     EXPECT_EQ(unit->cursorX(), 0xFFFF);
     EXPECT_EQ(unit->cursorY(), 0xFFFF);
 }
@@ -168,7 +177,9 @@ TEST_P(TestPAJ7620U2, Cursor)
     uint16_t x{}, y{};
     EXPECT_TRUE(unit->readCursor(x, y));
 
+    // Not in periodic: nothing is stored, so the accessors return the empty-buffer defaults
     unit->update();
+    EXPECT_TRUE(unit->empty());
     EXPECT_EQ(unit->brightness(), 0);
     EXPECT_FALSE(unit->approach());
 }
@@ -190,6 +201,29 @@ TEST_P(TestPAJ7620U2, Flip)
     EXPECT_NE(flip, flip2);
 }
 
+TEST_P(TestPAJ7620U2, FlipKeptAcrossMode)
+{
+    SCOPED_TRACE(ustr);
+
+    // The mode tables also write the flip bits; the flip settings must survive a mode change
+    constexpr Mode modes[] = {Mode::Cursor, Mode::Proximity, Mode::Gesture};
+    for (const bool hf : {false, true}) {
+        for (const bool vf : {false, true}) {
+            EXPECT_TRUE(unit->writeHorizontalFlip(hf));
+            EXPECT_TRUE(unit->writeVerticalFlip(vf));
+            for (auto&& m : modes) {
+                SCOPED_TRACE(m5::utility::formatString("H:%u V:%u Mode:%u", hf, vf, m5::stl::to_underlying(m)));
+                EXPECT_TRUE(unit->writeMode(m));
+                bool h{}, v{};
+                EXPECT_TRUE(unit->readHorizontalFlip(h));
+                EXPECT_TRUE(unit->readVerticalFlip(v));
+                EXPECT_EQ(h, hf);
+                EXPECT_EQ(v, vf);
+            }
+        }
+    }
+}
+
 TEST_P(TestPAJ7620U2, ProximityPeriodic)
 {
     SCOPED_TRACE(ustr);
@@ -202,11 +236,43 @@ TEST_P(TestPAJ7620U2, ProximityPeriodic)
     if (!GetParam().store_on_change) {
         EXPECT_FALSE(r.timed_out);
         EXPECT_EQ(r.update_count, 16U);
+        // +5 ms covers every board, including SoftwareI2C (NessoN1)
         EXPECT_LE(r.median(), r.expected_interval + 5);
+    } else {
+        // The first sample is always stored
+        EXPECT_GE(r.update_count, 1U);
     }
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
+}
+
+TEST_P(TestPAJ7620U2, CursorPeriodic)
+{
+    SCOPED_TRACE(ustr);
+
+    EXPECT_TRUE(unit->writeMode(Mode::Cursor));
+    EXPECT_TRUE(unit->startPeriodicMeasurement(10));
+    EXPECT_TRUE(unit->inPeriodic());
+
+    auto r = collect_periodic_measurements(unit.get(), 16, 0, check_param_callback(nullptr));
+    if (!GetParam().store_on_change) {
+        EXPECT_FALSE(r.timed_out);
+        EXPECT_EQ(r.update_count, 16U);
+        // +5 ms covers every board, including SoftwareI2C (NessoN1)
+        EXPECT_LE(r.median(), r.expected_interval + 5);
+    } else {
+        // The first sample is always stored
+        EXPECT_GE(r.update_count, 1U);
+    }
+
+    EXPECT_TRUE(unit->stopPeriodicMeasurement());
+    EXPECT_FALSE(unit->inPeriodic());
+
+    // Cursor data is stored, so the Proximity accessors return their defaults
+    EXPECT_FALSE(unit->empty());
+    EXPECT_EQ(unit->brightness(), 0);
+    EXPECT_FALSE(unit->approach());
 }
 
 TEST_P(TestPAJ7620U2, StartPeriodicWithModeAndFreq)
@@ -217,6 +283,8 @@ TEST_P(TestPAJ7620U2, StartPeriodicWithModeAndFreq)
     EXPECT_TRUE(unit->startPeriodicMeasurement(Mode::Proximity, Frequency::Normal, 10));
     EXPECT_TRUE(unit->inPeriodic());
     EXPECT_EQ(unit->mode(), Mode::Proximity);
+    EXPECT_EQ(unit->frequency(), Frequency::Normal);
+    EXPECT_EQ(unit->interval(), 10U);
 
     EXPECT_TRUE(unit->stopPeriodicMeasurement());
     EXPECT_FALSE(unit->inPeriodic());
@@ -249,6 +317,14 @@ TEST_P(TestPAJ7620U2, ReadFrequency)
 
     uint16_t raw{};
     EXPECT_TRUE(unit->readFrequency(raw));
+
+    // Deprecated 8-bit overload returns the lower byte of R_IDLE_TIME
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    uint8_t raw8{};
+    EXPECT_TRUE(unit->readFrequency(raw8));
+#pragma GCC diagnostic pop
+    EXPECT_EQ(raw8, static_cast<uint8_t>(raw & 0xFF));
 }
 
 TEST_P(TestPAJ7620U2, FrequencyHz)
@@ -275,6 +351,11 @@ TEST_P(TestPAJ7620U2, FrequencyHz)
     EXPECT_NEAR(hz, 60.0f, 1.0f);
     // Not a preset
     EXPECT_EQ(unit->frequency(), Frequency::Unknown);
+
+    // Out of range: not positive, or higher than idle_time 0 (about 405.8 Hz)
+    EXPECT_FALSE(unit->writeFrequencyHz(0.0f));
+    EXPECT_FALSE(unit->writeFrequencyHz(-1.0f));
+    EXPECT_FALSE(unit->writeFrequencyHz(1000.0f));
 
     // Restore to Normal
     EXPECT_TRUE(unit->writeFrequency(Frequency::Normal));
@@ -312,6 +393,7 @@ struct BeginConfigParams {
     bool hflip;
     bool vflip;
     uint8_t rotation;
+    bool start_periodic;
 };
 
 class TestPAJ7620U2BeginConfig : public I2CComponentTestBase<UnitPAJ7620U2>,
@@ -326,7 +408,7 @@ protected:
             ptr->component_config(ccfg);
 
             auto cfg           = ptr->config();
-            cfg.start_periodic = false;
+            cfg.start_periodic = GetParam().start_periodic;
             cfg.mode           = GetParam().mode;
             cfg.frequency      = GetParam().frequency;
             cfg.hflip          = GetParam().hflip;
@@ -341,9 +423,11 @@ protected:
 INSTANTIATE_TEST_SUITE_P(ConfigValues, TestPAJ7620U2BeginConfig,
                          ::testing::Values(
                              // Default config
-                             BeginConfigParams{Mode::Gesture, Frequency::Normal, false, true, 0},
+                             BeginConfigParams{Mode::Gesture, Frequency::Normal, false, true, 0, false},
                              // Non-default: Proximity, Gaming, flips inverted, rotation 2
-                             BeginConfigParams{Mode::Proximity, Frequency::Gaming, true, false, 2}));
+                             BeginConfigParams{Mode::Proximity, Frequency::Gaming, true, false, 2, false},
+                             // Cursor, Gaming, rotation 1, periodic measurement started by begin
+                             BeginConfigParams{Mode::Cursor, Frequency::Gaming, false, true, 1, true}));
 
 TEST_P(TestPAJ7620U2BeginConfig, BeginAppliesConfig)
 {
@@ -377,4 +461,10 @@ TEST_P(TestPAJ7620U2BeginConfig, BeginAppliesConfig)
 
     // Rotation (memory only, not stored in register)
     EXPECT_EQ(unit->rotation(), p.rotation);
+
+    // Periodic measurement
+    EXPECT_EQ(unit->inPeriodic(), p.start_periodic);
+    if (unit->inPeriodic()) {
+        EXPECT_TRUE(unit->stopPeriodicMeasurement());
+    }
 }

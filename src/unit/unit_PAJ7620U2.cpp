@@ -5,7 +5,7 @@
  */
 /*!
   @file unit_PAJ7620U2.cpp
-  @brief PAJ7620U2Unit for M5UnitUnified
+  @brief PAJ7620U2 Unit for M5UnitUnified
 */
 #include "unit_PAJ7620U2.hpp"
 #include <M5Utility.hpp>
@@ -21,17 +21,6 @@ namespace {
 constexpr uint16_t chip_id{0x7620};
 constexpr uint8_t wakeup_value{0x20};
 constexpr uint8_t enter_suspend{0x01};
-
-#if 0
-// Hz to IDLE_TIME
-int freq_to_idle(const float frequency) {
-    return static_cast<int>((1000.0f / frequency - 3.55f) / 0.0323f);
-}
-// IDLE_TIME to Hz
-float idle_to_freq(const int idleTime) {
-    return 1000.0f / (idleTime * 0.0323f + 3.55f);
-}
-#endif
 
 struct Pair {
     uint8_t reg, val;
@@ -84,7 +73,7 @@ constexpr Pair register_for_initialize[] = {
     {0x29, 0x08},                // R_LSFT [3:0]
     {0x30, 0x03}, {0x3E, 0xFF},  // R_DebugPattern[7:0]
     {0x5E, 0x3D},                // T_clamp_drv_ctrl
-    {0x65, 0xAC},                // R_IDLE_TIME [7:0] (~110 Hz)
+    {0x65, 0xAC},                // R_IDLE_TIME [7:0] (~125 Hz)
     {0x66, 0x00},                // R_IDLE_TIME [15:8]
     {0x67, 0x97},                // R_IDLE_TIME_SLEEP_1 [7:0]
     {0x68, 0x01},                // R_IDLE_TIME_SLEEP_1 [15:8]
@@ -113,7 +102,7 @@ constexpr Pair register_for_initialize[] = {
     {0x48, 0x3C},  // R_AE_Exposure_UB [7:0]
     {0x49, 0x00},  // R_AE_Exposure_UB [15:8]
     {0x4A, 0x1E},  // R_AE_Exposure_LB [7:0]
-    {0x4C, 0x20},  // R_AE_Gain_UB [7:0] (was 0x22, fixed to match datasheet)
+    {0x4C, 0x20},  // R_AE_Gain_UB [7:0] (datasheet value)
     {0x51, 0x10},  // R_Manual_GG[0]
     {0x5E, 0x10},  // TG___CLK_manual
     {0x60, 0x27},  // TS_osc_code[6:0],OSC_BIST_OK[7]
@@ -143,7 +132,7 @@ constexpr Pair register_for_initialize[] = {
     {0x29, 0x08},  // R_LSFT [3:0]
     {0x3E, 0xFF},  // R_DebugPattern[7:0]
     {0x5E, 0x3D},  // T_clamp_drv_ctrl
-    {0x65, 0x96},  // R_IDLE_TIME [7:0] (~120 Hz)
+    {0x65, 0x96},  // R_IDLE_TIME [7:0] (~138 Hz)
     {0x67, 0x97},  // R_IDLE_TIME_SLEEP_1 [7:0]
     {0x69, 0xCD},  // R_IDLE_TIME_SLEEP_2 [7:0]
     {0x6A, 0x01},  // R_IDLE_TIME_SLEEP_2 [15:8]
@@ -178,7 +167,7 @@ constexpr Pair register_for_gesture[] = {
     {0x04, 0x02},  // R_HR_LS_Comp_DAvg_V
     {0x41, 0x40},
     {0x43, 0x30},
-    {0x65, 0xAC},  // R_IDLE_TIME [7:0] (~110 Hz)
+    {0x65, 0xAC},  // R_IDLE_TIME [7:0] (~125 Hz)
     {0x66, 0x00},  // R_IDLE_TIME [15:8]
     {0x67, 0x97},  // R_IDLE_TIME_SLEEP_1 [7:0]
     {0x68, 0x01},  // R_IDLE_TIME_SLEEP_1 [15:8]
@@ -209,7 +198,7 @@ constexpr Pair register_for_gesture[] = {
     {0x04, 0x02},  // R_HR_LS_Comp_DAvg_V
     {0x41, 0x40},
     {0x43, 0x30},
-    {0x65, 0x96},  // R_IDLE_TIME [7:0] (~120 Hz)
+    {0x65, 0x96},  // R_IDLE_TIME [7:0] (~138 Hz)
     {0x66, 0x00},  // R_IDLE_TIME [15:8]
     {0x67, 0x97},  // R_IDLE_TIME_SLEEP_1 [7:0]
     {0x68, 0x01},  // R_IDLE_TIME_SLEEP_1 [15:8]
@@ -301,7 +290,7 @@ constexpr Pair register_for_cursor[] = {
     {0x69, 0x14},
     {0x6A, 0x0A},
     {0xEF, 0x00},  // Set Bank 0
-    {0x32, 0x29},  // R_CursorClampLeft
+    {0x32, 0x29},  // R_CursorUseTop / R_CursorUseBGModel / R_CursorInvertY / R_CursorInvertX / R_CursorTopRatio
     {0x33, 0x01},  // R_PositionFilterStartSizeTh [7:0]
     {0x34, 0x00},  // R_PositionFilterStartSizeTh [8]
     {0x35, 0x01},  // R_ProcessFilterStartSizeTh [7:0]
@@ -417,9 +406,11 @@ bool UnitPAJ7620U2::begin()
             return false;
         }
     }
-    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode) ||
-        !writeHorizontalFlip(_cfg.hflip) || !writeVerticalFlip(_cfg.vflip)) {
-        M5_LIB_LOGE("Failed to settings");
+    // writeMode() applies the flip settings after the mode table
+    _hflip = _cfg.hflip;
+    _vflip = _cfg.vflip;
+    if (!select_bank(0, true) || !writeFrequency(_cfg.frequency) || !writeMode(_cfg.mode)) {
+        M5_LIB_LOGE("Failed to apply settings");
         return false;
     }
 
@@ -430,8 +421,8 @@ void UnitPAJ7620U2::update(const bool force)
 {
     _updated = false;
     if (inPeriodic()) {
-        elapsed_time_t at{m5::utility::millis()};
-        if (force || !_latest || at >= _latest + _interval) {
+        const elapsed_time_t at{m5::utility::millis()};
+        if (force || !_latest || m5::utility::hasElapsed(_latest, _interval, at)) {
             Data d{};
             switch (_mode) {
                 case Mode::Gesture:
@@ -471,7 +462,7 @@ bool UnitPAJ7620U2::update_gesture(paj7620u2::Data& d)
 {
     if (read_gesture(d)) {
         d.data_mode = Mode::Gesture;
-        uint16_t raw_gesture;
+        uint16_t raw_gesture{};
         std::memcpy(&raw_gesture, d.raw.data(), sizeof(raw_gesture));
         d.data_gesture = rotate_gesture(static_cast<Gesture>(raw_gesture), _rotation);
         return true;
@@ -487,7 +478,7 @@ bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d)
         d.data_gesture         = rotate_gesture(static_cast<Gesture>(raw_gesture), _rotation);
         d.data_mode            = Mode::Proximity;
         d.proximity_brightness = d.raw[2];
-        d.proximity_approach   = d.raw[3];
+        d.proximity_approach   = d.raw[3] & 0x01;  // S_State: 1 = approach, 0 = not approach
         return true;
     }
     return false;
@@ -495,14 +486,12 @@ bool UnitPAJ7620U2::update_proximity(paj7620u2::Data& d)
 
 bool UnitPAJ7620U2::update_cursor(paj7620u2::Data& d)
 {
-    // if (read_gesture(d) && d.gesture() == Gesture::HasObject && read_cursor(d)) {
     if (read_cursor(d)) {
         d.data_mode = Mode::Cursor;
         d.cursor_x  = (static_cast<uint16_t>(d.raw[3] & 0x1F) << 8) | d.raw[2];
         d.cursor_y  = (static_cast<uint16_t>(d.raw[5] & 0x1F) << 8) | d.raw[4];
         return true;
     }
-    //    M5_LIB_LOGE(">>>> %x", d.gesture());
     return false;
 }
 
@@ -547,11 +536,11 @@ bool UnitPAJ7620U2::readNoMotionCount(uint8_t& cnt)
 bool UnitPAJ7620U2::readObjectSize(uint16_t& sz)
 {
     sz = 0;
-    uint8_t buf[2]{};
-    if (!read_banked_register(OBJECT_SIZE_LOW, buf, 2)) {
+    m5::types::little_uint16_t v{};
+    if (!read_banked_register(OBJECT_SIZE_LOW, v.data(), 2)) {
         return false;
     }
-    sz = static_cast<uint16_t>(buf[1]) << 8 | buf[0];
+    sz = v.get();
     return true;
 }
 
@@ -641,7 +630,7 @@ bool UnitPAJ7620U2::writeFrequency(const Frequency f)
     if (f == Frequency::Unknown) {
         return false;
     }
-    uint16_t idle_time = freq_table[m5::stl::to_underlying(f)];
+    const uint16_t idle_time = freq_table[m5::stl::to_underlying(f)];
     if (!write_banked_register8(R_IDLE_TIME_LOW, static_cast<uint8_t>(idle_time & 0xFF)) ||
         !write_banked_register8(R_IDLE_TIME_HIGH, static_cast<uint8_t>(idle_time >> 8))) {
         return false;
@@ -661,7 +650,10 @@ float UnitPAJ7620U2::readFrequencyHz()
 
 bool UnitPAJ7620U2::writeFrequencyHz(const float hz)
 {
-    uint16_t idle_time = hz_to_idle_time(hz);
+    if (!(hz > 0.0f)) {
+        return false;
+    }
+    const uint16_t idle_time = hz_to_idle_time(hz);
     if (idle_time == 0 && hz > 0.0f) {
         return false;  // hz too high
     }
@@ -687,19 +679,11 @@ bool UnitPAJ7620U2::writeMode(const Mode mode)
     auto idx       = m5::stl::to_underlying(mode);
     const Pair* rv = idx < m5::stl::size(register_table) ? register_table[idx] : nullptr;
     if (!rv) {
-        M5_LIB_LOGE("Invalid mode:%x", mode);
+        M5_LIB_LOGE("Invalid mode:%x", m5::stl::to_underlying(mode));
         return false;
     }
 
     while (rv->reg != 0xFF) {
-#if 0
-        uint8_t v{};
-        if (!readRegister8(rv->reg, v, 0)) {
-            return false;
-        }
-        M5_LIB_LOGE("{0X%02x,0X%02X}", rv->reg, v);
-        // M5_LIB_LOGI("[%02X]:%02X", rv->reg, rv->val);
-#endif
         if (!writeRegister8(rv->reg, rv->val)) {
             M5_LIB_LOGE("Failed to change mode %x:%x", rv->reg, rv->val);
             return false;
@@ -709,7 +693,14 @@ bool UnitPAJ7620U2::writeMode(const Mode mode)
     _mode = mode;
 
     // To resolve bank inconsistencies after register setting
-    return select_bank(0, true) && ((_mode != Mode::Proximity) ? writeFrequency(_frequency) : true);
+    if (!select_bank(0, true)) {
+        return false;
+    }
+    // The mode table also writes the flip bits, so restore the flip settings
+    if (!apply_flip()) {
+        return false;
+    }
+    return (_mode != Mode::Proximity) ? writeFrequency(_frequency) : true;
 }
 
 bool UnitPAJ7620U2::readApproachThreshold(uint8_t& high, uint8_t& low)
@@ -746,25 +737,36 @@ bool UnitPAJ7620U2::readVerticalFlip(bool& flip)
 
 bool UnitPAJ7620U2::writeHorizontalFlip(const bool flip)
 {
-    uint8_t v{};
-    if (read_banked_register8(LS_COMP_DAVG_V, v)) {
-        v = (v & ~0x01) | (flip ? 0x01 : 0x00);
-        return write_banked_register8(LS_COMP_DAVG_V, v);
+    const bool prev = _hflip;
+    _hflip          = flip;
+    if (apply_flip()) {
+        return true;
     }
+    _hflip = prev;
     return false;
 }
 
 bool UnitPAJ7620U2::writeVerticalFlip(const bool flip)
 {
+    const bool prev = _vflip;
+    _vflip          = flip;
+    if (apply_flip()) {
+        return true;
+    }
+    _vflip = prev;
+    return false;
+}
+
+bool UnitPAJ7620U2::apply_flip()
+{
     uint8_t v{};
     if (read_banked_register8(LS_COMP_DAVG_V, v)) {
-        v = (v & ~0x02) | (flip ? 0x02 : 0x00);
+        v = (v & ~0x03) | (_hflip ? 0x01 : 0x00) | (_vflip ? 0x02 : 0x00);  // HFlip bit:0, VFlip bit:1
         return write_banked_register8(LS_COMP_DAVG_V, v);
     }
     return false;
 }
 
-//
 bool UnitPAJ7620U2::select_bank(const uint8_t bank, const bool force)
 {
     if (!force && _current_bank == bank) {
@@ -814,13 +816,13 @@ bool UnitPAJ7620U2::wakeup()
     constexpr int max_retries{10};
     for (int attempt = 0; attempt < max_retries; ++attempt) {
         // 1st select_bank: wakeup trigger (NACK expected if sensor is sleeping)
-        bool sb1 = select_bank(0, true);
+        const bool sb1 = select_bank(0, true);
         // Wait for sensor to finish wakeup (datasheet: min 700us)
         m5::utility::delay(2);
         // 2nd select_bank: should ACK if sensor is now awake
-        bool sb2 = select_bank(0, true);
-        bool wu  = was_wakeup();
-        M5_LIB_LOGW("attempt %d: sb1=%d sb2=%d wu=%d", attempt, sb1, sb2, wu);
+        const bool sb2 = select_bank(0, true);
+        const bool wu  = was_wakeup();
+        M5_LIB_LOGD("attempt %d: sb1=%d sb2=%d wu=%d", attempt, sb1, sb2, wu);
         if (wu) {
             M5_LIB_LOGI("Wakeup OK at attempt %d", attempt);
             if (ai2c) {
@@ -834,11 +836,14 @@ bool UnitPAJ7620U2::wakeup()
         write_banked_register8(SW_SUSPEND_ENL, enter_suspend);  // Enter Suspend
         m5::utility::delay(10);
 
-        M5_LIB_LOGI("Wakeup attempt %d/%d failed", attempt, max_retries);
+        M5_LIB_LOGI("Wakeup attempt %d/%d failed", attempt + 1, max_retries);
         m5::utility::delay(100);
     }
 
-    M5_LIB_LOGE("Failed to wait wakeup (I2C)");
+    if (ai2c) {
+        ai2c->setClock(component_config().clock);
+    }
+    M5_LIB_LOGE("Failed to wake up (I2C)");
     return false;
 }
 
@@ -850,11 +855,11 @@ bool UnitPAJ7620U2::was_wakeup()
 
 bool UnitPAJ7620U2::read_chip_id(uint16_t& id)
 {
-    uint8_t buf[2]{};
-    if (!read_banked_register(PART_ID_LOW, buf, 2)) {
+    m5::types::little_uint16_t v{};
+    if (!read_banked_register(PART_ID_LOW, v.data(), 2)) {
         return false;
     }
-    id = static_cast<uint16_t>(buf[1]) << 8 | buf[0];
+    id = v.get();
     return true;
 }
 

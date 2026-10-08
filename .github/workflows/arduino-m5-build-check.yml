@@ -2,7 +2,7 @@ name: Build(arduino-m5stack)
 
 env:
   SKETCH_NAMES_FIND_START: ./examples/UnitUnified
-  REQUIRED_LIBRARIES: M5Unified,M5UnitUnified
+  REQUIRED_LIBRARIES: M5Unified,M5UnitUnified,M5Unit-HUB
 
 on:
   push:
@@ -59,36 +59,40 @@ jobs:
 
         sketch:
           - PlotToSerial
+          # ViaPaHub goes through UnitPaHub (M5Unit-HUB), so it is built on every representative board
+          - ViaPaHub
 
         board:
-          - arduino_nesso_n1
-          - m5stack_atom
-          - m5stack_atoms3
+          # Reduced from 24 to 9 boards: one per chip, plus the S3 boards with their own PSRAM / flash / USB build properties.
+          # The other boards differ only in the variant header, so the library code compiles the same.
+#          - arduino_nesso_n1  # ESP32-C6: represented by m5stack_nano_c6
+#          - m5stack_atom  # ESP32: represented by m5stack_core
+#          - m5stack_atoms3  # ESP32-S3: represented by m5stack_cores3
           - m5stack_atoms3r
-          - m5stack_capsule
+#          - m5stack_capsule  # ESP32-S3: represented by m5stack_cores3
           - m5stack_cardputer
 #          - m5stack_chain_dualkey
           - m5stack_core
-          - m5stack_core2
-          - m5stack_coreink
+#          - m5stack_core2  # ESP32: represented by m5stack_core
+#          - m5stack_coreink  # ESP32: represented by m5stack_core
           - m5stack_cores3
-          - m5stack_dial
-          - m5stack_dinmeter
-          - m5stack_fire
+#          - m5stack_dial  # ESP32-S3: represented by m5stack_cores3
+#          - m5stack_dinmeter  # ESP32-S3: represented by m5stack_cores3
+#          - m5stack_fire  # ESP32: represented by m5stack_core
           - m5stack_nano_c6
-#          - m5stack_nano_h2
-          - m5stack_paper
+          - m5stack_nano_h2
+#          - m5stack_paper  # ESP32: represented by m5stack_core
           - m5stack_papers3
 #          - m5stack_poe_cam
 #          - m5stack_powerhub
 #          - m5stack_stamp_c3
 #          - m5stack_stamp_pico
-          - m5stack_stamp_s3
+#          - m5stack_stamp_s3  # ESP32-S3: represented by m5stack_cores3
 #          - m5stack_stamplc
 #          - m5stack_station
-          - m5stack_stickc
-          - m5stack_stickc_plus
-          - m5stack_stickc_plus2
+#          - m5stack_stickc  # ESP32: represented by m5stack_core
+#          - m5stack_stickc_plus  # ESP32: represented by m5stack_core
+#          - m5stack_stickc_plus2  # ESP32: represented by m5stack_core
           - m5stack_sticks3
           - m5stack_tab5
 #          - m5stack_timer_cam
@@ -98,7 +102,7 @@ jobs:
 #          - m5stack_unit_cams3
 
         platform-version:
-          - 3.2.5
+          - 3.3.9
 
         platform:
           - m5stack
@@ -109,7 +113,7 @@ jobs:
         include:
           - sketch: BLEKeyboard
             board: m5stack_core
-            platform-version: 3.2.5
+            platform-version: 3.3.9
             platform: m5stack
             archi: esp32
             platform-url: https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/arduino/package_m5stack_index.json
@@ -118,15 +122,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install BLE libraries
-        if: matrix.sketch == 'BLEKeyboard'
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
-          arduino-cli config init
-          arduino-cli config set library.enable_unsafe_install true
-          arduino-cli lib update-index
-          arduino-cli lib install --git-url https://github.com/lewisxhe/ESP32-BLE-Keyboard-fork.git
 
       - name: Prepare libraries list
         id: libs

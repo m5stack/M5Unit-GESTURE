@@ -38,7 +38,7 @@ enum class Gesture : uint16_t {
     Forward          = 1U << 4,   //!< Closer to the sensor
     Backward         = 1U << 5,   //!< Away from the sensor
     Clockwise        = 1U << 6,   //!< Clockwise
-    CounterClockwise = 1U << 7,   //!< Counter clock wise
+    CounterClockwise = 1U << 7,   //!< Counterclockwise
     Wave             = 1U << 8,   //!< Wave
     Approach         = 1U << 9,   //!< Approach (proximity mode)
     HasObject        = 1U << 10,  //!< Has object (cursor mode)
@@ -84,7 +84,7 @@ inline float idle_time_to_hz(const uint16_t idle_time)
 /*!
   @brief Convert frequency in Hz to R_IDLE_TIME register value
   @param hz Frequency in Hz (must be > 0)
-  @return R_IDLE_TIME[15:0] register value, or 0 if out of range
+  @return R_IDLE_TIME[15:0] register value. 0 if hz <= 0 or too high (> about 405.8 Hz), 65535 if too low
   @details Formula: idle_time = 31250 / Hz - 77
 */
 inline uint16_t hz_to_idle_time(const float hz)
@@ -146,7 +146,7 @@ struct Data {
     {
         return (data_mode == Mode::Proximity) ? proximity_brightness : 0;
     }
-    /*! @brief Detect the approach? */
+    /*! @brief Gets the approach state (true: approach) */
     inline bool approach() const
     {
         return (data_mode == Mode::Proximity) ? proximity_approach : false;
@@ -154,12 +154,18 @@ struct Data {
     ///@}
     ///@name Cursor mode
     ///@{
-    /*! @brief Gets the cursor X of any object */
+    /*!
+      @brief Gets the cursor X of any object
+      @return Object center X on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode
+     */
     inline uint16_t cursorX() const
     {
         return (data_mode == Mode::Cursor) ? cursor_x : 0xFFFF;
     }
-    /*! @brief Gets the cursor Y of any object */
+    /*!
+      @brief Gets the cursor Y of any object
+      @return Object center Y on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode
+     */
     inline uint16_t cursorY() const
     {
         return (data_mode == Mode::Cursor) ? cursor_y : 0xFFFF;
@@ -194,7 +200,7 @@ public:
         bool vflip{true};
         //! Rotation if start on begin
         uint8_t rotation{0};
-        //! Store only when value is a change
+        //! Store only when the value changes
         bool store_on_change{true};
     };
 
@@ -228,11 +234,14 @@ public:
     ///@name Settings for begin
     ///@{
     /*! @brief Gets the configuration */
-    inline config_t config()
+    inline config_t config() const
     {
         return _cfg;
     }
-    //! @brief Set the configuration
+    /*!
+      @brief Set the configuration
+      @param cfg Configuration
+     */
     inline void config(const config_t& cfg)
     {
         _cfg = cfg;
@@ -256,12 +265,20 @@ public:
     {
         return !empty() ? oldest().approach() : false;
     }
-    //! @brief Oldest cursor X if Cursor mode
+    /*!
+      @brief Oldest cursor X if Cursor mode
+      @return Object center X on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if empty or not
+      Cursor mode
+     */
     uint16_t cursorX() const
     {
         return !empty() ? oldest().cursorX() : 0xFFFF;
     }
-    //! @brief Oldest cursor Y if Cursor mode
+    /*!
+      @brief Oldest cursor Y if Cursor mode
+      @return Object center Y on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if empty or not
+      Cursor mode
+     */
     uint16_t cursorY() const
     {
         return !empty() ? oldest().cursorY() : 0xFFFF;
@@ -340,9 +357,25 @@ public:
      */
     bool readFrequency(uint16_t& raw);
     /*!
+      @brief Read the lower byte of R_IDLE_TIME
+      @param[out] raw R_IDLE_TIME[7:0]
+      @return True if successful
+      @deprecated R_IDLE_TIME is 16 bits. Use readFrequency(uint16_t&) instead
+     */
+    [[deprecated("Use readFrequency(uint16_t&) instead")]] bool readFrequency(uint8_t& raw)
+    {
+        uint16_t v{};
+        raw = 0;
+        if (readFrequency(v)) {
+            raw = static_cast<uint8_t>(v & 0xFF);
+            return true;
+        }
+        return false;
+    }
+    /*!
       @brief Read the frequency
       @param[out] f Frequency
-      @return True if successful
+      @return True if successful. False (f = Unknown) if the register value matches no preset
      */
     bool readFrequency(paj7620u2::Frequency& f);
     /*!
@@ -359,7 +392,7 @@ public:
     /*!
       @brief Write the frequency in Hz
       @param hz Frequency in Hz (must be > 0)
-      @return True if successful
+      @return True if successful (false if hz <= 0 or too high)
      */
     bool writeFrequencyHz(const float hz);
 
@@ -373,8 +406,8 @@ public:
     bool readGesture(paj7620u2::Gesture& gesture);
     /*!
       @brief Object center position
-      @param[out] x X coordinate
-      @param[out] y Y coordinate
+      @param[out] x X coordinate on the 30x30 sensor array in 1/128 pixel units (0 - 3712)
+      @param[out] y Y coordinate on the 30x30 sensor array in 1/128 pixel units (0 - 3712)
       @return True if successful
      */
     bool readObjectCenter(uint16_t& x, uint16_t& y);
@@ -417,7 +450,7 @@ public:
     /*!
       @brief Read proximity
       @param[out] brightness 0:Out of bounds  [1:far ... 255:near]
-      @param[out] approach Approach object
+      @param[out] approach 1: approach, 0: not approach
       @return True if successful
      */
     bool readProximity(uint8_t& brightness, uint8_t& approach);
@@ -467,6 +500,7 @@ public:
       @brief Write the detection mode
       @param mode detection mode
       @return True if successful
+      @note The horizontal / vertical flip settings are kept across mode changes
      */
     bool writeMode(const paj7620u2::Mode mode);
     ///@}
@@ -543,6 +577,8 @@ protected:
     bool read_proximity(paj7620u2::Data& d);
     bool read_cursor(paj7620u2::Data& d);
 
+    bool apply_flip();
+
     bool wakeup();
     bool was_wakeup();
     bool read_chip_id(uint16_t& id);
@@ -553,6 +589,7 @@ protected:
     paj7620u2::Mode _mode{};
     paj7620u2::Frequency _frequency{};
     uint8_t _rotation{};
+    bool _hflip{}, _vflip{true};
 
     std::unique_ptr<m5::container::CircularBuffer<paj7620u2::Data>> _data{};
     config_t _cfg{};
