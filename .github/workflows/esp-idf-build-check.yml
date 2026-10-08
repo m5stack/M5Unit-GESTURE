@@ -81,12 +81,17 @@ jobs:
           target: ${{ matrix.target }}
           path: examples/UnitUnified/PlotToSerial
 
-  # ViaPaHub only adds the hub (M5Unit-HUB, example-only dependency) on top of the library, whose chip and idf
-  # axes are already covered by build-chips. Build it on the representative chip with the latest 5.x only.
+  # ViaPaHub goes through UnitPaHub (M5Unit-HUB, example-only dependency), a different unit from PlotToSerial,
+  # so it is built on every chip. The idf axis is covered by build-chips; use the latest 5.x only.
   build-viapahub:
-    name: v5.5.4 esp32 ViaPaHub
+    name: v5.5.4 ${{ matrix.target }} ViaPaHub
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        target: [esp32, esp32s3, esp32c3, esp32c5, esp32c6, esp32h2, esp32p4]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -95,5 +100,5 @@ jobs:
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.5.4
-          target: esp32
+          target: ${{ matrix.target }}
           path: examples/UnitUnified/ViaPaHub
