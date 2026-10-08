@@ -3,7 +3,7 @@ var searchData=
   ['raw_0',['raw',['../structm5_1_1unit_1_1paj7620u2_1_1_data.html#a15d7f5d6a72236662e7fb60e88a8441d',1,'m5::unit::paj7620u2::Data']]],
   ['readapproachthreshold_1',['readApproachThreshold',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a5679286c2ec751d8a9820a09b85816db',1,'m5::unit::UnitPAJ7620U2']]],
   ['readcursor_2',['readCursor',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a584efcef7d2aff4a061745ba22a07a57',1,'m5::unit::UnitPAJ7620U2']]],
-  ['readfrequency_3',['readFrequency',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#ab4366716c4753e9eef151f002e6aee95',1,'m5::unit::UnitPAJ7620U2::readFrequency(uint16_t &amp;raw)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a6c16136522e489d0084b2895ab7d5834',1,'m5::unit::UnitPAJ7620U2::readFrequency(paj7620u2::Frequency &amp;f)']]],
+  ['readfrequency_3',['readFrequency',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#ab4366716c4753e9eef151f002e6aee95',1,'m5::unit::UnitPAJ7620U2::readFrequency(uint16_t &amp;raw)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a88c83b07724c94eb952a3d29d75dd2f8',1,'m5::unit::UnitPAJ7620U2::readFrequency(uint8_t &amp;raw)'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a6c16136522e489d0084b2895ab7d5834',1,'m5::unit::UnitPAJ7620U2::readFrequency(paj7620u2::Frequency &amp;f)']]],
   ['readfrequencyhz_4',['readFrequencyHz',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#acdeb8fa43208cfddc6a062f7f91c2411',1,'m5::unit::UnitPAJ7620U2']]],
   ['readgesture_5',['readGesture',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4d2b9e9b02f9cf89f0f3fabde706e95c',1,'m5::unit::UnitPAJ7620U2']]],
   ['readhorizontalflip_6',['readHorizontalFlip',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aaa8a5f75eb516232a0fe0a89fd7a0365',1,'m5::unit::UnitPAJ7620U2']]],

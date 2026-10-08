@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.2.0 git rev:70c2663</span>
+   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.3.0 git rev:73e6de5</span>
    </div>
   </td>
  </tr>
@@ -126,16 +126,14 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>brightness</b> () 
 <tr class="separator:ab36762c0df169debe8ae7dc717d17556"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ec3406417988b5d2abe52fb1af28a2b" id="r_a3ec3406417988b5d2abe52fb1af28a2b"><td class="memItemLeft" align="right" valign="top"><a id="a3ec3406417988b5d2abe52fb1af28a2b" name="a3ec3406417988b5d2abe52fb1af28a2b"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>approach</b> () const</td></tr>
-<tr class="memdesc:a3ec3406417988b5d2abe52fb1af28a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect the approach? <br /></td></tr>
+<tr class="memdesc:a3ec3406417988b5d2abe52fb1af28a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the approach state (true: approach) <br /></td></tr>
 <tr class="separator:a3ec3406417988b5d2abe52fb1af28a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Cursor mode</div></td></tr>
-<tr class="memitem:a74c4eb8e551b5031a287546041c16c25" id="r_a74c4eb8e551b5031a287546041c16c25"><td class="memItemLeft" align="right" valign="top"><a id="a74c4eb8e551b5031a287546041c16c25" name="a74c4eb8e551b5031a287546041c16c25"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>cursorX</b> () const</td></tr>
-<tr class="memdesc:a74c4eb8e551b5031a287546041c16c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cursor X of any object. <br /></td></tr>
+<tr class="memitem:a74c4eb8e551b5031a287546041c16c25" id="r_a74c4eb8e551b5031a287546041c16c25"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74c4eb8e551b5031a287546041c16c25">cursorX</a> () const</td></tr>
+<tr class="memdesc:a74c4eb8e551b5031a287546041c16c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cursor X of any object.  <br /></td></tr>
 <tr class="separator:a74c4eb8e551b5031a287546041c16c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb24cb07fff8049ca6fbe09d521ba383" id="r_acb24cb07fff8049ca6fbe09d521ba383"><td class="memItemLeft" align="right" valign="top"><a id="acb24cb07fff8049ca6fbe09d521ba383" name="acb24cb07fff8049ca6fbe09d521ba383"></a>
-uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>cursorY</b> () const</td></tr>
-<tr class="memdesc:acb24cb07fff8049ca6fbe09d521ba383"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cursor Y of any object. <br /></td></tr>
+<tr class="memitem:acb24cb07fff8049ca6fbe09d521ba383" id="r_acb24cb07fff8049ca6fbe09d521ba383"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb24cb07fff8049ca6fbe09d521ba383">cursorY</a> () const</td></tr>
+<tr class="memdesc:acb24cb07fff8049ca6fbe09d521ba383"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the cursor Y of any object.  <br /></td></tr>
 <tr class="separator:acb24cb07fff8049ca6fbe09d521ba383"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -185,7 +183,64 @@ union {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Measurement data group. </p>
-</div></div><!-- contents -->
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a74c4eb8e551b5031a287546041c16c25" name="a74c4eb8e551b5031a287546041c16c25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c4eb8e551b5031a287546041c16c25">&#9670;&#160;</a></span>cursorX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t m5::unit::paj7620u2::Data::cursorX </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the cursor X of any object. </p>
+<dl class="section return"><dt>Returns</dt><dd>Object center X on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode </dd></dl>
+
+</div>
+</div>
+<a id="acb24cb07fff8049ca6fbe09d521ba383" name="acb24cb07fff8049ca6fbe09d521ba383"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb24cb07fff8049ca6fbe09d521ba383">&#9670;&#160;</a></span>cursorY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t m5::unit::paj7620u2::Data::cursorY </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the cursor Y of any object. </p>
+<dl class="section return"><dt>Returns</dt><dd>Object center Y on the 30x30 sensor array in 1/128 pixel units (0 - 3712), or 0xFFFF if not Cursor mode </dd></dl>
+
+</div>
+</div>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

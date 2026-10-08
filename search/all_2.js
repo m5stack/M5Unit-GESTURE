@@ -1,7 +1,7 @@
 var searchData=
 [
   ['clockwise_0',['Clockwise',['../unit___p_a_j7620_u2_8hpp.html#a1c0d3ab5e6165d9e444614e049c0a9c2aba360a794737bcc8657a5b6e870d7ba8',1,'m5::unit::paj7620u2']]],
-  ['config_1',['config',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4d34055c98519a13d63e1667f4983fdb',1,'m5::unit::UnitPAJ7620U2::config()'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4fabc85c91528def464047adf41edc7e',1,'m5::unit::UnitPAJ7620U2::config(const config_t &amp;cfg)']]],
+  ['config_1',['config',['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#aa8d2b80738e0752f907274f9684515d8',1,'m5::unit::UnitPAJ7620U2::config() const'],['../classm5_1_1unit_1_1_unit_p_a_j7620_u2.html#a4fabc85c91528def464047adf41edc7e',1,'m5::unit::UnitPAJ7620U2::config(const config_t &amp;cfg)']]],
   ['config_5ft_2',['config_t',['../structm5_1_1unit_1_1_unit_p_a_j7620_u2_1_1config__t.html',1,'m5::unit::UnitPAJ7620U2']]],
   ['confirm_3',['Confirm',['../unit___p_a_j7620_u2_8hpp.html#a1c0d3ab5e6165d9e444614e049c0a9c2a70d9be9b139893aa6c69b5e77e614311',1,'m5::unit::paj7620u2']]],
   ['counterclockwise_4',['CounterClockwise',['../unit___p_a_j7620_u2_8hpp.html#a1c0d3ab5e6165d9e444614e049c0a9c2a8f23635f9ec49db2161fc5cddf033a79',1,'m5::unit::paj7620u2']]],

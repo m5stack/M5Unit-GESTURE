@@ -26,6 +26,7 @@ var NAVTREE =
 [
   [ "M5Unit-GESTURE", "index.html", [
     [ "M5UnitGESTURE", "index.html", null ],
+    [ "Deprecated List", "deprecated.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ]
     ] ],

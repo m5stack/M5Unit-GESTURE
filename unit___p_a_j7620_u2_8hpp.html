@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.2.0 git rev:70c2663</span>
+   <div id="projectname">M5Unit-GESTURE<span id="projectnumber">&#160;0.3.0 git rev:73e6de5</span>
    </div>
   </td>
  </tr>
@@ -129,7 +129,7 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacem5.html">m5</a></td></tr>
-<tr class="memdesc:namespacem5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Top level namespace of M5stack. <br /></td></tr>
+<tr class="memdesc:namespacem5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Top level namespace of M5Stack. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepaj7620u2.html">paj7620u2</a></td></tr>
 <tr class="memdesc:namespacepaj7620u2"><td class="mdescLeft">&#160;</td><td class="mdescRight">For PAJ7620U2. <br /></td></tr>
@@ -259,7 +259,7 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2aba360a794737bcc8657a5b6e870d7ba8" name="a1c0d3ab5e6165d9e444614e049c0a9c2aba360a794737bcc8657a5b6e870d7ba8"></a>Clockwise&#160;</td><td class="fielddoc"><p>Clockwise. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2a8f23635f9ec49db2161fc5cddf033a79" name="a1c0d3ab5e6165d9e444614e049c0a9c2a8f23635f9ec49db2161fc5cddf033a79"></a>CounterClockwise&#160;</td><td class="fielddoc"><p>Counter clock wise. </p>
+<tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2a8f23635f9ec49db2161fc5cddf033a79" name="a1c0d3ab5e6165d9e444614e049c0a9c2a8f23635f9ec49db2161fc5cddf033a79"></a>CounterClockwise&#160;</td><td class="fielddoc"><p>Counterclockwise. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a1c0d3ab5e6165d9e444614e049c0a9c2ad911b34823c7674c292556dc56148c27" name="a1c0d3ab5e6165d9e444614e049c0a9c2ad911b34823c7674c292556dc56148c27"></a>Wave&#160;</td><td class="fielddoc"><p>Wave. </p>
 </td></tr>
@@ -344,7 +344,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>R_IDLE_TIME[15:0] register value, or 0 if out of range</dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>R_IDLE_TIME[15:0] register value. 0 if hz &lt;= 0 or too high (&gt; about 405.8 Hz), 65535 if too low</dd></dl>
 <p>Formula: idle_time = 31250 / Hz - 77 </p>
 
 </div>
